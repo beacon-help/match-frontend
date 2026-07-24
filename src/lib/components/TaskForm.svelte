@@ -24,7 +24,7 @@
 				type="text"
 				bind:value={task.title}
 				placeholder="e.g. Fix login bug"
-				class="w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-800 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+				class="w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
 			/>
 		</div>
 
@@ -37,7 +37,7 @@
 				rows="4"
 				bind:value={task.description}
 				placeholder="Describe the task..."
-				class="w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-800 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+				class="w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
 			></textarea>
 		</div>
 
@@ -48,7 +48,7 @@
 				type="text"
 				bind:value={task.author}
 				placeholder="e.g. Alex"
-				class="w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-800 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+				class="w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
 			/>
 		</div>
 	</div>
