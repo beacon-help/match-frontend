@@ -1,5 +1,6 @@
 import { apiFetch } from '$lib/api/client';
 import type { Signup } from '$lib/types/signup';
+import type { Login } from '$lib/types/login';
 
 export type HelpseekerCreationRequestSchema = {
 	first_name: string;
@@ -25,6 +26,25 @@ export function signupHelpseeker(signup: Signup): Promise<UserSchema> {
 	};
 
 	return apiFetch<UserSchema>('/user/signup/helpseeker', {
+		method: 'POST',
+		body
+	});
+}
+
+export type TokenSchema = {
+	access_token: string;
+	refresh_token: string;
+	token_type?: string;
+};
+
+export function loginUser(login: Login): Promise<TokenSchema> {
+	const body = new URLSearchParams({
+		grant_type: 'password',
+		username: login.email,
+		password: login.password
+	});
+
+	return apiFetch<TokenSchema>('/user/login', {
 		method: 'POST',
 		body
 	});

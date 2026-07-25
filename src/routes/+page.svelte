@@ -49,10 +49,10 @@
 
 	<section class="text-xl leading-9 text-gray-800 sm:text-2xl sm:leading-[44px]">
 		<p>
-			The most affected areas include the municipalities of <strong>Torrent</strong>, <strong>Alzira</strong>, and <strong>Carcaixent</strong>
-			, where severe flooding has impacted residential zones, roads, and public
-			facilities. Rescue and recovery operations remain ongoing as local communities work to restore
-			normal conditions.
+			The most affected areas include the municipalities of <strong>Torrent</strong>,
+			<strong>Alzira</strong>, and <strong>Carcaixent</strong>
+			, where severe flooding has impacted residential zones, roads, and public facilities. Rescue and
+			recovery operations remain ongoing as local communities work to restore normal conditions.
 		</p>
 	</section>
 </main>
