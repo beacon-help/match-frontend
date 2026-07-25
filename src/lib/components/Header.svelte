@@ -7,22 +7,26 @@
 	// (the Figma Header has logged-in/out and help-seeker/helper variants).
 </script>
 
-<header class="flex h-[106px] w-full items-center justify-between border-b border-gray-200 px-8">
-	<a href={resolve('/')} class="flex items-center gap-3">
-		<img src="/home/logo.svg" alt="" class="h-10 w-10" />
-		<span class="text-xl font-semibold text-gray-800">Match Valencia</span>
+<header
+	class="flex h-[106px] w-full items-center justify-between gap-4 border-b border-gray-200 px-4 sm:px-6 lg:px-8"
+>
+	<a href={resolve('/')} class="flex items-center gap-2 sm:gap-3">
+		<img src="/home/logo.svg" alt="" class="h-9 w-9 sm:h-10 sm:w-10" />
+		<span class="text-lg font-semibold whitespace-nowrap text-gray-800 sm:text-xl">
+			Match Valencia
+		</span>
 	</a>
 
-	<nav class="flex items-center gap-3">
+	<nav class="flex items-center gap-2 sm:gap-3">
 		<a
 			href={resolve('/login')}
-			class="rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 hover:bg-gray-50"
+			class="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium whitespace-nowrap text-gray-700 hover:bg-gray-50 sm:px-4 sm:text-base"
 		>
 			Sign in
 		</a>
 		<a
 			href={resolve('/signup')}
-			class="rounded-lg bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700"
+			class="rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium whitespace-nowrap text-white hover:bg-blue-700 sm:px-4 sm:text-base"
 		>
 			Register
 		</a>

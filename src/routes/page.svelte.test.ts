@@ -8,4 +8,11 @@ describe('/+page.svelte', () => {
 		render(Page);
 		expect(screen.getByText(/On November 4, 2025/)).toBeInTheDocument();
 	});
+
+	test('renders affected municipalities in bold', () => {
+		render(Page);
+		const torrent = screen.getByText('Torrent');
+		expect(torrent).toBeInTheDocument();
+		expect(torrent.tagName).toBe('STRONG');
+	});
 });

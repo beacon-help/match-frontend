@@ -1,7 +1,4 @@
 <script lang="ts">
-	// Home landing page — implements the Figma "Home" frame.
-	// See docs/home-implementation-plan.md. The affected-areas section is added in a
-	// later step; this covers the centered column, hero copy, and the map.
 	import { onMount } from 'svelte';
 	import { listPublicTasks } from '$lib/api/task';
 	import { describeApiError } from '$lib/api/client';
@@ -29,7 +26,7 @@
 </script>
 
 <main class="mx-auto max-w-[1000px] space-y-10 px-6 py-12">
-	<section class="text-2xl leading-[44px] text-gray-800">
+	<section class="text-xl leading-9 text-gray-800 sm:text-2xl sm:leading-[44px]">
 		<p>
 			On November 4, 2025, the city of Valencia experienced a severe weather event that brought
 			torrential rain, flash floods, and widespread damage across urban and rural areas. The storm
@@ -43,9 +40,19 @@
 		</p>
 	</section>
 
-	<HomeMap {markers} />
+	<div class="space-y-2">
+		<HomeMap {markers} />
+		{#if mapError}
+			<p class="text-sm text-red-600">Couldn't load task locations: {mapError}</p>
+		{/if}
+	</div>
 
-	{#if mapError}
-		<p class="text-sm text-red-600">Couldn't load task locations: {mapError}</p>
-	{/if}
+	<section class="text-xl leading-9 text-gray-800 sm:text-2xl sm:leading-[44px]">
+		<p>
+			The most affected areas include the municipalities of <strong>Torrent</strong>, <strong>Alzira</strong>, and <strong>Carcaixent</strong>
+			, where severe flooding has impacted residential zones, roads, and public
+			facilities. Rescue and recovery operations remain ongoing as local communities work to restore
+			normal conditions.
+		</p>
+	</section>
 </main>

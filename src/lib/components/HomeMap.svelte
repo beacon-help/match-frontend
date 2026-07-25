@@ -11,7 +11,7 @@
 
 	interface Props {
 		markers: MapMarker[];
-		/** Fallback center (Valencia) used until markers are available to fit. */
+		/** Fallback center (Valencia) used until markers are available to fit. TODO set from config */
 		center?: [number, number];
 		zoom?: number;
 	}
@@ -29,30 +29,36 @@
 	onMount(() => {
 		let disposed = false;
 
-		import('leaflet').then((mod) => {
-			if (disposed) return;
-			const lib = mod.default;
+		import('leaflet')
+			.then((mod) => {
+				if (disposed) return;
+				const lib = mod.default;
 
-			map = lib.map(container).setView(center, zoom);
-			lib
-				.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-					attribution:
-						'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-					maxZoom: 19
-				})
-				.addTo(map);
+				map = lib.map(container).setView(center, zoom);
+				lib
+					.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+						attribution:
+							'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+						maxZoom: 19
+					})
+					.addTo(map);
 
-			// Reuse the wireframe's pin asset; anchor its tip (bottom-centre) on the point.
-			icon = lib.icon({
-				iconUrl: '/home/marker.svg',
-				iconSize: [16, 20],
-				iconAnchor: [8, 20],
-				popupAnchor: [0, -18]
+				// Reuse the wireframe's pin asset; anchor its tip (bottom-centre) on the point.
+				icon = lib.icon({
+					iconUrl: '/home/marker.svg',
+					iconSize: [16, 20],
+					iconAnchor: [8, 20],
+					popupAnchor: [0, -18]
+				});
+				markerLayer = lib.featureGroup().addTo(map);
+
+				L = lib; // assigning reactive state triggers the marker $effect
+			})
+			.catch((err) => {
+				// Swallow load/init failures (e.g. the component unmounted mid-import, or a
+				// non-DOM test environment) so they don't surface as unhandled rejections.
+				console.error('Failed to initialise map', err);
 			});
-			markerLayer = lib.featureGroup().addTo(map);
-
-			L = lib; // assigning reactive state triggers the marker $effect
-		});
 
 		return () => {
 			disposed = true;
@@ -82,6 +88,6 @@
 <div
 	bind:this={container}
 	role="application"
-	aria-label="Map of task locations in the Valencia area"
+	aria-label="Map of task locations "
 	class="aspect-[5/3] w-full overflow-hidden rounded-2xl border border-gray-200"
 ></div>
