@@ -37,6 +37,12 @@ export type TokenSchema = {
 	token_type?: string;
 };
 
+export function getMe(accessToken: string): Promise<UserSchema> {
+	return apiFetch<UserSchema>('/user/me', {
+		headers: { Authorization: `Bearer ${accessToken}` }
+	});
+}
+
 export function loginUser(login: Login): Promise<TokenSchema> {
 	const body = new URLSearchParams({
 		grant_type: 'password',
