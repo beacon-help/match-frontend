@@ -1,50 +1,21 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { listPublicTasks } from '$lib/api/task';
-	import { describeApiError } from '$lib/api/client';
-	import TaskCard from '$lib/components/TaskCard.svelte';
-	import TaskForm from '$lib/components/TaskForm.svelte';
-	import type { PublicTask } from '$lib/types/task';
-
-	let task = $state({
-		title: '',
-		description: '',
-		author: ''
-	});
-
-	let publicTasks = $state<PublicTask[]>([]);
-	let isLoadingTasks = $state(true);
-	let loadTasksError = $state('');
-
-	onMount(async () => {
-		try {
-			publicTasks = await listPublicTasks();
-		} catch (err) {
-			loadTasksError = describeApiError(err);
-		} finally {
-			isLoadingTasks = false;
-		}
-	});
+	// Home landing page — implements the Figma "Home" frame.
+	// See docs/home-implementation-plan.md. The map and affected-areas sections are
+	// added in later steps; this scaffold covers the centered column + hero copy.
 </script>
 
-<section class="container mx-auto px-4 py-10">
-	<h3 class="mb-6 text-4xl font-bold">Cases</h3>
-
-	{#if isLoadingTasks}
-		<p class="text-gray-500">Loading tasks…</p>
-	{:else if loadTasksError}
-		<p class="text-red-600">{loadTasksError}</p>
-	{:else if publicTasks.length === 0}
-		<p class="text-gray-500">No open tasks right now.</p>
-	{:else}
-		<div class="m-6 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-			{#each publicTasks as publicTask (publicTask.id)}
-				<TaskCard task={publicTask} />
-			{/each}
-		</div>
-	{/if}
-
-	<h3 class="mb-6 text-4xl font-bold">Post an issue</h3>
-
-	<TaskForm {task} />
-</section>
+<main class="mx-auto max-w-[1000px] px-6 py-12">
+	<section class="text-2xl leading-[44px] text-gray-800">
+		<p>
+			On November 4, 2025, the city of Valencia experienced a severe weather event that brought
+			torrential rain, flash floods, and widespread damage across urban and rural areas. The storm
+			disrupted transportation, flooded homes, and affected essential infrastructure.
+		</p>
+		<p>
+			This phenomenon, known as a DANA (Isolated Depression in High Levels), has left many residents
+			in need of urgent assistance. Volunteers are requested to support cleanup efforts, deliver
+			essential supplies, and assist affected families in coordination with local authorities and
+			emergency services.
+		</p>
+	</section>
+</main>
