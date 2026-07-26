@@ -33,8 +33,15 @@ export function createTask(body: TaskCreationRequest, accessToken: string): Prom
 	});
 }
 
-export function manageTask(taskId: number, action: TaskAction, accessToken: string): Promise<Task> {
-	return apiFetch<Task>(`/task/${taskId}?action=${action}`, {
+export function manageTask(
+	taskId: number,
+	action: TaskAction,
+	accessToken: string,
+	helperId?: number
+): Promise<Task> {
+	// `approve`/`reject` act on a specific volunteer's request, identified by helper_id.
+	const helperParam = helperId != null ? `&helper_id=${helperId}` : '';
+	return apiFetch<Task>(`/task/${taskId}?action=${action}${helperParam}`, {
 		method: 'PUT',
 		headers: { Authorization: `Bearer ${accessToken}` }
 	});

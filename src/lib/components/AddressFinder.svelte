@@ -6,10 +6,10 @@
 	interface Props {
 		/** Free-text address (source of truth — geocoding is mocked). Bindable. */
 		address: string;
-		/** Marker latitude, set by clicking the map. Bindable. */
-		lat: number;
-		/** Marker longitude, set by clicking the map. Bindable. */
-		lon: number;
+		/** Marker latitude, set by clicking the map. Bindable. May arrive as a string. */
+		lat: number | string;
+		/** Marker longitude, set by clicking the map. Bindable. May arrive as a string. */
+		lon: number | string;
 		error?: string;
 	}
 
