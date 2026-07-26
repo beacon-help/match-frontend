@@ -4,6 +4,7 @@
 	import LoginForm from '$lib/components/LoginForm.svelte';
 	import { loginUser } from '$lib/api/user';
 	import { saveTokens } from '$lib/auth/tokens';
+	import { loadSession } from '$lib/auth/session.svelte';
 	import { ApiError, describeApiError } from '$lib/api/client';
 	import { validateLogin, type LoginErrors } from '$lib/validation/login';
 	import type { Login } from '$lib/types/login';
@@ -29,6 +30,7 @@
 		try {
 			const tokens = await loginUser(login);
 			saveTokens(tokens);
+			await loadSession();
 			await goto(resolve('/'));
 		} catch (err) {
 			// The backend answers bad credentials with 401; give that its own message rather

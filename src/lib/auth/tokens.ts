@@ -1,9 +1,6 @@
 import { browser } from '$app/environment';
 import type { TokenSchema } from '$lib/api/user';
 
-// TODO Minimal token persistence. The full auth state (and the Header's logged-in variants)
-// is still to be designed — for now we just keep the tokens so a successful login isn't
-// thrown away and later work has something to read from.
 const ACCESS_TOKEN_KEY = 'access_token';
 const REFRESH_TOKEN_KEY = 'refresh_token';
 
