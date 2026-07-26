@@ -25,13 +25,13 @@
 				class="rounded-lg px-3 py-2 text-sm font-medium whitespace-nowrap text-gray-700 hover:bg-gray-50 sm:px-4 sm:text-base"
 			>
 				Search Task
-			</a>
+			</a> -->
 			<a
 				href={resolve('/tasks')}
 				class="rounded-lg bg-gray-100 px-3 py-2 text-sm font-medium whitespace-nowrap text-gray-900 sm:px-4 sm:text-base"
 			>
 				My Tasks
-			</a> -->
+			</a>
 			<a
 				href={resolve('/me')}
 				class="ml-1 flex items-center gap-1.5 rounded-lg py-1 pr-2 pl-1 hover:bg-gray-50"
