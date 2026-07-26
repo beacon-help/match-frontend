@@ -49,6 +49,17 @@
 			{#if errors.password}
 				<p class="mt-1 text-sm text-red-600">{errors.password}</p>
 			{/if}
+			<!-- TODO: backend — no password reset endpoint yet; link is a mock placeholder. -->
+			<div class="mt-1 text-right">
+				<button
+					type="button"
+					disabled
+					class="text-sm font-medium text-gray-400"
+					title="Password reset is not available yet"
+				>
+					Forgot password?
+				</button>
+			</div>
 		</div>
 
 		<button
