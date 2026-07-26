@@ -31,3 +31,10 @@ export interface Task extends BaseTask {
 	owner: TaskUser;
 	helper: TaskUser | null;
 }
+
+export type TaskCreationRequest = {
+	title: string;
+	description: string;
+	category: string;
+	location: Location;
+};

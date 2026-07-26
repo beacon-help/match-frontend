@@ -14,6 +14,11 @@ export const session = {
 	},
 	get isLoaded() {
 		return isLoaded;
+	},
+	// Role is authoritative on the backend `user_type`, so it flows in with the session
+	// and clears automatically with the user on logout.
+	get role() {
+		return user?.user_type ?? null;
 	}
 };
 
