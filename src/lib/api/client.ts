@@ -30,16 +30,28 @@ export type ApiFetchOptions = {
 };
 
 export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): Promise<T> {
+	// URLSearchParams bodies are sent as-is (application/x-www-form-urlencoded, e.g. the
+	// OAuth2 login form); everything else is JSON. For form bodies we let fetch set the
+	// Content-Type so it includes the correct charset.
+	const isForm = options.body instanceof URLSearchParams;
+
+	let body: BodyInit | undefined;
+	if (options.body instanceof URLSearchParams) {
+		body = options.body;
+	} else if (options.body !== undefined) {
+		body = JSON.stringify(options.body);
+	}
+
 	let response: Response;
 	try {
 		response = await fetch(`${PUBLIC_API_BASE_URL}${path}`, {
 			method: options.method ?? 'GET',
 			headers: {
-				'Content-Type': 'application/json',
 				Accept: 'application/json',
+				...(isForm ? {} : { 'Content-Type': 'application/json' }),
 				...options.headers
 			},
-			body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
+			body,
 			signal: options.signal
 		});
 	} catch {
