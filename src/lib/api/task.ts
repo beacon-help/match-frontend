@@ -41,22 +41,20 @@ export function manageTask(
 ): Promise<Task> {
 	// `approve`/`reject` act on a specific volunteer's request, identified by helper_id.
 	const helperParam = helperId != null ? `&helper_id=${helperId}` : '';
-	return apiFetch<Task>(`/task/${taskId}?action=${action}${helperParam}`, {
+	return apiFetch<Task>(`/task/${taskId}/manage?action=${action}${helperParam}`, {
 		method: 'PUT',
 		headers: { Authorization: `Bearer ${accessToken}` }
 	});
 }
 
-// TODO: backend — there is no task field-update endpoint yet. Edit Task persistence is
-// mocked: we resolve with the locally-edited task so the UI flow works end-to-end. Swap this
-// for a real `PATCH /task/{id}` call once the backend exposes one.
-export function updateTask(task: Task, edits: TaskCreationRequest): Promise<Task> {
-	const updated: Task = {
-		...task,
-		title: edits.title,
-		description: edits.description,
-		category: edits.category,
-		location: edits.location
-	};
-	return Promise.resolve(updated);
+export function updateTask(
+	taskId: number,
+	edits: TaskCreationRequest,
+	accessToken: string
+): Promise<Task> {
+	return apiFetch<Task>(`/task/${taskId}/edit`, {
+		method: 'PUT',
+		headers: { Authorization: `Bearer ${accessToken}` },
+		body: edits
+	});
 }

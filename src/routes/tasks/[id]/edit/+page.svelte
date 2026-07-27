@@ -25,6 +25,7 @@
 	let loadError: string | null = $state(null);
 	let submitError: string | null = $state(null);
 	let needsSignIn = $state(false);
+	let accessToken = $state<string | null>(null);
 
 	onMount(async () => {
 		const token = getAccessToken();
@@ -34,6 +35,7 @@
 			return;
 		}
 
+		accessToken = token;
 		try {
 			const task = await getTask(taskId, token);
 			original = task;
@@ -56,7 +58,7 @@
 
 	async function handleSubmit(event: SubmitEvent) {
 		event.preventDefault();
-		if (!original) return;
+		if (!original || !accessToken) return;
 
 		errors = validateTask(form);
 		if (Object.keys(errors).length > 0) {
@@ -66,8 +68,7 @@
 		isSubmitting = true;
 		submitError = null;
 		try {
-			// TODO: backend — no field-update endpoint yet; updateTask mock-resolves locally.
-			await updateTask(original, form);
+			await updateTask(taskId, form, accessToken);
 			await goto(resolve('/tasks/[id]', { id: String(taskId) }));
 		} catch (err) {
 			submitError = describeApiError(err);
