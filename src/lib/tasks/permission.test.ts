@@ -7,7 +7,7 @@ const base: Task = {
 	title: 'Move furniture',
 	status: 'open',
 	location: { address: 'Valencia', lat: 39.47, lon: -0.38 },
-	category: 'Transport Goods',
+	category: 'transport people',
 	description: 'Need help moving',
 	created_at: '2026-07-01T00:00:00Z',
 	updated_at: null,

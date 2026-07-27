@@ -5,7 +5,7 @@ import type { TaskCreationRequest } from '$lib/types/task';
 const valid: TaskCreationRequest = {
 	title: 'Move a sofa',
 	description: 'Need a hand carrying a sofa downstairs.',
-	category: 'Transport Goods',
+	category: 'transport people',
 	location: { address: 'Carrer de Colón 12', lat: 39.47, lon: -0.38 }
 };
 
