@@ -92,3 +92,9 @@ export function loginUser(login: Login): Promise<TokenSchema> {
 		body
 	});
 }
+
+export function verifyUser(verificationCode: string): Promise<void> {
+	return apiFetch<void>(`/user/verify/${verificationCode}`, {
+		method: 'PUT'
+	});
+}
