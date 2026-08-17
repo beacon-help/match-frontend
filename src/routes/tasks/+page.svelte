@@ -1,19 +1,32 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { listMyTasks, manageTask } from '$lib/api/task';
+	import { getMe } from '$lib/api/user';
 	import { getAccessToken } from '$lib/auth/tokens';
+	import { session } from '$lib/auth/session.svelte';
 	import { ApiError, describeApiError } from '$lib/api/client';
+	import { getOfferMessage } from '$lib/tasks/offerMessages';
 	import type { Task } from '$lib/types/task';
 	import MyTaskCard from '$lib/components/MyTaskCard.svelte';
+	import ReviewOfferModal from '$lib/components/ReviewOfferModal.svelte';
+	import ProfileModal from '$lib/components/ProfileModal.svelte';
 	import Button from '$lib/components/Button.svelte';
 
+	let currentUserId = $state(0);
 	let tasks: Task[] = $state([]);
 	let isLoading = $state(true);
 	let error: string | null = $state(null);
-	// True when there is no usable session (no token, or the token was rejected) — the
-	// user needs to sign in before we can show their tasks.
 	let needsSignIn = $state(false);
+
+	let reviewTask: Task | null = $state(null);
+	let profileUserId: number | null = $state(null);
+	let actionBusy = $state(false);
+	let actionError: string | null = $state(null);
+
+	// Volunteers land on Search from the empty state; help-seekers land on Create Task.
+	const isVolunteer = $derived(session.role === 'volunteer');
 
 	onMount(async () => {
 		const token = getAccessToken();
@@ -24,7 +37,9 @@
 		}
 
 		try {
-			tasks = await listMyTasks(token);
+			const [me, myTasks] = await Promise.all([getMe(token), listMyTasks(token)]);
+			currentUserId = me.id;
+			tasks = myTasks;
 		} catch (err) {
 			if (err instanceof ApiError && err.status === 401) {
 				needsSignIn = true;
@@ -36,15 +51,36 @@
 		}
 	});
 
-	async function updateTask(taskId: number, action: 'close' | 'report_success') {
+	function replaceTask(updated: Task) {
+		tasks = tasks.map((t) => (t.id === updated.id ? updated : t));
+	}
+
+	async function runAction(task: Task, action: 'close' | 'report_success') {
 		const token = getAccessToken();
 		if (!token) return;
-
+		actionBusy = true;
 		try {
-			const updated = await manageTask(taskId, action, token);
-			tasks = tasks.map((t) => (t.id === updated.id ? updated : t));
+			replaceTask(await manageTask(task.id, action, token));
 		} catch (err) {
 			error = describeApiError(err);
+		} finally {
+			actionBusy = false;
+		}
+	}
+
+	async function reviewDecision(action: 'approve' | 'reject') {
+		if (!reviewTask) return;
+		const token = getAccessToken();
+		if (!token) return;
+		actionBusy = true;
+		actionError = null;
+		try {
+			replaceTask(await manageTask(reviewTask.id, action, token, reviewTask.helper?.id));
+			reviewTask = null;
+		} catch (err) {
+			actionError = describeApiError(err);
+		} finally {
+			actionBusy = false;
 		}
 	}
 </script>
@@ -64,21 +100,56 @@
 		<p class="text-red-600">{error}</p>
 	{:else if tasks.length === 0}
 		<div class="flex flex-col items-center gap-8 py-24 text-center">
-			<p class="max-w-sm text-gray-900">
-				You haven't created any tasks yet. If there's anything you need help with, feel free to get
-				started.
-			</p>
-			<Button variant="primary" href={resolve('/tasks/create')}>I need help</Button>
+			{#if isVolunteer}
+				<p class="max-w-sm text-gray-900">
+					You haven't offered to help with any tasks yet. Browse open tasks to find someone who
+					needs a hand.
+				</p>
+				<Button variant="primary" href={resolve('/tasks/search')}>Search tasks</Button>
+			{:else}
+				<p class="max-w-sm text-gray-900">
+					You haven't created any tasks yet. If there's anything you need help with, feel free to
+					get started.
+				</p>
+				<Button variant="primary" href={resolve('/tasks/create')}>I need help</Button>
+			{/if}
 		</div>
 	{:else}
 		<div class="space-y-6">
 			{#each tasks as task (task.id)}
 				<MyTaskCard
 					{task}
-					onRemove={() => updateTask(task.id, 'close')}
-					onMarkDone={() => updateTask(task.id, 'report_success')}
+					{currentUserId}
+					busy={actionBusy}
+					onSeeMore={() => goto(resolve('/tasks/[id]', { id: String(task.id) }))}
+					onEdit={() => goto(resolve('/tasks/[id]/edit', { id: String(task.id) }))}
+					onReview={() => {
+						actionError = null;
+						reviewTask = task;
+					}}
+					onSeeHelper={() => task.helper && (profileUserId = task.helper.id)}
+					onSeeOwner={() => (profileUserId = task.owner.id)}
+					onMarkDone={() => runAction(task, 'report_success')}
+					onRemove={() => runAction(task, 'close')}
+					onCancel={() => runAction(task, 'close')}
 				/>
 			{/each}
 		</div>
 	{/if}
 </section>
+
+{#if reviewTask}
+	<ReviewOfferModal
+		task={reviewTask}
+		message={getOfferMessage(reviewTask.id)}
+		isSubmitting={actionBusy}
+		error={actionError}
+		onClose={() => (reviewTask = null)}
+		onAccept={() => reviewDecision('approve')}
+		onReject={() => reviewDecision('reject')}
+	/>
+{/if}
+
+{#if profileUserId !== null}
+	<ProfileModal userId={profileUserId} onClose={() => (profileUserId = null)} />
+{/if}

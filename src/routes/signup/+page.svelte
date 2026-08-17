@@ -1,48 +1,26 @@
 <script lang="ts">
-	import SignupForm from '$lib/components/SignupForm.svelte';
-	import { signupHelpseeker } from '$lib/api/user';
-	import { describeApiError } from '$lib/api/client';
-	import { validateSignup, type SignupErrors } from '$lib/validation/signup';
-	import type { Signup } from '$lib/types/signup';
-
-	let signup: Signup = $state({
-		firstName: '',
-		lastName: '',
-		email: '',
-		password: ''
-	});
-	let errors: SignupErrors = $state({});
-	let isSubmitting = $state(false);
-	let submitError: string | null = $state(null);
-	let succeeded = $state(false);
-
-	async function handleSubmit(event: SubmitEvent) {
-		event.preventDefault();
-
-		errors = validateSignup(signup);
-		if (Object.keys(errors).length > 0) {
-			return;
-		}
-
-		isSubmitting = true;
-		submitError = null;
-		try {
-			await signupHelpseeker(signup);
-			succeeded = true;
-		} catch (err) {
-			submitError = describeApiError(err);
-		} finally {
-			isSubmitting = false;
-		}
-	}
+	import { resolve } from '$app/paths';
 </script>
 
 <section class="container mx-auto px-4 py-10">
-	<h3 class="mb-6 text-4xl font-bold">Sign up</h3>
+	<div class="mx-auto max-w-xl rounded-2xl border border-gray-200 bg-white p-8 shadow-lg">
+		<h2 class="mb-8 text-center text-3xl font-bold text-gray-800">
+			Tell us why do you want to register?
+		</h2>
 
-	{#if succeeded}
-		<p class="text-lg text-green-700">Account created! Check your email to verify your account.</p>
-	{:else}
-		<SignupForm {signup} {errors} {isSubmitting} {submitError} onSubmit={handleSubmit} />
-	{/if}
+		<div class="flex flex-col gap-4 sm:flex-row">
+			<a
+				href={resolve('/signup/helpseeker')}
+				class="flex-1 rounded-xl border border-gray-300 bg-gray-50 px-6 py-8 text-center text-lg font-semibold text-gray-900 transition hover:border-blue-500 hover:bg-blue-50"
+			>
+				I need help
+			</a>
+			<a
+				href={resolve('/signup/volunteer')}
+				class="flex-1 rounded-xl border border-gray-300 bg-gray-50 px-6 py-8 text-center text-lg font-semibold text-gray-900 transition hover:border-blue-500 hover:bg-blue-50"
+			>
+				I want to help
+			</a>
+		</div>
+	</div>
 </section>

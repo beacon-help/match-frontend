@@ -1,32 +1,68 @@
 <script lang="ts">
-	import type { PublicTask } from '$lib/types/task';
+	import type { Task } from '$lib/types/task';
+	import { taskPermission } from '$lib/tasks/permission';
+	import StatusBadge from '$lib/components/StatusBadge.svelte';
+	import TaskActionsBar from '$lib/components/TaskActionsBar.svelte';
 
 	interface Props {
-		task: PublicTask;
+		task: Task;
+		currentUserId: number;
+		busy?: boolean;
+		onSeeMore: () => void;
+		onOfferHelp?: () => void;
+		onSeeOwner?: () => void;
+		onSeeHelper?: () => void;
+		onReview?: () => void;
+		onMarkDone?: () => void;
+		onRemove?: () => void;
+		onCancel?: () => void;
+		onContact?: () => void;
+		onEdit?: () => void;
 	}
 
-	let { task }: Props = $props();
+	let {
+		task,
+		currentUserId,
+		busy = false,
+		onSeeMore,
+		onOfferHelp,
+		onSeeOwner,
+		onSeeHelper,
+		onReview,
+		onMarkDone,
+		onRemove,
+		onCancel,
+		onContact,
+		onEdit
+	}: Props = $props();
 
-	const statusStyles: Record<PublicTask['status'], string> = {
-		open: 'bg-blue-100 text-blue-700',
-		pending: 'bg-yellow-100 text-yellow-700',
-		approved: 'bg-green-100 text-green-700',
-		succeeded: 'bg-green-100 text-green-700',
-		failed: 'bg-red-100 text-red-700',
-		cancelled: 'bg-gray-100 text-gray-700'
-	};
+	const permission = $derived(taskPermission(task, currentUserId));
 </script>
 
-<div
-	class="overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-lg transition hover:shadow-xl"
->
-	<div class="flex items-center justify-between gap-3">
-		<h3 class="text-lg font-semibold text-gray-800">{task.title}</h3>
-		<span class={`rounded-full px-3 py-1 text-xs font-medium ${statusStyles[task.status]}`}>
-			{task.status}
-		</span>
+<div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:shadow-md">
+	<div class="flex flex-col gap-4">
+		<div class="flex items-start justify-between gap-4">
+			<div class="flex flex-col gap-1">
+				<h3 class="text-xl font-semibold text-gray-900">{task.title}</h3>
+				<p class="text-sm font-medium text-gray-500">{task.category}</p>
+				<p class="text-sm text-gray-600">{task.location.address}</p>
+			</div>
+			<StatusBadge status={task.status} />
+		</div>
+		<TaskActionsBar
+			{task}
+			{permission}
+			{busy}
+			{onSeeMore}
+			{onOfferHelp}
+			{onSeeOwner}
+			{onSeeHelper}
+			{onReview}
+			{onMarkDone}
+			{onRemove}
+			{onCancel}
+			{onContact}
+			{onEdit}
+		/>
 	</div>
-
-	<p class="mt-2 text-sm font-medium text-gray-500">{task.category}</p>
-	<p class="mt-3 text-gray-600">{task.location.address}</p>
 </div>
