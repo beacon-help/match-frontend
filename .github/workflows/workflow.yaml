@@ -21,4 +21,5 @@ jobs:
           node-version: 24
           cache: pnpm
       - run: pnpm install
+      - run: pnpm approve-builds
       - run: pnpm run test
