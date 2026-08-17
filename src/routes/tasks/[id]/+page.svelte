@@ -3,12 +3,13 @@
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
-	import { getTask, manageTask } from '$lib/api/task';
+	import { getTask } from '$lib/api/task';
 	import { getMe } from '$lib/api/user';
 	import { getAccessToken } from '$lib/auth/tokens';
 	import { ApiError, describeApiError } from '$lib/api/client';
 	import { taskPermission } from '$lib/tasks/permission';
-	import { saveOfferMessage, getOfferMessage } from '$lib/tasks/offerMessages';
+	import { getOfferMessage } from '$lib/tasks/offerMessages';
+	import { createTaskActionRunner } from '$lib/tasks/actionRunner.svelte';
 	import type { Task } from '$lib/types/task';
 	import HomeMap from '$lib/components/HomeMap.svelte';
 	import StatusBadge from '$lib/components/StatusBadge.svelte';
@@ -28,8 +29,11 @@
 	let showOffer = $state(false);
 	let showReview = $state(false);
 	let profileUserId: number | null = $state(null);
-	let actionBusy = $state(false);
 	let actionError: string | null = $state(null);
+
+	const actions = createTaskActionRunner((updated) => {
+		task = updated;
+	});
 
 	onMount(async () => {
 		const token = getAccessToken();
@@ -71,51 +75,21 @@
 		task ? new Date(task.created_at).toLocaleDateString(undefined, { dateStyle: 'medium' }) : ''
 	);
 
-	async function runAction(action: 'close' | 'report_success') {
+	function runAction(action: 'close' | 'report_success') {
 		if (!task) return;
-		const token = getAccessToken();
-		if (!token) return;
-		actionBusy = true;
-		try {
-			task = await manageTask(task.id, action, token);
-		} catch (err) {
-			error = describeApiError(err);
-		} finally {
-			actionBusy = false;
-		}
+		return actions.runAction(task, action, (msg) => (error = msg));
 	}
 
 	async function submitOffer(message: string) {
 		if (!task) return;
-		const token = getAccessToken();
-		if (!token) return;
-		actionBusy = true;
-		actionError = null;
-		try {
-			task = await manageTask(task.id, 'join', token);
-			saveOfferMessage(taskId, message); // mock-persist (no backend field)
-			showOffer = false;
-		} catch (err) {
-			actionError = describeApiError(err);
-		} finally {
-			actionBusy = false;
-		}
+		const updated = await actions.submitOffer(task, message, (msg) => (actionError = msg));
+		if (updated) showOffer = false;
 	}
 
 	async function reviewDecision(action: 'approve' | 'reject') {
 		if (!task) return;
-		const token = getAccessToken();
-		if (!token) return;
-		actionBusy = true;
-		actionError = null;
-		try {
-			task = await manageTask(task.id, action, token, task.helper?.id);
-			showReview = false;
-		} catch (err) {
-			actionError = describeApiError(err);
-		} finally {
-			actionBusy = false;
-		}
+		const updated = await actions.reviewDecision(task, action, (msg) => (actionError = msg));
+		if (updated) showReview = false;
 	}
 </script>
 
@@ -174,7 +148,7 @@
 				{task}
 				{permission}
 				hideSeeMore
-				busy={actionBusy}
+				busy={actions.busy}
 				onOfferHelp={() => {
 					actionError = null;
 					showOffer = true;
@@ -197,7 +171,7 @@
 {#if showOffer && task}
 	<OfferHelpModal
 		{task}
-		isSubmitting={actionBusy}
+		isSubmitting={actions.busy}
 		error={actionError}
 		onClose={() => (showOffer = false)}
 		onSubmit={submitOffer}
@@ -208,7 +182,7 @@
 	<ReviewOfferModal
 		{task}
 		message={getOfferMessage(taskId)}
-		isSubmitting={actionBusy}
+		isSubmitting={actions.busy}
 		error={actionError}
 		onClose={() => (showReview = false)}
 		onAccept={() => reviewDecision('approve')}

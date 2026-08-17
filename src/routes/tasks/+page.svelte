@@ -2,12 +2,13 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
-	import { listMyTasks, manageTask } from '$lib/api/task';
+	import { listMyTasks } from '$lib/api/task';
 	import { getMe } from '$lib/api/user';
 	import { getAccessToken } from '$lib/auth/tokens';
 	import { session } from '$lib/auth/session.svelte';
 	import { ApiError, describeApiError } from '$lib/api/client';
 	import { getOfferMessage } from '$lib/tasks/offerMessages';
+	import { createTaskActionRunner } from '$lib/tasks/actionRunner.svelte';
 	import type { Task } from '$lib/types/task';
 	import MyTaskCard from '$lib/components/MyTaskCard.svelte';
 	import ReviewOfferModal from '$lib/components/ReviewOfferModal.svelte';
@@ -22,8 +23,11 @@
 
 	let reviewTask: Task | null = $state(null);
 	let profileUserId: number | null = $state(null);
-	let actionBusy = $state(false);
 	let actionError: string | null = $state(null);
+
+	const actions = createTaskActionRunner((updated) => {
+		tasks = tasks.map((t) => (t.id === updated.id ? updated : t));
+	});
 
 	// Volunteers land on Search from the empty state; help-seekers land on Create Task.
 	const isVolunteer = $derived(session.role === 'volunteer');
@@ -51,37 +55,14 @@
 		}
 	});
 
-	function replaceTask(updated: Task) {
-		tasks = tasks.map((t) => (t.id === updated.id ? updated : t));
-	}
-
-	async function runAction(task: Task, action: 'close' | 'report_success') {
-		const token = getAccessToken();
-		if (!token) return;
-		actionBusy = true;
-		try {
-			replaceTask(await manageTask(task.id, action, token));
-		} catch (err) {
-			error = describeApiError(err);
-		} finally {
-			actionBusy = false;
-		}
+	function runAction(task: Task, action: 'close' | 'report_success') {
+		return actions.runAction(task, action, (msg) => (error = msg));
 	}
 
 	async function reviewDecision(action: 'approve' | 'reject') {
 		if (!reviewTask) return;
-		const token = getAccessToken();
-		if (!token) return;
-		actionBusy = true;
-		actionError = null;
-		try {
-			replaceTask(await manageTask(reviewTask.id, action, token, reviewTask.helper?.id));
-			reviewTask = null;
-		} catch (err) {
-			actionError = describeApiError(err);
-		} finally {
-			actionBusy = false;
-		}
+		const updated = await actions.reviewDecision(reviewTask, action, (msg) => (actionError = msg));
+		if (updated) reviewTask = null;
 	}
 </script>
 
@@ -120,7 +101,7 @@
 				<MyTaskCard
 					{task}
 					{currentUserId}
-					busy={actionBusy}
+					busy={actions.busy}
 					onSeeMore={() => goto(resolve('/tasks/[id]', { id: String(task.id) }))}
 					onEdit={() => goto(resolve('/tasks/[id]/edit', { id: String(task.id) }))}
 					onReview={() => {
@@ -142,7 +123,7 @@
 	<ReviewOfferModal
 		task={reviewTask}
 		message={getOfferMessage(reviewTask.id)}
-		isSubmitting={actionBusy}
+		isSubmitting={actions.busy}
 		error={actionError}
 		onClose={() => (reviewTask = null)}
 		onAccept={() => reviewDecision('approve')}

@@ -2,12 +2,13 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
-	import { listTasks, manageTask } from '$lib/api/task';
+	import { listTasks } from '$lib/api/task';
 	import { getMe } from '$lib/api/user';
 	import { getAccessToken } from '$lib/auth/tokens';
 	import { ApiError, describeApiError } from '$lib/api/client';
 	import { haversineKm, locationLatLon } from '$lib/tasks/distance';
-	import { saveOfferMessage, getOfferMessage } from '$lib/tasks/offerMessages';
+	import { getOfferMessage } from '$lib/tasks/offerMessages';
+	import { createTaskActionRunner } from '$lib/tasks/actionRunner.svelte';
 	import type { Task } from '$lib/types/task';
 	import HomeMap from '$lib/components/HomeMap.svelte';
 	import TaskCard from '$lib/components/TaskCard.svelte';
@@ -34,8 +35,11 @@
 	let offerTask: Task | null = $state(null);
 	let reviewTask: Task | null = $state(null);
 	let profileUserId: number | null = $state(null);
-	let actionBusy = $state(false);
 	let actionError: string | null = $state(null);
+
+	const actions = createTaskActionRunner((updated) => {
+		allTasks = allTasks.map((t) => (t.id === updated.id ? updated : t));
+	});
 
 	onMount(async () => {
 		const token = getAccessToken();
@@ -81,58 +85,21 @@
 			.filter((m): m is { lat: number; lon: number; label: string } => m !== null)
 	);
 
-	function replaceTask(updated: Task) {
-		allTasks = allTasks.map((t) => (t.id === updated.id ? updated : t));
-	}
-
 	// Runs a direct backend action (close / report_success) and syncs the list.
-	async function runAction(task: Task, action: 'close' | 'report_success') {
-		const token = getAccessToken();
-		if (!token) return;
-		actionBusy = true;
-		actionError = null;
-		try {
-			replaceTask(await manageTask(task.id, action, token));
-		} catch (err) {
-			error = describeApiError(err);
-		} finally {
-			actionBusy = false;
-		}
+	function runAction(task: Task, action: 'close' | 'report_success') {
+		return actions.runAction(task, action, (msg) => (error = msg));
 	}
 
 	async function submitOffer(message: string) {
 		if (!offerTask) return;
-		const token = getAccessToken();
-		if (!token) return;
-		actionBusy = true;
-		actionError = null;
-		try {
-			const updated = await manageTask(offerTask.id, 'join', token);
-			saveOfferMessage(offerTask.id, message); // mock-persist (no backend field)
-			replaceTask(updated);
-			offerTask = null;
-		} catch (err) {
-			actionError = describeApiError(err);
-		} finally {
-			actionBusy = false;
-		}
+		const updated = await actions.submitOffer(offerTask, message, (msg) => (actionError = msg));
+		if (updated) offerTask = null;
 	}
 
 	async function reviewDecision(action: 'approve' | 'reject') {
 		if (!reviewTask) return;
-		const token = getAccessToken();
-		if (!token) return;
-		actionBusy = true;
-		actionError = null;
-		try {
-			const updated = await manageTask(reviewTask.id, action, token, reviewTask.helper?.id);
-			replaceTask(updated);
-			reviewTask = null;
-		} catch (err) {
-			actionError = describeApiError(err);
-		} finally {
-			actionBusy = false;
-		}
+		const updated = await actions.reviewDecision(reviewTask, action, (msg) => (actionError = msg));
+		if (updated) reviewTask = null;
 	}
 </script>
 
@@ -185,7 +152,7 @@
 							<TaskCard
 								{task}
 								{currentUserId}
-								busy={actionBusy}
+								busy={actions.busy}
 								onSeeMore={() => goto(resolve('/tasks/[id]', { id: String(task.id) }))}
 								onOfferHelp={() => {
 									actionError = null;
@@ -212,7 +179,7 @@
 {#if offerTask}
 	<OfferHelpModal
 		task={offerTask}
-		isSubmitting={actionBusy}
+		isSubmitting={actions.busy}
 		error={actionError}
 		onClose={() => (offerTask = null)}
 		onSubmit={submitOffer}
@@ -223,7 +190,7 @@
 	<ReviewOfferModal
 		task={reviewTask}
 		message={getOfferMessage(reviewTask.id)}
-		isSubmitting={actionBusy}
+		isSubmitting={actions.busy}
 		error={actionError}
 		onClose={() => (reviewTask = null)}
 		onAccept={() => reviewDecision('approve')}
