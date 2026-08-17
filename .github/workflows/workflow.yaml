@@ -20,5 +20,5 @@ jobs:
         with:
           node-version: 24
           cache: pnpm
-      - run: pnpm install --allow-scripts
+      - run: pnpm install
       - run: pnpm run test
