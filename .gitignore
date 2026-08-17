@@ -25,3 +25,8 @@ vite.config.ts.timestamp-*
 .vite
 
 .idea
+
+# Package manager: this project uses pnpm exclusively (see packageManager
+# in package.json) — ignore lockfiles from other package managers.
+package-lock.json
+yarn.lock
