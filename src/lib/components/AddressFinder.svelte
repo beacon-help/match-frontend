@@ -101,7 +101,7 @@
 		bind:this={container}
 		role="application"
 		aria-label="Click the map to set the task location"
-		class="aspect-[5/3] w-full overflow-hidden rounded-2xl border border-gray-200"
+		class="isolate aspect-[5/3] w-full overflow-hidden rounded-2xl border border-gray-200"
 	></div>
 	<p class="text-xs text-gray-500">Click on the map to drop a pin for the location.</p>
 </div>

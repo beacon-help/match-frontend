@@ -89,5 +89,5 @@
 	bind:this={container}
 	role="application"
 	aria-label="Map of task locations "
-	class="aspect-[5/3] w-full overflow-hidden rounded-2xl border border-gray-200"
+	class="isolate aspect-[5/3] w-full overflow-hidden rounded-2xl border border-gray-200"
 ></div>
