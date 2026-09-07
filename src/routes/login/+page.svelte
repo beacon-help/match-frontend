@@ -31,7 +31,7 @@
 			const tokens = await loginUser(login);
 			saveTokens(tokens);
 			await loadSession();
-			await goto(resolve('/'));
+			await goto(resolve('/tasks'));
 		} catch (err) {
 			// The backend answers bad credentials with 401; give that its own message rather
 			// than the generic fallback.
