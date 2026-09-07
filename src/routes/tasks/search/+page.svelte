@@ -7,7 +7,7 @@
 	import { getAccessToken } from '$lib/auth/tokens';
 	import { ApiError, describeApiError } from '$lib/api/client';
 	import { haversineKm, locationLatLon } from '$lib/tasks/distance';
-	import { getOfferMessage } from '$lib/tasks/offerMessages';
+	import { helperOfferMessage } from '$lib/tasks/offers';
 	import { createTaskActionRunner } from '$lib/tasks/actionRunner.svelte';
 	import type { Task } from '$lib/types/task';
 	import HomeMap from '$lib/components/HomeMap.svelte';
@@ -189,7 +189,7 @@
 {#if reviewTask}
 	<ReviewOfferModal
 		task={reviewTask}
-		message={getOfferMessage(reviewTask.id)}
+		message={helperOfferMessage(reviewTask, reviewTask.helper?.id)}
 		isSubmitting={actions.busy}
 		error={actionError}
 		onClose={() => (reviewTask = null)}

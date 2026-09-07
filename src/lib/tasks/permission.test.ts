@@ -12,7 +12,8 @@ const base: Task = {
 	created_at: '2026-07-01T00:00:00Z',
 	updated_at: null,
 	owner: { id: 10, first_name: 'Owner' },
-	helper: null
+	helper: null,
+	helper_offers: []
 };
 
 describe('taskPermission', () => {

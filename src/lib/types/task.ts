@@ -1,3 +1,5 @@
+import type { Category } from '$lib/tasks/categories';
+
 export type TaskStatus = 'open' | 'pending' | 'approved' | 'succeeded' | 'failed' | 'cancelled';
 
 export type TaskAction =
@@ -14,7 +16,7 @@ export interface BaseTask {
 	title: string;
 	status: TaskStatus;
 	location: Location;
-	category: string;
+	category: Category;
 }
 
 export interface PublicTask extends BaseTask {}
@@ -24,12 +26,19 @@ export interface TaskUser {
 	first_name: string;
 }
 
+export interface HelperOffer {
+	user_id: number;
+	offered_at: string;
+	message: string;
+}
+
 export interface Task extends BaseTask {
 	description: string;
 	created_at: string;
 	updated_at: string | null;
 	owner: TaskUser;
 	helper: TaskUser | null;
+	helper_offers: HelperOffer[];
 }
 
 export type TaskCreationRequest = {

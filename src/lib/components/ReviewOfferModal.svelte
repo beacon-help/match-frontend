@@ -5,7 +5,7 @@
 
 	interface Props {
 		task: Task;
-		/** The volunteer's mock-persisted offer message (null if none was stored). */
+		/** The volunteer's offer message (null if this offer had none). */
 		message: string | null;
 		isSubmitting?: boolean;
 		error?: string | null;

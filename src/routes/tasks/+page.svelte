@@ -7,7 +7,7 @@
 	import { getAccessToken } from '$lib/auth/tokens';
 	import { session } from '$lib/auth/session.svelte';
 	import { ApiError, describeApiError } from '$lib/api/client';
-	import { getOfferMessage } from '$lib/tasks/offerMessages';
+	import { helperOfferMessage } from '$lib/tasks/offers';
 	import { createTaskActionRunner } from '$lib/tasks/actionRunner.svelte';
 	import type { Task } from '$lib/types/task';
 	import MyTaskCard from '$lib/components/MyTaskCard.svelte';
@@ -122,7 +122,7 @@
 {#if reviewTask}
 	<ReviewOfferModal
 		task={reviewTask}
-		message={getOfferMessage(reviewTask.id)}
+		message={helperOfferMessage(reviewTask, reviewTask.helper?.id)}
 		isSubmitting={actions.busy}
 		error={actionError}
 		onClose={() => (reviewTask = null)}

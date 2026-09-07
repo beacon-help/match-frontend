@@ -9,7 +9,7 @@
 		isSubmitting?: boolean;
 		error?: string | null;
 		onClose: () => void;
-		/** Called with the volunteer's message; the parent performs the join + mock-persist. */
+		/** Called with the volunteer's message; the parent submits it as the join's helper_offer. */
 		onSubmit: (message: string) => void;
 	}
 

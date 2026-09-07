@@ -37,11 +37,15 @@ export function manageTask(
 	taskId: number,
 	action: TaskAction,
 	accessToken: string,
-	helperId?: number
+	helperId?: number,
+	message?: string
 ): Promise<Task> {
+	const params = new URLSearchParams({ action });
 	// `approve`/`reject` act on a specific volunteer's request, identified by helper_id.
-	const helperParam = helperId != null ? `&helper_id=${helperId}` : '';
-	return apiFetch<Task>(`/task/${taskId}/manage?action=${action}${helperParam}`, {
+	if (helperId != null) params.set('helper_id', String(helperId));
+	// Required by the backend for `join` — becomes the volunteer's helper_offer message.
+	if (message != null) params.set('message', message);
+	return apiFetch<Task>(`/task/${taskId}/manage?${params}`, {
 		method: 'PUT',
 		headers: { Authorization: `Bearer ${accessToken}` }
 	});

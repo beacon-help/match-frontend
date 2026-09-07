@@ -1,7 +1,6 @@
 import { manageTask } from '$lib/api/task';
 import { getAccessToken } from '$lib/auth/tokens';
 import { describeApiError } from '$lib/api/client';
-import { saveOfferMessage } from '$lib/tasks/offerMessages';
 import type { Task } from '$lib/types/task';
 
 // Shared by every page that mutates a task via `PUT /task/{id}/manage` (My Tasks, Search,
@@ -39,10 +38,8 @@ export function createTaskActionRunner(replace: (updated: Task) => void) {
 		return run((token) => manageTask(task.id, action, token), onError);
 	}
 
-	async function submitOffer(task: Task, message: string, onError: (message: string) => void) {
-		const updated = await run((token) => manageTask(task.id, 'join', token), onError);
-		if (updated) saveOfferMessage(task.id, message); // mock-persist (no backend field)
-		return updated;
+	function submitOffer(task: Task, message: string, onError: (message: string) => void) {
+		return run((token) => manageTask(task.id, 'join', token, undefined, message), onError);
 	}
 
 	function reviewDecision(
