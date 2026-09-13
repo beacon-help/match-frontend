@@ -10,6 +10,11 @@ Formatting (indentation, quotes, etc.) is enforced by Prettier/ESLint — don't 
 6. **Prefer plain functions over cleverness.** Reach for `$derived`/`$effect` only when a plain function or variable won't do — implicit reactivity is the easiest thing to get wrong coming from a backend background.
 7. **Tailwind utility classes in markup, no raw `style="..."` attributes.** Utility classes compile to a shared, cached stylesheet — they are not the same problem as inline styles. Hardcoded `style=` values are untracked and unthemeable; avoid them. If the same cluster of classes (6+) repeats in 3+ places, extract a component (the Tailwind reuse unit), not a hand-written CSS class.
 
+## Commits
+
+- Keep commit messages concise: a short imperative subject line, body only when it adds something the diff doesn't.
+- Never add the `Co-Authored-By: Claude ...` trailer or any other Claude/Claude Code attribution.
+
 ## Resources
 
 - OpenAPI specs of the backend service can be found in `../match-backend/openapi_specs.json`
