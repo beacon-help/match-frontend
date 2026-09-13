@@ -1,4 +1,4 @@
-import { PUBLIC_API_BASE_URL } from '$env/static/public';
+import { env } from '$env/dynamic/public';
 
 /**
  * Resolves a `TaskImage.path` into something usable as an `<img src>`.
@@ -11,5 +11,5 @@ export function imageSrc(path: string): string {
 	if (/^https?:\/\//i.test(path)) {
 		return path;
 	}
-	return `${PUBLIC_API_BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
+	return `${env.PUBLIC_API_BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
 }
