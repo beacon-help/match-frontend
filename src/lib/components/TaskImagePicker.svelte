@@ -37,7 +37,10 @@
 	const addLabel = $derived(isPreparing ? 'Adding…' : 'Add photo');
 
 	// Object URLs have to be handed back explicitly, so each pending file's preview is
-	// cached here and revoked once that file is gone.
+	// cached here and revoked once that file is gone. Deliberately a plain Map: it is an
+	// identity-keyed cache whose contents never drive rendering, so a SvelteMap would add a
+	// reactivity cycle (read during render, written during render) for no benefit.
+	// eslint-disable-next-line svelte/prefer-svelte-reactivity
 	const previews = new Map<File, string>();
 
 	function previewUrl(file: File): string {
@@ -175,7 +178,8 @@
 	</p>
 
 	<div role="alert" class="flex flex-col gap-1">
-		{#each errors as message}
+		<!-- Keyed by position: two files can fail the same way and produce the same text. -->
+		{#each errors as message, index (index)}
 			<p class="text-sm text-red-600">{message}</p>
 		{/each}
 	</div>
