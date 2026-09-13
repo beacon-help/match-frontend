@@ -13,7 +13,8 @@ const base: Task = {
 	updated_at: null,
 	owner: { id: 10, first_name: 'Owner' },
 	helper: null,
-	helper_offers: []
+	helper_offers: [],
+	images: []
 };
 
 describe('taskPermission', () => {

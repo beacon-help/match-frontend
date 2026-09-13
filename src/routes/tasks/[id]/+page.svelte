@@ -9,6 +9,7 @@
 	import { ApiError, describeApiError } from '$lib/api/client';
 	import { taskPermission } from '$lib/tasks/permission';
 	import { helperOfferMessage } from '$lib/tasks/offers';
+	import { imageSrc } from '$lib/tasks/images';
 	import { createTaskActionRunner } from '$lib/tasks/actionRunner.svelte';
 	import type { Task } from '$lib/types/task';
 	import HomeMap from '$lib/components/HomeMap.svelte';
@@ -66,11 +67,6 @@
 				].filter((m) => Number.isFinite(m.lat) && Number.isFinite(m.lon))
 			: []
 	);
-	// TODO: backend — GET /task/{id} returns no images; the gallery uses placeholders.
-	const gallery = $derived(
-		[1, 2, 3].map((n) => `https://picsum.photos/seed/task-${taskId}-${n}/600/400`)
-	);
-
 	const postedAt = $derived(
 		task ? new Date(task.created_at).toLocaleDateString(undefined, { dateStyle: 'medium' }) : ''
 	);
@@ -113,11 +109,17 @@
 
 			<HomeMap {markers} />
 
-			<div class="grid grid-cols-3 gap-3">
-				{#each gallery as src, i (src)}
-					<img {src} alt="Task photo {i + 1}" class="aspect-[3/2] w-full rounded-lg object-cover" />
-				{/each}
-			</div>
+			{#if task.images.length > 0}
+				<div class="grid grid-cols-3 gap-3">
+					{#each task.images as image, i (image.id)}
+						<img
+							src={imageSrc(image.path)}
+							alt="Task photo {i + 1}"
+							class="aspect-[3/2] w-full rounded-lg object-cover"
+						/>
+					{/each}
+				</div>
+			{/if}
 
 			<p class="text-gray-700">{task.description}</p>
 

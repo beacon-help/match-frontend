@@ -32,6 +32,12 @@ export interface HelperOffer {
 	message: string;
 }
 
+export interface TaskImage {
+	id: string;
+	/** Absolute URL served by the API — render it via `imageSrc()`. */
+	path: string;
+}
+
 export interface Task extends BaseTask {
 	description: string;
 	created_at: string;
@@ -39,6 +45,7 @@ export interface Task extends BaseTask {
 	owner: TaskUser;
 	helper: TaskUser | null;
 	helper_offers: HelperOffer[];
+	images: TaskImage[];
 }
 
 export type TaskCreationRequest = {
