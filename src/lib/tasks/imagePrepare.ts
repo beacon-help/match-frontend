@@ -20,7 +20,8 @@ export const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 /** Ready-made `accept` value, so the file input doesn't restate the type policy. */
 export const ACCEPT_ATTRIBUTE = ALLOWED_TYPES.join(',');
 
-const TYPE_LABEL = 'JPEG, PNG or WebP';
+/** Human-readable form of ALLOWED_TYPES, for error text and picker hints. */
+export const TYPE_LABEL = 'JPEG, PNG or WebP';
 
 export type PreparedImages = {
 	/** Files that passed validation, downscaled where possible. */
@@ -34,7 +35,8 @@ function describeSize(bytes: number): string {
 	return `${(Math.ceil((bytes / (1024 * 1024)) * 10) / 10).toFixed(1)}MB`;
 }
 
-const LIMIT_LABEL = `${MAX_BYTES / (1024 * 1024)}MB`;
+/** Human-readable form of MAX_BYTES, for error text and picker hints. */
+export const LIMIT_LABEL = `${MAX_BYTES / (1024 * 1024)}MB`;
 
 /**
  * Checks one file against the type and size limits.
