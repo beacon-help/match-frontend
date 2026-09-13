@@ -21,4 +21,6 @@ jobs:
           node-version: 24
           cache: pnpm
       - run: pnpm install
+      - name: Export repo variables
+        run: echo '${{ toJSON(vars) }}' | jq -r 'to_entries[] | "\(.key)=\(.value)"' >> "$GITHUB_ENV"
       - run: pnpm run test
