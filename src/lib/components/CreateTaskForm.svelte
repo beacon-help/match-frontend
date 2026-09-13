@@ -1,11 +1,12 @@
 <script lang="ts">
-	import type { TaskCreationRequest, TaskStatus } from '$lib/types/task';
+	import type { TaskCreationRequest, TaskImage, TaskStatus } from '$lib/types/task';
 	import type { TaskErrors } from '$lib/validation/task';
 	import { CATEGORIES } from '$lib/tasks/categories';
 	import TextField from '$lib/components/TextField.svelte';
 	import AddressFinder from '$lib/components/AddressFinder.svelte';
 	import StatusBadge from '$lib/components/StatusBadge.svelte';
 	import Button from '$lib/components/Button.svelte';
+	import TaskImagePicker from '$lib/components/TaskImagePicker.svelte';
 
 	interface Props {
 		task: TaskCreationRequest;
@@ -15,6 +16,12 @@
 		mode?: 'create' | 'edit';
 		/** Shown as a header badge in edit mode. */
 		status?: TaskStatus;
+		/** Photos already stored on the task, in edit mode. */
+		existingImages?: TaskImage[];
+		/** Newly picked photos, uploaded by the parent once the task exists. */
+		pendingImages?: File[];
+		/** Ids of existing photos to delete when the parent saves. */
+		removedImageIds?: string[];
 		onSubmit: (event: SubmitEvent) => void;
 		onCancel: () => void;
 	}
@@ -26,6 +33,9 @@
 		submitError = null,
 		mode = 'create',
 		status,
+		existingImages = [],
+		pendingImages = $bindable([]),
+		removedImageIds = $bindable([]),
 		onSubmit,
 		onCancel
 	}: Props = $props();
@@ -86,6 +96,13 @@
 			bind:lat={task.location.lat}
 			bind:lon={task.location.lon}
 			error={errors.location}
+		/>
+
+		<TaskImagePicker
+			existing={existingImages}
+			bind:pending={pendingImages}
+			bind:removedIds={removedImageIds}
+			disabled={isSubmitting}
 		/>
 
 		<div class="flex justify-end gap-3">

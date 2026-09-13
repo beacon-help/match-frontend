@@ -51,6 +51,32 @@ export function manageTask(
 	});
 }
 
+// Images live outside the task body: neither POST /task/ nor PUT /task/{id}/edit accepts
+// them, so uploads always target an existing task. Both endpoints return the full updated
+// task, so callers can replace their local copy wholesale.
+export function addTaskImages(taskId: number, files: File[], accessToken: string): Promise<Task> {
+	const form = new FormData();
+	for (const file of files) {
+		form.append('images', file);
+	}
+	return apiFetch<Task>(`/task/${taskId}/images`, {
+		method: 'POST',
+		headers: { Authorization: `Bearer ${accessToken}` },
+		body: form
+	});
+}
+
+export function removeTaskImage(
+	taskId: number,
+	imageId: string,
+	accessToken: string
+): Promise<Task> {
+	return apiFetch<Task>(`/task/${taskId}/images/${encodeURIComponent(imageId)}`, {
+		method: 'DELETE',
+		headers: { Authorization: `Bearer ${accessToken}` }
+	});
+}
+
 export function updateTask(
 	taskId: number,
 	edits: TaskCreationRequest,

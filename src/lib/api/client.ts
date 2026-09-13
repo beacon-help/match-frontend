@@ -30,14 +30,14 @@ export type ApiFetchOptions = {
 };
 
 export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): Promise<T> {
-	// URLSearchParams bodies are sent as-is (application/x-www-form-urlencoded, e.g. the
-	// OAuth2 login form); everything else is JSON. For form bodies we let fetch set the
-	// Content-Type so it includes the correct charset.
-	const isForm = options.body instanceof URLSearchParams;
+	// URLSearchParams (the OAuth2 login form) and FormData (image uploads) are sent as-is;
+	// everything else is JSON. For both we let fetch set the Content-Type itself, so it
+	// carries the correct charset / multipart boundary.
+	const isRawBody = options.body instanceof URLSearchParams || options.body instanceof FormData;
 
 	let body: BodyInit | undefined;
-	if (options.body instanceof URLSearchParams) {
-		body = options.body;
+	if (isRawBody) {
+		body = options.body as BodyInit;
 	} else if (options.body !== undefined) {
 		body = JSON.stringify(options.body);
 	}
@@ -48,7 +48,7 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
 			method: options.method ?? 'GET',
 			headers: {
 				Accept: 'application/json',
-				...(isForm ? {} : { 'Content-Type': 'application/json' }),
+				...(isRawBody ? {} : { 'Content-Type': 'application/json' }),
 				...options.headers
 			},
 			body,

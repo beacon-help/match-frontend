@@ -4,6 +4,7 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { getTask, updateTask } from '$lib/api/task';
+	import { applyImageChanges } from '$lib/tasks/applyImageChanges';
 	import { getAccessToken } from '$lib/auth/tokens';
 	import { ApiError, describeApiError } from '$lib/api/client';
 	import { validateTask, type TaskErrors } from '$lib/validation/task';
@@ -19,6 +20,8 @@
 		category: '',
 		location: { address: '', lat: NaN, lon: NaN }
 	});
+	let pendingImages: File[] = $state([]);
+	let removedImageIds: string[] = $state([]);
 	let errors: TaskErrors = $state({});
 	let isLoading = $state(true);
 	let isSubmitting = $state(false);
@@ -56,6 +59,37 @@
 		}
 	});
 
+	/**
+	 * Saves the details, then the photo changes — the backend exposes them as separate
+	 * calls, so the sequence is batched rather than atomic and the copy has to say how far
+	 * it got.
+	 *
+	 * @returns a user-facing message, or null if everything saved.
+	 */
+	async function saveChanges(token: string): Promise<string | null> {
+		try {
+			await updateTask(taskId, form, token);
+		} catch (err) {
+			return describeApiError(err);
+		}
+
+		const outcome = await applyImageChanges(
+			taskId,
+			{ removedIds: removedImageIds, added: pendingImages },
+			token
+		);
+
+		// Adopting the server's copy keeps the picker honest about what survived, and the
+		// remaining queues mean a retry only repeats what is genuinely outstanding.
+		if (outcome.task) {
+			original = outcome.task;
+		}
+		removedImageIds = outcome.remaining.removedIds;
+		pendingImages = outcome.remaining.added;
+
+		return outcome.error === null ? null : `Your details were saved, but ${outcome.error}`;
+	}
+
 	async function handleSubmit(event: SubmitEvent) {
 		event.preventDefault();
 		if (!original || !accessToken) return;
@@ -68,10 +102,12 @@
 		isSubmitting = true;
 		submitError = null;
 		try {
-			await updateTask(taskId, form, accessToken);
+			const failure = await saveChanges(accessToken);
+			if (failure) {
+				submitError = failure;
+				return;
+			}
 			await goto(resolve('/tasks/[id]', { id: String(taskId) }));
-		} catch (err) {
-			submitError = describeApiError(err);
 		} finally {
 			isSubmitting = false;
 		}
@@ -94,6 +130,9 @@
 	{:else if original}
 		<CreateTaskForm
 			bind:task={form}
+			bind:pendingImages
+			bind:removedImageIds
+			existingImages={original.images}
 			{errors}
 			{isSubmitting}
 			{submitError}

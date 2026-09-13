@@ -55,6 +55,41 @@ describe('apiFetch', () => {
 
 		await expect(apiFetch('/foo')).rejects.toMatchObject({ status: 0 });
 	});
+
+	it('sends a JSON body with a JSON Content-Type', async () => {
+		vi.mocked(fetch).mockResolvedValue(mockFetchResponse(200, {}));
+
+		await apiFetch('/foo', { method: 'POST', body: { title: 'hi' } });
+
+		const init = vi.mocked(fetch).mock.calls[0][1]!;
+		expect(init.body).toBe('{"title":"hi"}');
+		expect(init.headers).toMatchObject({ 'Content-Type': 'application/json' });
+	});
+
+	// Multipart uploads must reach fetch untouched: setting Content-Type ourselves would
+	// omit the boundary and the backend would reject the body.
+	it('sends a FormData body as-is without a Content-Type', async () => {
+		vi.mocked(fetch).mockResolvedValue(mockFetchResponse(201, {}));
+		const form = new FormData();
+		form.append('images', new Blob(['x']), 'photo.jpg');
+
+		await apiFetch('/foo', { method: 'POST', body: form });
+
+		const init = vi.mocked(fetch).mock.calls[0][1]!;
+		expect(init.body).toBe(form);
+		expect(init.headers).not.toHaveProperty('Content-Type');
+	});
+
+	it('sends a URLSearchParams body as-is without a Content-Type', async () => {
+		vi.mocked(fetch).mockResolvedValue(mockFetchResponse(200, {}));
+		const params = new URLSearchParams({ username: 'a' });
+
+		await apiFetch('/foo', { method: 'POST', body: params });
+
+		const init = vi.mocked(fetch).mock.calls[0][1]!;
+		expect(init.body).toBe(params);
+		expect(init.headers).not.toHaveProperty('Content-Type');
+	});
 });
 
 describe('describeApiError', () => {
