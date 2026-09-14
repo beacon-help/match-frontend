@@ -1,10 +1,11 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
+	import type { ResolvedPathname } from '$app/types';
 
 	interface Props {
 		variant?: 'primary' | 'neutral';
 		disabled?: boolean;
-		href?: string;
+		href?: ResolvedPathname;
 		onclick?: () => void;
 		children: Snippet;
 	}
