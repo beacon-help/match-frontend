@@ -2,7 +2,7 @@ test:
 	pnpm run test
 
 format:
-	npm run format
+	pnpm run format
 
 up:
 	pnpm run dev -- --open

@@ -64,7 +64,7 @@ export function signupVolunteer(signup: VolunteerSignup): Promise<UserSchema> {
 
 export function getUser(id: number, accessToken: string): Promise<UserSchema> {
 	return apiFetch<UserSchema>(`/user/${id}`, {
-		headers: { Authorization: `Bearer ${accessToken}` }
+		authed: accessToken
 	});
 }
 
@@ -76,7 +76,7 @@ export type TokenSchema = {
 
 export function getMe(accessToken: string): Promise<UserSchema> {
 	return apiFetch<UserSchema>('/user/me', {
-		headers: { Authorization: `Bearer ${accessToken}` }
+		authed: accessToken
 	});
 }
 

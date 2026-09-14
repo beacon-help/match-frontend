@@ -14,14 +14,19 @@ describe('haversineKm', () => {
 });
 
 describe('locationLatLon', () => {
-	it('parses string coordinates to numbers', () => {
-		expect(locationLatLon({ address: 'x', lat: '39.47', lon: '-0.38' })).toEqual({
+	it('returns the coordinates for a usable location', () => {
+		expect(locationLatLon({ address: 'x', lat: 39.47, lon: -0.38 })).toEqual({
 			lat: 39.47,
 			lon: -0.38
 		});
 	});
 
-	it('returns null for non-numeric coordinates', () => {
-		expect(locationLatLon({ address: 'x', lat: 'abc', lon: '1' })).toBeNull();
+	it('returns null when a coordinate is not finite', () => {
+		expect(locationLatLon({ address: 'x', lat: NaN, lon: 1 })).toBeNull();
+		expect(locationLatLon({ address: 'x', lat: 1, lon: NaN })).toBeNull();
+	});
+
+	it('keeps a legitimate zero coordinate', () => {
+		expect(locationLatLon({ address: 'x', lat: 0, lon: 0 })).toEqual({ lat: 0, lon: 0 });
 	});
 });

@@ -25,6 +25,7 @@ export class ApiError extends Error {
 export type ApiFetchOptions = {
 	method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 	body?: unknown;
+	authed?: string;
 	headers?: Record<string, string>;
 	signal?: AbortSignal;
 };
@@ -49,6 +50,7 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
 			headers: {
 				Accept: 'application/json',
 				...(isRawBody ? {} : { 'Content-Type': 'application/json' }),
+				...(options.authed ? { Authorization: `Bearer ${options.authed}` } : {}),
 				...options.headers
 			},
 			body,

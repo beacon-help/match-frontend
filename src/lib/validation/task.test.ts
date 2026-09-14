@@ -31,7 +31,7 @@ describe('validateTask', () => {
 			validateTask({ ...valid, location: { address: '', lat: 39, lon: -0.3 } })
 		).toHaveProperty('location');
 		expect(
-			validateTask({ ...valid, location: { address: 'x', lat: 'nope', lon: '' } })
+			validateTask({ ...valid, location: { address: 'x', lat: NaN, lon: NaN } })
 		).toHaveProperty('location');
 	});
 });

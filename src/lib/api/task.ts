@@ -7,7 +7,7 @@ export function listPublicTasks(): Promise<PublicTask[]> {
 
 export function listMyTasks(accessToken: string): Promise<Task[]> {
 	return apiFetch<Task[]>('/task/my-tasks', {
-		headers: { Authorization: `Bearer ${accessToken}` }
+		authed: accessToken
 	});
 }
 
@@ -15,20 +15,20 @@ export function listMyTasks(accessToken: string): Promise<Task[]> {
 // compute the viewer's permission for its action row.
 export function listTasks(accessToken: string): Promise<Task[]> {
 	return apiFetch<Task[]>('/task/', {
-		headers: { Authorization: `Bearer ${accessToken}` }
+		authed: accessToken
 	});
 }
 
 export function getTask(taskId: number, accessToken: string): Promise<Task> {
 	return apiFetch<Task>(`/task/${taskId}`, {
-		headers: { Authorization: `Bearer ${accessToken}` }
+		authed: accessToken
 	});
 }
 
 export function createTask(body: TaskCreationRequest, accessToken: string): Promise<Task> {
 	return apiFetch<Task>('/task/', {
 		method: 'POST',
-		headers: { Authorization: `Bearer ${accessToken}` },
+		authed: accessToken,
 		body
 	});
 }
@@ -47,7 +47,7 @@ export function manageTask(
 	if (message != null) params.set('message', message);
 	return apiFetch<Task>(`/task/${taskId}/manage?${params}`, {
 		method: 'PUT',
-		headers: { Authorization: `Bearer ${accessToken}` }
+		authed: accessToken
 	});
 }
 
@@ -61,7 +61,7 @@ export function addTaskImages(taskId: number, files: File[], accessToken: string
 	}
 	return apiFetch<Task>(`/task/${taskId}/images`, {
 		method: 'POST',
-		headers: { Authorization: `Bearer ${accessToken}` },
+		authed: accessToken,
 		body: form
 	});
 }
@@ -73,7 +73,7 @@ export function removeTaskImage(
 ): Promise<Task> {
 	return apiFetch<Task>(`/task/${taskId}/images/${encodeURIComponent(imageId)}`, {
 		method: 'DELETE',
-		headers: { Authorization: `Bearer ${accessToken}` }
+		authed: accessToken
 	});
 }
 
@@ -84,7 +84,7 @@ export function updateTask(
 ): Promise<Task> {
 	return apiFetch<Task>(`/task/${taskId}/edit`, {
 		method: 'PUT',
-		headers: { Authorization: `Bearer ${accessToken}` },
+		authed: accessToken,
 		body: edits
 	});
 }
