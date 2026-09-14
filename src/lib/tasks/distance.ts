@@ -21,8 +21,7 @@ export function haversineKm(
 	return 2 * EARTH_RADIUS_KM * Math.asin(Math.sqrt(h));
 }
 
-// Parses a Location's lat/lon (which may arrive as strings) into numbers, or null if either
-// is not finite.
+// Number() is runtime armour: the type says number, but the value comes off a JSON response.
 export function locationLatLon(location: Location): { lat: number; lon: number } | null {
 	const lat = Number(location.lat);
 	const lon = Number(location.lon);

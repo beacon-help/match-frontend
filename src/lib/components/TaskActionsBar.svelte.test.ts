@@ -56,7 +56,7 @@ describe('TaskActionsBar', () => {
 		expect(screen.getByText('Edit').closest('button')).toBeDisabled();
 	});
 
-	// Contact has no backend, so it renders but can never be actioned.
+	// TODO: backend — no messaging endpoint, so Contact can never be actioned.
 	it('renders Contact disabled for an engaged helper', () => {
 		const engaged: Task = { ...task, status: 'pending', helper: { id: 20, first_name: 'H' } };
 		render(TaskActionsBar, { task: engaged, permission: 'engaged' });

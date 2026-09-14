@@ -121,7 +121,8 @@
 			<aside class="flex flex-col gap-6">
 				<div class="flex flex-col gap-2">
 					<label class="text-sm font-medium text-gray-700" for="search-address">Location</label>
-					<!-- Mock geocode: filtering is measured from Valencia regardless of input. -->
+					<!-- TODO: backend — no geocoding endpoint; filtering is measured from Valencia
+					     regardless of what is typed here. -->
 					<input
 						id="search-address"
 						type="text"
