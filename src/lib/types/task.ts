@@ -5,10 +5,12 @@ export type TaskStatus = 'open' | 'pending' | 'approved' | 'succeeded' | 'failed
 export type TaskAction =
 	'join' | 'approve' | 'reject' | 'close' | 'report_success' | 'report_failure';
 
+// The OpenAPI schema says `anyOf: [number, string]`, but the string branch is a Decimal
+// artifact of pydantic accepting lenient input — responses always carry JSON numbers.
 export type Location = {
 	address: string;
-	lat: number | string;
-	lon: number | string;
+	lat: number;
+	lon: number;
 };
 
 export interface BaseTask {

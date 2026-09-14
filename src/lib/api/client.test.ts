@@ -18,6 +18,33 @@ describe('apiFetch', () => {
 		vi.unstubAllGlobals();
 	});
 
+	it('sends authed as a Bearer credential', async () => {
+		vi.mocked(fetch).mockResolvedValue(mockFetchResponse(200, {}));
+
+		await apiFetch('/foo', { authed: 'tok123' });
+
+		const init = vi.mocked(fetch).mock.calls[0][1] as RequestInit;
+		expect((init.headers as Record<string, string>).Authorization).toBe('Bearer tok123');
+	});
+
+	it('omits Authorization when authed is not given', async () => {
+		vi.mocked(fetch).mockResolvedValue(mockFetchResponse(200, {}));
+
+		await apiFetch('/foo');
+
+		const init = vi.mocked(fetch).mock.calls[0][1] as RequestInit;
+		expect((init.headers as Record<string, string>).Authorization).toBeUndefined();
+	});
+
+	it('lets an explicit Authorization header override authed', async () => {
+		vi.mocked(fetch).mockResolvedValue(mockFetchResponse(200, {}));
+
+		await apiFetch('/foo', { authed: 'tok123', headers: { Authorization: 'Bearer override' } });
+
+		const init = vi.mocked(fetch).mock.calls[0][1] as RequestInit;
+		expect((init.headers as Record<string, string>).Authorization).toBe('Bearer override');
+	});
+
 	it('returns parsed JSON on success', async () => {
 		vi.mocked(fetch).mockResolvedValue(mockFetchResponse(200, { id: 1 }));
 
