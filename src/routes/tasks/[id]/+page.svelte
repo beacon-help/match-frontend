@@ -1,62 +1,36 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { getTask } from '$lib/api/task';
-	import { getMe } from '$lib/api/user';
-	import { getAccessToken } from '$lib/auth/tokens';
-	import { ApiError, describeApiError } from '$lib/api/client';
 	import { taskPermission } from '$lib/tasks/permission';
 	import { helperOfferMessage } from '$lib/tasks/offers';
 	import { imageSrc } from '$lib/tasks/images';
 	import { createTaskActionRunner } from '$lib/tasks/actionRunner.svelte';
-	import type { Task } from '$lib/types/task';
+	import { createAuthedPage } from '$lib/auth/authedPage.svelte';
+	import { session } from '$lib/auth/session.svelte';
 	import HomeMap from '$lib/components/HomeMap.svelte';
 	import StatusBadge from '$lib/components/StatusBadge.svelte';
 	import TaskActionsBar from '$lib/components/TaskActionsBar.svelte';
 	import OfferHelpModal from '$lib/components/OfferHelpModal.svelte';
 	import ReviewOfferModal from '$lib/components/ReviewOfferModal.svelte';
 	import ProfileModal from '$lib/components/ProfileModal.svelte';
+	import SignInPrompt from '$lib/components/SignInPrompt.svelte';
 
 	const taskId = Number(page.params.id);
-
-	let task = $state<Task | null>(null);
-	let currentUserId = $state(0);
-	let isLoading = $state(true);
-	let error: string | null = $state(null);
-	let needsSignIn = $state(false);
 
 	let showOffer = $state(false);
 	let showReview = $state(false);
 	let profileUserId: number | null = $state(null);
 	let actionError: string | null = $state(null);
 
+	const authed = createAuthedPage((token) => getTask(taskId, token));
+
+	const task = $derived(authed.data ?? null);
+	const currentUserId = $derived(session.user?.id ?? 0);
+
 	const actions = createTaskActionRunner((updated) => {
-		task = updated;
-	});
-
-	onMount(async () => {
-		const token = getAccessToken();
-		if (!token) {
-			needsSignIn = true;
-			isLoading = false;
-			return;
-		}
-
-		try {
-			const [me, loaded] = await Promise.all([getMe(token), getTask(taskId, token)]);
-			currentUserId = me.id;
-			task = loaded;
-		} catch (err) {
-			if (err instanceof ApiError && err.status === 401) {
-				needsSignIn = true;
-			} else {
-				error = describeApiError(err);
-			}
-		} finally {
-			isLoading = false;
-		}
+		authed.data = updated;
 	});
 
 	const permission = $derived(task ? taskPermission(task, currentUserId) : 'public');
@@ -73,7 +47,7 @@
 
 	function runAction(action: 'close' | 'report_success') {
 		if (!task) return;
-		return actions.runAction(task, action, (msg) => (error = msg));
+		return actions.runAction(task, action, (msg) => (authed.error = msg));
 	}
 
 	async function submitOffer(message: string) {
@@ -90,16 +64,12 @@
 </script>
 
 <section class="container mx-auto max-w-3xl px-4 py-10">
-	{#if isLoading}
+	{#if authed.isLoading}
 		<p class="text-gray-600">Loading task…</p>
-	{:else if needsSignIn}
-		<p class="text-gray-600">
-			You need to <a href={resolve('/login')} class="font-medium text-blue-600 hover:text-blue-700"
-				>sign in</a
-			> to view this task.
-		</p>
-	{:else if error}
-		<p class="text-red-600">{error}</p>
+	{:else if authed.needsSignIn}
+		<SignInPrompt purpose="to view this task" />
+	{:else if authed.error}
+		<p class="text-red-600">{authed.error}</p>
 	{:else if task}
 		<div class="flex flex-col gap-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
 			<div class="flex items-start justify-between gap-4">

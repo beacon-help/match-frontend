@@ -1,14 +1,12 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { listTasks } from '$lib/api/task';
-	import { getMe } from '$lib/api/user';
-	import { getAccessToken } from '$lib/auth/tokens';
-	import { ApiError, describeApiError } from '$lib/api/client';
 	import { haversineKm, locationLatLon } from '$lib/tasks/distance';
 	import { helperOfferMessage } from '$lib/tasks/offers';
 	import { createTaskActionRunner } from '$lib/tasks/actionRunner.svelte';
+	import { createAuthedPage } from '$lib/auth/authedPage.svelte';
+	import { session } from '$lib/auth/session.svelte';
 	import type { Task } from '$lib/types/task';
 	import HomeMap from '$lib/components/HomeMap.svelte';
 	import TaskCard from '$lib/components/TaskCard.svelte';
@@ -16,15 +14,10 @@
 	import OfferHelpModal from '$lib/components/OfferHelpModal.svelte';
 	import ReviewOfferModal from '$lib/components/ReviewOfferModal.svelte';
 	import ProfileModal from '$lib/components/ProfileModal.svelte';
+	import SignInPrompt from '$lib/components/SignInPrompt.svelte';
 
 	// Valencia — the client-side radius filter is measured from here (geocoding is mocked).
 	const CENTER = { lat: 39.47, lon: -0.38 };
-
-	let currentUserId = $state(0);
-	let allTasks: Task[] = $state([]);
-	let isLoading = $state(true);
-	let error: string | null = $state(null);
-	let needsSignIn = $state(false);
 
 	// Filters
 	let searchAddress = $state('');
@@ -37,31 +30,13 @@
 	let profileUserId: number | null = $state(null);
 	let actionError: string | null = $state(null);
 
+	const authed = createAuthedPage((token) => listTasks(token));
+
+	const allTasks = $derived(authed.data ?? []);
+	const currentUserId = $derived(session.user?.id ?? 0);
+
 	const actions = createTaskActionRunner((updated) => {
-		allTasks = allTasks.map((t) => (t.id === updated.id ? updated : t));
-	});
-
-	onMount(async () => {
-		const token = getAccessToken();
-		if (!token) {
-			needsSignIn = true;
-			isLoading = false;
-			return;
-		}
-
-		try {
-			const [me, tasks] = await Promise.all([getMe(token), listTasks(token)]);
-			currentUserId = me.id;
-			allTasks = tasks;
-		} catch (err) {
-			if (err instanceof ApiError && err.status === 401) {
-				needsSignIn = true;
-			} else {
-				error = describeApiError(err);
-			}
-		} finally {
-			isLoading = false;
-		}
+		authed.data = allTasks.map((t) => (t.id === updated.id ? updated : t));
 	});
 
 	const filtered = $derived(
@@ -87,7 +62,7 @@
 
 	// Runs a direct backend action (close / report_success) and syncs the list.
 	function runAction(task: Task, action: 'close' | 'report_success') {
-		return actions.runAction(task, action, (msg) => (error = msg));
+		return actions.runAction(task, action, (msg) => (authed.error = msg));
 	}
 
 	async function submitOffer(message: string) {
@@ -106,16 +81,12 @@
 <section class="container mx-auto px-4 py-10">
 	<h3 class="mb-6 text-4xl font-bold">Search Task</h3>
 
-	{#if isLoading}
+	{#if authed.isLoading}
 		<p class="text-gray-600">Loading tasks…</p>
-	{:else if needsSignIn}
-		<p class="text-gray-600">
-			You need to <a href={resolve('/login')} class="font-medium text-blue-600 hover:text-blue-700"
-				>sign in</a
-			> to browse tasks.
-		</p>
-	{:else if error}
-		<p class="text-red-600">{error}</p>
+	{:else if authed.needsSignIn}
+		<SignInPrompt purpose="to browse tasks" />
+	{:else if authed.error}
+		<p class="text-red-600">{authed.error}</p>
 	{:else}
 		<div class="grid gap-8 lg:grid-cols-[300px_1fr]">
 			<aside class="flex flex-col gap-6">
