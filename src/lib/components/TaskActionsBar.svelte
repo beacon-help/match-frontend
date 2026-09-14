@@ -49,8 +49,8 @@
 		'see-owner': onSeeOwner,
 		'offer-help': onOfferHelp,
 		review: onReview,
-		// No backend messaging yet, so the button always renders disabled. Keyed
-		// explicitly to keep the record exhaustive over TaskActionKind.
+		// TODO: backend — no messaging endpoint, so Contact always renders disabled.
+		// Keyed explicitly so the record stays exhaustive over TaskActionKind.
 		contact: undefined
 	});
 
