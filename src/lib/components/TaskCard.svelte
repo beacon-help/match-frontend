@@ -16,7 +16,6 @@
 		onMarkDone?: () => void;
 		onRemove?: () => void;
 		onCancel?: () => void;
-		onContact?: () => void;
 		onEdit?: () => void;
 	}
 
@@ -32,7 +31,6 @@
 		onMarkDone,
 		onRemove,
 		onCancel,
-		onContact,
 		onEdit
 	}: Props = $props();
 
@@ -61,7 +59,6 @@
 			{onMarkDone}
 			{onRemove}
 			{onCancel}
-			{onContact}
 			{onEdit}
 		/>
 	</div>

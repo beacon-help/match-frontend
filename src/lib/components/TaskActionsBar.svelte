@@ -21,7 +21,6 @@
 		onSeeOwner?: () => void;
 		onOfferHelp?: () => void;
 		onReview?: () => void;
-		onContact?: () => void;
 	}
 
 	let {
@@ -37,8 +36,7 @@
 		onSeeHelper,
 		onSeeOwner,
 		onOfferHelp,
-		onReview,
-		onContact
+		onReview
 	}: Props = $props();
 
 	const handlers = $derived<Record<TaskActionKind, (() => void) | undefined>>({
@@ -51,7 +49,9 @@
 		'see-owner': onSeeOwner,
 		'offer-help': onOfferHelp,
 		review: onReview,
-		contact: onContact
+		// No backend messaging yet, so the button always renders disabled. Keyed
+		// explicitly to keep the record exhaustive over TaskActionKind.
+		contact: undefined
 	});
 
 	const specs = $derived(

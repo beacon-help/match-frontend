@@ -138,7 +138,7 @@
 					<input id="radius" type="range" min="1" max="100" bind:value={radiusKm} class="w-full" />
 				</div>
 
-				<CategoryCheckboxes bind:selected={selectedCategories} mode="filter" />
+				<CategoryCheckboxes bind:selected={selectedCategories} />
 			</aside>
 
 			<div class="flex flex-col gap-6">
