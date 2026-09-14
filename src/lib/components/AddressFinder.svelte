@@ -2,9 +2,10 @@
 	import { onMount } from 'svelte';
 	import 'leaflet/dist/leaflet.css';
 	import type * as Leaflet from 'leaflet';
+	import { createMap, type MapHandle } from '$lib/map/createMap';
 
 	interface Props {
-		/** Free-text address (source of truth — geocoding is mocked). Bindable. */
+		/** Free-text address (source of truth). Bindable. */
 		address: string;
 		/** Marker latitude, set by clicking the map. Bindable. NaN until a pin is dropped. */
 		lat: number;
@@ -16,59 +17,48 @@
 	let { address = $bindable(), lat = $bindable(), lon = $bindable(), error }: Props = $props();
 
 	let container: HTMLDivElement;
-	// Leaflet touches `window`, so load it client-side only, matching HomeMap.
-	let L = $state<typeof Leaflet>();
-	let map: Leaflet.Map | undefined;
+	// Plain let, not $state: nothing reactive reads the handle — placeMarker and the click
+	// handler are imperative.
+	let handle: MapHandle | undefined;
 	let marker: Leaflet.Marker | undefined;
-	let icon: Leaflet.Icon | undefined;
 
 	const inputClasses =
 		'w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none';
 
 	function placeMarker(la: number, lo: number) {
-		if (!L || !map) return;
+		if (!handle) return;
 		lat = la;
 		lon = lo;
 		if (marker) {
 			marker.setLatLng([la, lo]);
 		} else {
-			marker = L.marker([la, lo], icon ? { icon } : undefined).addTo(map);
+			marker = handle.L.marker([la, lo], { icon: handle.icon }).addTo(handle.map);
 		}
 	}
 
 	onMount(() => {
-		let disposed = false;
+		const aborter = new AbortController();
 
-		import('leaflet')
-			.then((mod) => {
-				if (disposed) return;
-				const lib = mod.default;
+		// Finiteness, not truthiness: a legitimate coordinate of 0 must survive. Longitude 0
+		// is reachable here — the Greenwich meridian crosses Spain near Valencia.
+		const hasLat = Number.isFinite(lat);
+		const hasLon = Number.isFinite(lon);
+		const center: [number, number] = [hasLat ? lat : 39.47, hasLon ? lon : -0.38];
 
-				// Default to Valencia; if a location was prefilled (Edit), center on it.
-				const start: [number, number] = [Number(lat) || 39.47, Number(lon) || -0.38];
-				map = lib.map(container).setView(start, Number(lat) ? 14 : 12);
-				lib
-					.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-						attribution:
-							'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-						maxZoom: 19
-					})
-					.addTo(map);
+		createMap(container, { center, zoom: hasLat ? 14 : 12, signal: aborter.signal })
+			.then((created) => {
+				if (!created) return;
+				if (aborter.signal.aborted) {
+					created.map.remove();
+					return;
+				}
+				handle = created;
 
-				icon = lib.icon({
-					iconUrl: '/home/marker.svg',
-					iconSize: [16, 20],
-					iconAnchor: [8, 20],
-					popupAnchor: [0, -18]
-				});
-
-				L = lib;
-				if (Number(lat) && Number(lon)) {
-					placeMarker(Number(lat), Number(lon));
+				if (hasLat && hasLon) {
+					placeMarker(lat, lon);
 				}
 
-				// Clicking the map drops/moves the pin, giving real coordinates.
-				map.on('click', (e: Leaflet.LeafletMouseEvent) => {
+				created.map.on('click', (e: Leaflet.LeafletMouseEvent) => {
 					placeMarker(e.latlng.lat, e.latlng.lng);
 				});
 			})
@@ -77,9 +67,10 @@
 			});
 
 		return () => {
-			disposed = true;
-			map?.remove();
-			map = undefined;
+			aborter.abort();
+			handle?.map.remove();
+			handle = undefined;
+			marker = undefined;
 		};
 	});
 </script>
