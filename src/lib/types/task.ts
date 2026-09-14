@@ -19,7 +19,7 @@ export interface BaseTask {
 	category: Category;
 }
 
-export interface PublicTask extends BaseTask {}
+export type PublicTask = BaseTask;
 
 export interface TaskUser {
 	id: number;
