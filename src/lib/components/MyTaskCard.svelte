@@ -17,7 +17,6 @@
 		onSeeOwner?: () => void;
 		onOfferHelp?: () => void;
 		onReview?: () => void;
-		onContact?: () => void;
 	}
 
 	let {
@@ -32,8 +31,7 @@
 		onSeeHelper,
 		onSeeOwner,
 		onOfferHelp,
-		onReview,
-		onContact
+		onReview
 	}: Props = $props();
 
 	const permission = $derived(taskPermission(task, currentUserId));
@@ -60,7 +58,6 @@
 				{onSeeOwner}
 				{onOfferHelp}
 				{onReview}
-				{onContact}
 			/>
 		</div>
 	</div>
