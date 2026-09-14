@@ -30,7 +30,9 @@
 		try {
 			const tokens = await loginUser(login);
 			saveTokens(tokens);
-			await loadSession();
+			// The credentials were accepted, so go regardless: a failed profile fetch clears
+			// the memo and the destination retries it.
+			await loadSession().catch(() => {});
 			await goto(resolve('/tasks'));
 		} catch (err) {
 			// The backend answers bad credentials with 401; give that its own message rather

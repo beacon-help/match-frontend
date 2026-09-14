@@ -1,62 +1,36 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { listMyTasks } from '$lib/api/task';
-	import { getMe } from '$lib/api/user';
-	import { getAccessToken } from '$lib/auth/tokens';
 	import { session } from '$lib/auth/session.svelte';
-	import { ApiError, describeApiError } from '$lib/api/client';
+	import { createAuthedPage } from '$lib/auth/authedPage.svelte';
 	import { helperOfferMessage } from '$lib/tasks/offers';
 	import { createTaskActionRunner } from '$lib/tasks/actionRunner.svelte';
 	import type { Task } from '$lib/types/task';
 	import MyTaskCard from '$lib/components/MyTaskCard.svelte';
 	import ReviewOfferModal from '$lib/components/ReviewOfferModal.svelte';
 	import ProfileModal from '$lib/components/ProfileModal.svelte';
+	import SignInPrompt from '$lib/components/SignInPrompt.svelte';
 	import Button from '$lib/components/Button.svelte';
-
-	let currentUserId = $state(0);
-	let tasks: Task[] = $state([]);
-	let isLoading = $state(true);
-	let error: string | null = $state(null);
-	let needsSignIn = $state(false);
 
 	let reviewTask: Task | null = $state(null);
 	let profileUserId: number | null = $state(null);
 	let actionError: string | null = $state(null);
 
+	const authed = createAuthedPage((token) => listMyTasks(token));
+
+	const tasks = $derived(authed.data ?? []);
+	const currentUserId = $derived(session.user?.id ?? 0);
+
 	const actions = createTaskActionRunner((updated) => {
-		tasks = tasks.map((t) => (t.id === updated.id ? updated : t));
+		authed.data = tasks.map((t) => (t.id === updated.id ? updated : t));
 	});
 
 	// Volunteers land on Search from the empty state; help-seekers land on Create Task.
 	const isVolunteer = $derived(session.role === 'volunteer');
 
-	onMount(async () => {
-		const token = getAccessToken();
-		if (!token) {
-			needsSignIn = true;
-			isLoading = false;
-			return;
-		}
-
-		try {
-			const [me, myTasks] = await Promise.all([getMe(token), listMyTasks(token)]);
-			currentUserId = me.id;
-			tasks = myTasks;
-		} catch (err) {
-			if (err instanceof ApiError && err.status === 401) {
-				needsSignIn = true;
-			} else {
-				error = describeApiError(err);
-			}
-		} finally {
-			isLoading = false;
-		}
-	});
-
 	function runAction(task: Task, action: 'close' | 'report_success') {
-		return actions.runAction(task, action, (msg) => (error = msg));
+		return actions.runAction(task, action, (msg) => (authed.error = msg));
 	}
 
 	async function reviewDecision(action: 'approve' | 'reject') {
@@ -69,16 +43,12 @@
 <section class="container mx-auto px-4 py-10">
 	<h3 class="mb-6 text-4xl font-bold">My Tasks</h3>
 
-	{#if isLoading}
+	{#if authed.isLoading}
 		<p class="text-gray-600">Loading your tasks…</p>
-	{:else if needsSignIn}
-		<p class="text-gray-600">
-			You need to <a href={resolve('/login')} class="font-medium text-blue-600 hover:text-blue-700"
-				>sign in</a
-			> to view your tasks.
-		</p>
-	{:else if error}
-		<p class="text-red-600">{error}</p>
+	{:else if authed.needsSignIn}
+		<SignInPrompt purpose="to view your tasks" />
+	{:else if authed.error}
+		<p class="text-red-600">{authed.error}</p>
 	{:else if tasks.length === 0}
 		<div class="flex flex-col items-center gap-8 py-24 text-center">
 			{#if isVolunteer}

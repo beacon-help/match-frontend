@@ -22,7 +22,9 @@ export const session = {
 	}
 };
 
-export async function loadSession(): Promise<void> {
+let inflight: Promise<void> | null = null;
+
+async function load(): Promise<void> {
 	const token = getAccessToken();
 	if (!token) {
 		user = null;
@@ -34,16 +36,33 @@ export async function loadSession(): Promise<void> {
 		user = await getMe(token);
 	} catch (err) {
 		// A 401 means the token is expired/invalid — drop it so we stop presenting a session.
+		// That answer is authoritative and stays memoised. Anything else (network, 5xx) is
+		// transient: clear the memo and rethrow so the next caller retries instead of being
+		// stuck with a resolved promise that says "signed out".
 		if (err instanceof ApiError && err.status === 401) {
 			clearTokens();
 			user = null;
+		} else {
+			inflight = null;
+			throw err;
 		}
 	} finally {
 		isLoaded = true;
 	}
 }
 
+/** Loads the session, reusing an in-flight or completed load. */
+export function ensureSession(): Promise<void> {
+	return (inflight ??= load());
+}
+
+/** Forces a reload, replacing whatever `ensureSession` would have returned. */
+export function loadSession(): Promise<void> {
+	return (inflight = load());
+}
+
 export function endSession(): void {
 	clearTokens();
 	user = null;
+	inflight = null;
 }
