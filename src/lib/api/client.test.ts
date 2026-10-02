@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { apiFetch, describeApiError, ApiError } from './client';
+import { apiFetch, describeApiError, ApiError, onServerUnreachable } from './client';
 
 function mockFetchResponse(status: number, body: unknown) {
 	return {
@@ -142,5 +142,41 @@ describe('describeApiError', () => {
 
 	it('describes a non-ApiError generically', () => {
 		expect(describeApiError(new Error('boom'))).toBe('Something went wrong, please try again.');
+	});
+});
+
+describe('onServerUnreachable', () => {
+	const listener = vi.fn();
+
+	beforeEach(() => {
+		vi.stubGlobal('fetch', vi.fn());
+		onServerUnreachable(listener);
+	});
+
+	afterEach(() => {
+		onServerUnreachable(null);
+		listener.mockReset();
+		vi.unstubAllGlobals();
+	});
+
+	it('fires when the request gets no response', async () => {
+		vi.mocked(fetch).mockRejectedValue(new TypeError('Failed to fetch'));
+
+		await expect(apiFetch('/foo')).rejects.toMatchObject({ status: 0 });
+		expect(listener).toHaveBeenCalledOnce();
+	});
+
+	it.each([502, 503, 504])('fires on a %i gateway error', async (status) => {
+		vi.mocked(fetch).mockResolvedValue(mockFetchResponse(status, {}));
+
+		await expect(apiFetch('/foo')).rejects.toMatchObject({ status });
+		expect(listener).toHaveBeenCalledOnce();
+	});
+
+	it.each([404, 500])('stays quiet on a %i', async (status) => {
+		vi.mocked(fetch).mockResolvedValue(mockFetchResponse(status, {}));
+
+		await expect(apiFetch('/foo')).rejects.toBeInstanceOf(ApiError);
+		expect(listener).not.toHaveBeenCalled();
 	});
 });

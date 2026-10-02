@@ -22,6 +22,14 @@ export class ApiError extends Error {
 	}
 }
 
+const GATEWAY_ERRORS = new Set([502, 503, 504]);
+
+let serverUnreachableListener: (() => void) | null = null;
+
+export function onServerUnreachable(listener: (() => void) | null): void {
+	serverUnreachableListener = listener;
+}
+
 export type ApiFetchOptions = {
 	method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 	body?: unknown;
@@ -57,7 +65,12 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
 			signal: options.signal
 		});
 	} catch {
+		serverUnreachableListener?.();
 		throw new ApiError('Network error', 0);
+	}
+
+	if (GATEWAY_ERRORS.has(response.status)) {
+		serverUnreachableListener?.();
 	}
 
 	if (!response.ok) {
