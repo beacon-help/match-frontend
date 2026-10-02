@@ -3,7 +3,7 @@
 	import type { ResolvedPathname } from '$app/types';
 
 	interface Props {
-		variant?: 'primary' | 'neutral';
+		variant?: 'primary' | 'success' | 'neutral';
 		disabled?: boolean;
 		href?: ResolvedPathname;
 		onclick?: () => void;
@@ -12,8 +12,9 @@
 
 	let { variant = 'neutral', disabled = false, href, onclick, children }: Props = $props();
 
-	const variantClasses: Record<'primary' | 'neutral', string> = {
+	const variantClasses: Record<NonNullable<Props['variant']>, string> = {
 		primary: 'bg-gray-900 text-white hover:bg-gray-800',
+		success: 'bg-green-600 text-white hover:bg-green-700',
 		neutral: 'border border-gray-300 bg-gray-100 text-gray-900 hover:bg-gray-200'
 	};
 
