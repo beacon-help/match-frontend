@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { imageSrc } from './images';
 
-// .env.test sets PUBLIC_API_BASE_URL=http://localhost:8000
+// match-config sets frontend.api_base_url to http://localhost:8000
 describe('imageSrc', () => {
 	it('passes an absolute URL through untouched', () => {
 		expect(imageSrc('http://localhost:8000/task/images/abc')).toBe(

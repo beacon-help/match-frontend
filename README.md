@@ -1,6 +1,21 @@
 ## Developing
 
-Installed dependencies with `pnpm install`
+Config comes from [match-config](https://github.com/beacon-help/match-config),
+vendored as a git submodule. Populate it, then install dependencies:
+
+```bash
+git submodule update --init
+pnpm install
+```
+
+The app reads the `frontend` section through `import config from 'virtual:match-config'`.
+`ENV` picks the environment (default `dev`) and is baked in at build time. For local
+overrides, put a gitignored `config.local.yaml` at the repo root:
+
+```yaml
+frontend:
+  api_base_url: http://localhost:9000
+```
 
 Start a development server:
 

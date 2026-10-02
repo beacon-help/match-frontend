@@ -1,2 +1,5 @@
+packages:
+  - vendor/match-config/typescript
+
 allowBuilds:
   esbuild: true

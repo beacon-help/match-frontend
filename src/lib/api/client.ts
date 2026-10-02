@@ -1,4 +1,4 @@
-import { env } from '$env/dynamic/public';
+import config from 'virtual:match-config';
 
 export type ValidationError = {
 	loc: (string | number)[];
@@ -45,7 +45,7 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
 
 	let response: Response;
 	try {
-		response = await fetch(`${env.PUBLIC_API_BASE_URL}${path}`, {
+		response = await fetch(`${config.api_base_url}${path}`, {
 			method: options.method ?? 'GET',
 			headers: {
 				Accept: 'application/json',

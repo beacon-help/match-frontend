@@ -1,4 +1,4 @@
-import { env } from '$env/dynamic/public';
+import config from 'virtual:match-config';
 
 /**
  * Resolves a `TaskImage.path` into something usable as an `<img src>`.
@@ -11,5 +11,5 @@ export function imageSrc(path: string): string {
 	if (/^https?:\/\//i.test(path)) {
 		return path;
 	}
-	return `${env.PUBLIC_API_BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
+	return `${config.api_base_url}${path.startsWith('/') ? '' : '/'}${path}`;
 }

@@ -1,4 +1,5 @@
 .claude/
+vendor/
 
 # Package Managers
 package-lock.json
