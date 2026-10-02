@@ -62,7 +62,7 @@
 					You haven't created any tasks yet. If there's anything you need help with, feel free to
 					get started.
 				</p>
-				<Button variant="primary" href={resolve('/tasks/create')}>I need help</Button>
+				<Button variant="success" href={resolve('/tasks/create')}>Create your first task</Button>
 			{/if}
 		</div>
 	{:else}
