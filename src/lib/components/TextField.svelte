@@ -1,4 +1,6 @@
 <script lang="ts">
+	import PasswordInput from '$lib/components/PasswordInput.svelte';
+
 	interface Props {
 		label: string;
 		value: string;
@@ -32,7 +34,7 @@
 	{#if multiline}
 		<textarea {id} bind:value {placeholder} {rows} class={inputClasses}></textarea>
 	{:else if type === 'password'}
-		<input {id} type="password" bind:value {placeholder} class={inputClasses} />
+		<PasswordInput {id} bind:value {placeholder} />
 	{:else if type === 'email'}
 		<input {id} type="email" bind:value {placeholder} class={inputClasses} />
 	{:else}

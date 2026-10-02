@@ -1,4 +1,5 @@
 <script lang="ts">
+	import PasswordInput from '$lib/components/PasswordInput.svelte';
 	import type { Signup } from '$lib/types/signup';
 	import type { SignupErrors } from '$lib/validation/signup';
 
@@ -72,12 +73,10 @@
 
 		<div>
 			<label class="mb-1 block text-sm font-medium text-gray-700" for="password">Password</label>
-			<input
+			<PasswordInput
 				id="password"
-				type="password"
 				bind:value={signup.password}
 				placeholder="At least 8 characters"
-				class="w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
 			/>
 			{#if errors.password}
 				<p class="mt-1 text-sm text-red-600">{errors.password}</p>

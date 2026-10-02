@@ -1,4 +1,5 @@
 <script lang="ts">
+	import PasswordInput from '$lib/components/PasswordInput.svelte';
 	import type { Login } from '$lib/types/login';
 	import type { LoginErrors } from '$lib/validation/login';
 
@@ -39,13 +40,7 @@
 
 		<div>
 			<label class="mb-1 block text-sm font-medium text-gray-700" for="password">Password</label>
-			<input
-				id="password"
-				type="password"
-				bind:value={login.password}
-				placeholder="Your password"
-				class="w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-			/>
+			<PasswordInput id="password" bind:value={login.password} placeholder="Your password" />
 			{#if errors.password}
 				<p class="mt-1 text-sm text-red-600">{errors.password}</p>
 			{/if}
