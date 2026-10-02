@@ -12,6 +12,7 @@
 	import HomeMap from '$lib/components/HomeMap.svelte';
 	import StatusBadge from '$lib/components/StatusBadge.svelte';
 	import TaskActionsBar from '$lib/components/TaskActionsBar.svelte';
+	import TaskActivity from '$lib/components/TaskActivity.svelte';
 	import OfferHelpModal from '$lib/components/OfferHelpModal.svelte';
 	import ReviewOfferModal from '$lib/components/ReviewOfferModal.svelte';
 	import ProfileModal from '$lib/components/ProfileModal.svelte';
@@ -63,7 +64,7 @@
 	}
 </script>
 
-<section class="container mx-auto max-w-3xl px-4 py-10">
+<section class="container mx-auto max-w-5xl px-4 py-10">
 	{#if authed.isLoading}
 		<p class="text-gray-600">Loading task…</p>
 	{:else if authed.needsSignIn}
@@ -71,71 +72,77 @@
 	{:else if authed.error}
 		<p class="text-red-600">{authed.error}</p>
 	{:else if task}
-		<div class="flex flex-col gap-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-			<div class="flex items-start justify-between gap-4">
-				<h1 class="text-3xl font-bold text-gray-900">{task.title}</h1>
-				<StatusBadge status={task.status} />
+		<div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
+			<div
+				class="flex min-w-0 flex-col gap-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm"
+			>
+				<div class="flex items-start justify-between gap-4">
+					<h1 class="text-3xl font-bold text-gray-900">{task.title}</h1>
+					<StatusBadge status={task.status} />
+				</div>
+
+				<HomeMap {markers} />
+
+				{#if task.images.length > 0}
+					<div class="grid grid-cols-3 gap-3">
+						{#each task.images as image, i (image.id)}
+							<img
+								src={imageSrc(image.path)}
+								alt="Task photo {i + 1}"
+								class="aspect-[3/2] w-full rounded-lg object-cover"
+							/>
+						{/each}
+					</div>
+				{/if}
+
+				<p class="text-gray-700">{task.description}</p>
+
+				<dl class="grid grid-cols-1 gap-3 border-t border-gray-100 pt-4 sm:grid-cols-2">
+					<div>
+						<dt class="text-sm font-medium text-gray-500">Category</dt>
+						<dd class="text-gray-900">{task.category}</dd>
+					</div>
+					<div>
+						<dt class="text-sm font-medium text-gray-500">Location</dt>
+						<dd class="text-gray-900">{task.location.address}</dd>
+					</div>
+					<div>
+						<dt class="text-sm font-medium text-gray-500">Posted</dt>
+						<dd class="text-gray-900">{postedAt}</dd>
+					</div>
+					<div>
+						<dt class="text-sm font-medium text-gray-500">Owner</dt>
+						<dd class="text-gray-900">{task.owner.first_name}</dd>
+					</div>
+				</dl>
+
+				{#if actionError}
+					<p class="text-sm text-red-600">{actionError}</p>
+				{/if}
+
+				<TaskActionsBar
+					{task}
+					{permission}
+					hideSeeMore
+					busy={actions.busy}
+					onOfferHelp={() => {
+						actionError = null;
+						showOffer = true;
+					}}
+					onReview={() => {
+						actionError = null;
+						showReview = true;
+					}}
+					onSeeOwner={() => task && (profileUserId = task.owner.id)}
+					onSeeHelper={() => task?.helper && (profileUserId = task.helper.id)}
+					onMarkDone={() => runAction('report_success')}
+					onRemove={() => runAction('close')}
+					onCancel={() => runAction('close')}
+					onEdit={() => goto(resolve('/tasks/[id]/edit', { id: String(taskId) }))}
+				/>
 			</div>
 
-			<HomeMap {markers} />
-
-			{#if task.images.length > 0}
-				<div class="grid grid-cols-3 gap-3">
-					{#each task.images as image, i (image.id)}
-						<img
-							src={imageSrc(image.path)}
-							alt="Task photo {i + 1}"
-							class="aspect-[3/2] w-full rounded-lg object-cover"
-						/>
-					{/each}
-				</div>
-			{/if}
-
-			<p class="text-gray-700">{task.description}</p>
-
-			<dl class="grid grid-cols-1 gap-3 border-t border-gray-100 pt-4 sm:grid-cols-2">
-				<div>
-					<dt class="text-sm font-medium text-gray-500">Category</dt>
-					<dd class="text-gray-900">{task.category}</dd>
-				</div>
-				<div>
-					<dt class="text-sm font-medium text-gray-500">Location</dt>
-					<dd class="text-gray-900">{task.location.address}</dd>
-				</div>
-				<div>
-					<dt class="text-sm font-medium text-gray-500">Posted</dt>
-					<dd class="text-gray-900">{postedAt}</dd>
-				</div>
-				<div>
-					<dt class="text-sm font-medium text-gray-500">Owner</dt>
-					<dd class="text-gray-900">{task.owner.first_name}</dd>
-				</div>
-			</dl>
-
-			{#if actionError}
-				<p class="text-sm text-red-600">{actionError}</p>
-			{/if}
-
-			<TaskActionsBar
-				{task}
-				{permission}
-				hideSeeMore
-				busy={actions.busy}
-				onOfferHelp={() => {
-					actionError = null;
-					showOffer = true;
-				}}
-				onReview={() => {
-					actionError = null;
-					showReview = true;
-				}}
-				onSeeOwner={() => task && (profileUserId = task.owner.id)}
-				onSeeHelper={() => task?.helper && (profileUserId = task.helper.id)}
-				onMarkDone={() => runAction('report_success')}
-				onRemove={() => runAction('close')}
-				onCancel={() => runAction('close')}
-				onEdit={() => goto(resolve('/tasks/[id]/edit', { id: String(taskId) }))}
-			/>
+			<TaskActivity events={task.events} ownerId={task.owner.id} viewerId={currentUserId} />
 		</div>
 	{/if}
 </section>

@@ -14,7 +14,8 @@ const base: Task = {
 	owner: { id: 10, first_name: 'Owner' },
 	helper: null,
 	helper_offers: [],
-	images: []
+	images: [],
+	events: []
 };
 
 describe('taskPermission', () => {

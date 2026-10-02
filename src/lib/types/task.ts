@@ -34,6 +34,18 @@ export interface HelperOffer {
 	message: string;
 }
 
+export type TaskEventType =
+	'created' | 'offered' | 'approved' | 'rejected' | 'closed' | 'succeeded' | 'failed';
+
+export interface TaskEvent {
+	id: number;
+	type: TaskEventType;
+	actor: TaskUser;
+	helper: TaskUser | null;
+	message: string | null;
+	occurred_at: string;
+}
+
 export interface TaskImage {
 	id: string;
 	/** Absolute URL served by the API — render it via `imageSrc()`. */
@@ -48,6 +60,7 @@ export interface Task extends BaseTask {
 	helper: TaskUser | null;
 	helper_offers: HelperOffer[];
 	images: TaskImage[];
+	events: TaskEvent[];
 }
 
 export type TaskCreationRequest = {
