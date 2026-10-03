@@ -1,15 +1,29 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { listPublicTasks } from '$lib/api/task';
+	import { getStats } from '$lib/api/stats';
 	import { describeApiError } from '$lib/api/client';
+	import { session } from '$lib/auth/session.svelte';
 	import HomeMap from '$lib/components/HomeMap.svelte';
+	import StatsHero from '$lib/components/StatsHero.svelte';
+	import type { Stats } from '$lib/types/stats';
 
 	type MapMarker = { lat: number; lon: number; label?: string };
 
 	let markers = $state<MapMarker[]>([]);
 	let mapError = $state('');
+	let stats = $state<Stats | null>(null);
+
+	async function loadStats() {
+		try {
+			stats = await getStats();
+		} catch {
+			// The hero falls back to number-free copy; stats are not worth an error message.
+		}
+	}
 
 	onMount(async () => {
+		loadStats();
 		try {
 			const tasks = await listPublicTasks();
 			markers = tasks
@@ -26,6 +40,8 @@
 </script>
 
 <main class="mx-auto max-w-[1000px] space-y-10 px-6 py-12">
+	<StatsHero {stats} role={session.role} />
+
 	<section class="text-xl leading-9 text-gray-800 sm:text-2xl sm:leading-[44px]">
 		<p>
 			On November 4, 2025, the city of Valencia experienced a severe weather event that brought
