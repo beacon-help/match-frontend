@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
+	import { page } from '$app/state';
 	import { session, endSession } from '$lib/auth/session.svelte';
 	import type { UserSchema, UserType } from '$lib/api/user';
 
@@ -15,6 +16,8 @@
 
 	let menuOpen = $state(false);
 
+	const onMission = $derived(page.url.pathname === resolve('/mission'));
+
 	async function logout() {
 		menuOpen = false;
 		endSession();
@@ -27,7 +30,7 @@
 >
 	<a href={resolve('/')} class="flex items-center gap-2 sm:gap-3">
 		<img src="/home/logo.svg" alt="" class="h-9 w-9 sm:h-10 sm:w-10" />
-		<span class="text-lg font-semibold whitespace-nowrap text-gray-800 sm:text-xl">
+		<span class="hidden text-lg font-semibold whitespace-nowrap text-gray-800 sm:inline sm:text-xl">
 			Match Valencia
 		</span>
 		{#if session.user && session.role}
@@ -121,7 +124,17 @@
 			</div>
 		</nav>
 	{:else}
-		<nav class="flex items-center gap-2 sm:gap-3">
+		<nav class="flex items-center gap-1.5 sm:gap-3">
+			<a
+				href={resolve('/mission')}
+				aria-current={onMission ? 'page' : undefined}
+				class={[
+					'rounded-lg px-3 py-2 text-sm font-medium whitespace-nowrap sm:px-4 sm:text-base',
+					onMission ? 'bg-gray-100 text-gray-900' : 'text-gray-700 hover:bg-gray-50'
+				]}
+			>
+				Mission
+			</a>
 			<a
 				href={resolve('/login')}
 				class="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium whitespace-nowrap text-gray-700 hover:bg-gray-50 sm:px-4 sm:text-base"
