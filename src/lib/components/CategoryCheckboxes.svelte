@@ -2,7 +2,7 @@
 	import { CATEGORIES } from '$lib/tasks/categories';
 
 	interface Props {
-		/** Selected category labels. Bindable so the parent owns the state. */
+		/** Selected category values. Bindable so the parent owns the state. */
 		selected: string[];
 	}
 
@@ -19,15 +19,15 @@
 
 <fieldset class="flex flex-col gap-2">
 	<legend class="mb-1 text-sm font-medium text-gray-700">Filter by category</legend>
-	{#each CATEGORIES as category (category)}
+	{#each CATEGORIES as category (category.value)}
 		<label class="flex items-center gap-2 text-sm text-gray-700">
 			<input
 				type="checkbox"
-				checked={selected.includes(category)}
-				onchange={() => toggle(category)}
+				checked={selected.includes(category.value)}
+				onchange={() => toggle(category.value)}
 				class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
 			/>
-			{category}
+			{category.label}
 		</label>
 	{/each}
 </fieldset>

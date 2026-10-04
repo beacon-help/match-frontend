@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Task } from '$lib/types/task';
 	import { taskPermission } from '$lib/tasks/permission';
+	import { categoryLabel } from '$lib/tasks/categories';
 	import StatusBadge from '$lib/components/StatusBadge.svelte';
 	import TaskActionsBar from '$lib/components/TaskActionsBar.svelte';
 
@@ -42,7 +43,7 @@
 		<div class="flex items-start justify-between gap-4">
 			<div class="flex flex-col gap-1">
 				<h3 class="text-xl font-semibold text-gray-900">{task.title}</h3>
-				<p class="text-sm font-medium text-gray-500">{task.category}</p>
+				<p class="text-sm font-medium text-gray-500">{categoryLabel(task.category)}</p>
 				<p class="text-sm text-gray-600">{task.location.address}</p>
 			</div>
 			<StatusBadge status={task.status} />

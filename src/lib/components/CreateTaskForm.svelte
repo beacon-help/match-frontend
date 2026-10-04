@@ -82,8 +82,8 @@
 				class="w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
 			>
 				<option value="" disabled>Select a category…</option>
-				{#each CATEGORIES as category (category)}
-					<option value={category}>{category}</option>
+				{#each CATEGORIES as category (category.value)}
+					<option value={category.value}>{category.label}</option>
 				{/each}
 			</select>
 			{#if errors.category}

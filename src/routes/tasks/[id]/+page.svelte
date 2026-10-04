@@ -4,6 +4,7 @@
 	import { resolve } from '$app/paths';
 	import { getTask } from '$lib/api/task';
 	import { taskPermission } from '$lib/tasks/permission';
+	import { categoryLabel } from '$lib/tasks/categories';
 	import { helperOfferMessage } from '$lib/tasks/offers';
 	import { imageSrc } from '$lib/tasks/images';
 	import { createTaskActionRunner } from '$lib/tasks/actionRunner.svelte';
@@ -100,7 +101,7 @@
 				<dl class="grid grid-cols-1 gap-3 border-t border-gray-100 pt-4 sm:grid-cols-2">
 					<div>
 						<dt class="text-sm font-medium text-gray-500">Category</dt>
-						<dd class="text-gray-900">{task.category}</dd>
+						<dd class="text-gray-900">{categoryLabel(task.category)}</dd>
 					</div>
 					<div>
 						<dt class="text-sm font-medium text-gray-500">Location</dt>

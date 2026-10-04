@@ -1,5 +1,3 @@
-import type { Category } from '$lib/tasks/categories';
-
 export type TaskStatus = 'open' | 'pending' | 'approved' | 'succeeded' | 'failed' | 'cancelled';
 
 export type TaskAction =
@@ -18,7 +16,7 @@ export interface BaseTask {
 	title: string;
 	status: TaskStatus;
 	location: Location;
-	category: Category;
+	category: string;
 }
 
 export type PublicTask = BaseTask;
