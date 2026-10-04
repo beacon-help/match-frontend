@@ -7,8 +7,8 @@ import type { VolunteerSignup } from '$lib/types/signup';
 vi.mock('virtual:match-config', () => ({
 	default: {
 		volunteer_properties: [
-			{ value: 'HAS_BOAT', label: 'I have a boat' },
-			{ value: 'SPEAKS_VALENCIAN', label: 'I speak Valencian' }
+			{ value: 'has_boat', label: 'I have a boat' },
+			{ value: 'speaks_valencian', label: 'I speak Valencian' }
 		]
 	}
 }));
@@ -38,6 +38,6 @@ describe('VolunteerSignupForm', () => {
 
 		await fireEvent.click(screen.getByLabelText('I speak Valencian'));
 
-		expect(signup.properties).toEqual(['SPEAKS_VALENCIAN']);
+		expect(signup.properties).toEqual(['speaks_valencian']);
 	});
 });

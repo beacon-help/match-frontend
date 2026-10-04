@@ -7,7 +7,7 @@ const valid: VolunteerSignup = {
 	lastName: 'Rivera',
 	email: 'sam@example.com',
 	password: 'password123',
-	properties: ['HAS_CAR']
+	properties: ['has_car']
 };
 
 describe('validateVolunteerSignup', () => {
