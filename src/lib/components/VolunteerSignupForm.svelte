@@ -1,6 +1,6 @@
 <script lang="ts">
+	import config from 'virtual:match-config';
 	import type { VolunteerSignup } from '$lib/types/signup';
-	import type { VolunteerProperties } from '$lib/api/user';
 	import type { VolunteerSignupErrors } from '$lib/validation/volunteerSignup';
 	import TextField from '$lib/components/TextField.svelte';
 
@@ -14,14 +14,7 @@
 
 	let { signup, errors = {}, isSubmitting = false, submitError = null, onSubmit }: Props = $props();
 
-	const PROPERTY_OPTIONS: { value: VolunteerProperties; label: string }[] = [
-		{ value: 'HAS_CAR', label: 'I have a car' },
-		{ value: 'CAN_HOST', label: 'I can host people' },
-		{ value: 'CAN_WORK_PHYSICAL', label: 'I can do physical work' },
-		{ value: 'HAS_TOOLS', label: 'I have tools' }
-	];
-
-	function toggle(property: VolunteerProperties) {
+	function toggle(property: string) {
 		if (signup.properties.includes(property)) {
 			signup.properties = signup.properties.filter((p) => p !== property);
 		} else {
@@ -73,7 +66,7 @@
 
 		<fieldset class="flex flex-col gap-2">
 			<legend class="mb-1 text-sm font-medium text-gray-700">How can you help?</legend>
-			{#each PROPERTY_OPTIONS as option (option.value)}
+			{#each config.volunteer_properties as option (option.value)}
 				<label class="flex items-center gap-2 text-sm text-gray-700">
 					<input
 						type="checkbox"

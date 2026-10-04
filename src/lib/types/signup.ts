@@ -1,5 +1,3 @@
-import type { VolunteerProperties } from '$lib/api/user';
-
 export type Signup = {
 	firstName: string;
 	lastName: string;
@@ -12,5 +10,5 @@ export type VolunteerSignup = {
 	lastName: string;
 	email: string;
 	password: string;
-	properties: VolunteerProperties[];
+	properties: string[];
 };

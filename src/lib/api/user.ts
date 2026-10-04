@@ -6,9 +6,6 @@ import type { Login } from '$lib/types/login';
 // Wire value is hyphenated (`help-seeker`), unlike the `/signup/helpseeker` path segment.
 export type UserType = 'help-seeker' | 'volunteer';
 
-// Volunteer capabilities, matching the backend `VolunteerProperties` enum.
-export type VolunteerProperties = 'HAS_CAR' | 'CAN_HOST' | 'CAN_WORK_PHYSICAL' | 'HAS_TOOLS';
-
 export type HelpseekerCreationRequestSchema = {
 	first_name: string;
 	last_name: string;
@@ -21,7 +18,7 @@ export type VolunteerCreationRequestSchema = {
 	last_name: string;
 	email: string;
 	password: string;
-	properties: VolunteerProperties[];
+	properties: string[];
 };
 
 export type UserSchema = {
