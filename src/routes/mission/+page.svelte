@@ -1,8 +1,7 @@
 <script lang="ts">
+	import config from 'virtual:match-config';
 	import { resolve } from '$app/paths';
 	import { MISSION_QUESTIONS } from '$lib/mission/faq';
-
-	const CONTACT_EMAIL = 'hello@match-valencia.org';
 </script>
 
 <main class="mx-auto max-w-[1000px] px-6 py-12">
@@ -19,8 +18,8 @@
 			<div class="space-y-3 rounded-2xl bg-gray-50 p-5">
 				<p class="font-semibold text-gray-900">Questions or want to partner with us?</p>
 				<p class="text-gray-600">
-					Write to <a href="mailto:{CONTACT_EMAIL}" class="text-blue-600 hover:underline"
-						>{CONTACT_EMAIL}</a
+					Write to <a href="mailto:{config.contact_email}" class="text-blue-600 hover:underline"
+						>{config.contact_email}</a
 					>
 				</p>
 			</div>

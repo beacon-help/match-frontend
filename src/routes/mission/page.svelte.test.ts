@@ -1,8 +1,12 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import '@testing-library/jest-dom/vitest';
 import { render, screen } from '@testing-library/svelte';
 import Page from './+page.svelte';
 import { MISSION_QUESTIONS } from '$lib/mission/faq';
+
+vi.mock('virtual:match-config', () => ({
+	default: { contact_email: 'team@example.org' }
+}));
 
 describe('/mission', () => {
 	it('states the mission', () => {
@@ -34,6 +38,15 @@ describe('/mission', () => {
 		expect(screen.getByText('I need help').closest('a')).toHaveAttribute(
 			'href',
 			'/signup/helpseeker'
+		);
+	});
+
+	it('links to the contact email from the config', () => {
+		render(Page);
+
+		expect(screen.getByRole('link', { name: 'team@example.org' })).toHaveAttribute(
+			'href',
+			'mailto:team@example.org'
 		);
 	});
 });
