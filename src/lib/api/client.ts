@@ -13,12 +13,24 @@ export type HTTPValidationError = {
 export class ApiError extends Error {
 	readonly status: number;
 	readonly detail?: ValidationError[];
+	/** The `detail` string FastAPI sends with an `HTTPException`, e.g. on a 400. */
+	readonly serverMessage?: string;
 
-	constructor(message: string, status: number, detail?: ValidationError[]) {
+	constructor(message: string, status: number, detail?: ValidationError[], serverMessage?: string) {
 		super(message);
 		this.name = 'ApiError';
 		this.status = status;
 		this.detail = detail;
+		this.serverMessage = serverMessage;
+	}
+}
+
+async function readServerMessage(response: Response): Promise<string | undefined> {
+	try {
+		const body = await response.json();
+		return typeof body?.detail === 'string' ? body.detail : undefined;
+	} catch {
+		return undefined;
 	}
 }
 
@@ -78,7 +90,12 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
 			const body: HTTPValidationError = await response.json();
 			throw new ApiError('Validation failed', response.status, body.detail);
 		}
-		throw new ApiError(`Request failed with status ${response.status}`, response.status);
+		throw new ApiError(
+			`Request failed with status ${response.status}`,
+			response.status,
+			undefined,
+			await readServerMessage(response)
+		);
 	}
 
 	if (response.status === 204) {
