@@ -2,6 +2,7 @@ import { apiFetch } from '$lib/api/client';
 import type { Signup } from '$lib/types/signup';
 import type { VolunteerSignup } from '$lib/types/signup';
 import type { Login } from '$lib/types/login';
+import type { PasswordUpdate, ProfileUpdate } from '$lib/types/profile';
 
 // Wire value is hyphenated (`help-seeker`), unlike the `/signup/helpseeker` path segment.
 export type UserType = 'help-seeker' | 'volunteer';
@@ -28,6 +29,18 @@ export type UserSchema = {
 	email: string;
 	is_verified: boolean;
 	user_type: UserType;
+	properties: string[];
+};
+
+export type UserUpdateRequestSchema = {
+	first_name: string;
+	last_name: string;
+	properties?: string[];
+};
+
+export type PasswordChangeRequestSchema = {
+	current_password: string;
+	new_password: string;
 };
 
 export function signupHelpseeker(signup: Signup): Promise<UserSchema> {
@@ -73,6 +86,35 @@ export type TokenSchema = {
 
 export function getMe(accessToken: string): Promise<UserSchema> {
 	return apiFetch<UserSchema>('/user/me', {
+		authed: accessToken
+	});
+}
+
+export function updateMe(update: ProfileUpdate, accessToken: string): Promise<UserSchema> {
+	const body: UserUpdateRequestSchema = {
+		first_name: update.firstName,
+		last_name: update.lastName
+	};
+	if (update.properties) {
+		body.properties = update.properties;
+	}
+
+	return apiFetch<UserSchema>('/user/me', {
+		method: 'PUT',
+		body,
+		authed: accessToken
+	});
+}
+
+export function changePassword(update: PasswordUpdate, accessToken: string): Promise<void> {
+	const body: PasswordChangeRequestSchema = {
+		current_password: update.currentPassword,
+		new_password: update.newPassword
+	};
+
+	return apiFetch<void>('/user/me/password', {
+		method: 'PUT',
+		body,
 		authed: accessToken
 	});
 }
