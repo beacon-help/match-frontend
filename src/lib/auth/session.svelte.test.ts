@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import type { UserSchema } from '$lib/api/user';
 
 const getMe = vi.fn();
 const getAccessToken = vi.fn();
@@ -18,7 +19,15 @@ async function freshModule() {
 	return { ...(await import('./session.svelte')), ApiError };
 }
 
-const alice = { id: 1, first_name: 'Alice', last_name: 'A', email: 'a@b.c', is_verified: true };
+const alice: UserSchema = {
+	id: 1,
+	first_name: 'Alice',
+	last_name: 'A',
+	email: 'a@b.c',
+	is_verified: true,
+	user_type: 'help-seeker',
+	properties: []
+};
 
 beforeEach(() => {
 	vi.clearAllMocks();
@@ -89,6 +98,19 @@ describe('endSession', () => {
 
 		expect(getMe).toHaveBeenCalledTimes(2);
 		expect(session.user).toEqual(alice);
+	});
+});
+
+describe('setSessionUser', () => {
+	it('replaces the user without refetching', async () => {
+		const { ensureSession, setSessionUser, session } = await freshModule();
+		await ensureSession();
+
+		setSessionUser({ ...alice, first_name: 'Alicia' });
+		await ensureSession();
+
+		expect(session.user).toMatchObject({ first_name: 'Alicia' });
+		expect(getMe).toHaveBeenCalledTimes(1);
 	});
 });
 
