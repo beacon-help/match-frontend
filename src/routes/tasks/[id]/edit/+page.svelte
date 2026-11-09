@@ -1,19 +1,19 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { getTask, updateTask } from '$lib/api/task';
 	import { applyImageChanges } from '$lib/tasks/applyImageChanges';
 	import { getAccessToken } from '$lib/auth/tokens';
-	import { ApiError, describeApiError } from '$lib/api/client';
+	import { createAuthedPage } from '$lib/auth/authedPage.svelte';
+	import { describeApiError } from '$lib/api/client';
 	import { validateTask, type TaskErrors } from '$lib/validation/task';
-	import type { Task, TaskCreationRequest } from '$lib/types/task';
+	import type { TaskCreationRequest } from '$lib/types/task';
 	import CreateTaskForm from '$lib/components/CreateTaskForm.svelte';
+	import SignInPrompt from '$lib/components/SignInPrompt.svelte';
 
 	const taskId = Number(page.params.id);
 
-	let original = $state<Task | null>(null);
 	let form = $state<TaskCreationRequest>({
 		title: '',
 		description: '',
@@ -23,41 +23,23 @@
 	let pendingImages: File[] = $state([]);
 	let removedImageIds: string[] = $state([]);
 	let errors: TaskErrors = $state({});
-	let isLoading = $state(true);
 	let isSubmitting = $state(false);
-	let loadError: string | null = $state(null);
 	let submitError: string | null = $state(null);
-	let needsSignIn = $state(false);
-	let accessToken = $state<string | null>(null);
 
-	onMount(async () => {
-		const token = getAccessToken();
-		if (!token) {
-			needsSignIn = true;
-			isLoading = false;
-			return;
-		}
-
-		accessToken = token;
-		try {
-			const task = await getTask(taskId, token);
-			original = task;
-			form = {
-				title: task.title,
-				description: task.description,
-				category: task.category,
-				location: { ...task.location }
-			};
-		} catch (err) {
-			if (err instanceof ApiError && err.status === 401) {
-				needsSignIn = true;
-			} else {
-				loadError = describeApiError(err);
-			}
-		} finally {
-			isLoading = false;
-		}
+	// The loader seeds `form` as a side effect: it is bound into the form and edited from
+	// there, so it cannot be derived from the loaded task without discarding those edits.
+	const authed = createAuthedPage(async (token) => {
+		const task = await getTask(taskId, token);
+		form = {
+			title: task.title,
+			description: task.description,
+			category: task.category,
+			location: { ...task.location }
+		};
+		return task;
 	});
+
+	const original = $derived(authed.data ?? null);
 
 	/**
 	 * Saves the details, then the photo changes — the backend exposes them as separate
@@ -82,7 +64,7 @@
 		// Adopting the server's copy keeps the picker honest about what survived, and the
 		// remaining queues mean a retry only repeats what is genuinely outstanding.
 		if (outcome.task) {
-			original = outcome.task;
+			authed.data = outcome.task;
 		}
 		removedImageIds = outcome.remaining.removedIds;
 		pendingImages = outcome.remaining.added;
@@ -92,7 +74,10 @@
 
 	async function handleSubmit(event: SubmitEvent) {
 		event.preventDefault();
-		if (!original || !accessToken) return;
+		// Read at submit time rather than caching from the load: the stored token can be
+		// replaced while the form is open.
+		const token = getAccessToken();
+		if (!original || !token) return;
 
 		errors = validateTask(form);
 		if (Object.keys(errors).length > 0) {
@@ -102,7 +87,7 @@
 		isSubmitting = true;
 		submitError = null;
 		try {
-			const failure = await saveChanges(accessToken);
+			const failure = await saveChanges(token);
 			if (failure) {
 				submitError = failure;
 				return;
@@ -117,16 +102,12 @@
 <section class="container mx-auto px-4 py-10">
 	<h3 class="mb-6 text-4xl font-bold">Edit Task</h3>
 
-	{#if isLoading}
+	{#if authed.isLoading}
 		<p class="text-gray-600">Loading task…</p>
-	{:else if needsSignIn}
-		<p class="text-gray-600">
-			You need to <a href={resolve('/login')} class="font-medium text-blue-600 hover:text-blue-700"
-				>sign in</a
-			> to edit this task.
-		</p>
-	{:else if loadError}
-		<p class="text-red-600">{loadError}</p>
+	{:else if authed.needsSignIn}
+		<SignInPrompt purpose="to edit this task" />
+	{:else if authed.error}
+		<p class="text-red-600">{authed.error}</p>
 	{:else if original}
 		<CreateTaskForm
 			bind:task={form}
