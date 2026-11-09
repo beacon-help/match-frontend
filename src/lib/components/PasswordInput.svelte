@@ -1,5 +1,7 @@
 <script lang="ts">
-	interface Props {
+	import type { HTMLInputAttributes } from 'svelte/elements';
+
+	interface Props extends Omit<HTMLInputAttributes, 'type' | 'value' | 'class'> {
 		id: string;
 		value: string;
 		placeholder?: string;
@@ -7,7 +9,13 @@
 		visible?: boolean;
 	}
 
-	let { id, value = $bindable(), placeholder = '', visible = $bindable(true) }: Props = $props();
+	let {
+		id,
+		value = $bindable(),
+		placeholder = '',
+		visible = $bindable(true),
+		...attributes
+	}: Props = $props();
 
 	function toggleVisible() {
 		visible = !visible;
@@ -16,6 +24,7 @@
 
 <div class="relative">
 	<input
+		{...attributes}
 		{id}
 		type={visible ? 'text' : 'password'}
 		bind:value
