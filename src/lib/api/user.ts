@@ -32,6 +32,12 @@ export type UserSchema = {
 	properties: string[];
 };
 
+export type PublicUserSchema = {
+	id: number;
+	user_type: UserType;
+	first_name: string;
+};
+
 export type UserUpdateRequestSchema = {
 	first_name: string;
 	last_name: string;
@@ -72,8 +78,8 @@ export function signupVolunteer(signup: VolunteerSignup): Promise<UserSchema> {
 	});
 }
 
-export function getUser(id: number, accessToken: string): Promise<UserSchema> {
-	return apiFetch<UserSchema>(`/user/${id}`, {
+export function getUser(id: number, accessToken: string): Promise<PublicUserSchema> {
+	return apiFetch<PublicUserSchema>(`/user/${id}`, {
 		authed: accessToken
 	});
 }
