@@ -12,8 +12,6 @@
 		error?: string;
 		readonly?: boolean;
 		autocomplete?: HTMLInputAttributes['autocomplete'];
-		/** Password fields only: offer a Show/Hide toggle. */
-		revealable?: boolean;
 		/** Password fields only: whether the password shows as plain text. */
 		visible?: boolean;
 		/** Renders a multi-line textarea instead of a single-line input. */
@@ -30,7 +28,6 @@
 		error,
 		readonly = false,
 		autocomplete,
-		revealable = true,
 		visible = $bindable(true),
 		multiline = false,
 		rows = 4
@@ -61,7 +58,7 @@
 			aria-invalid={invalid}
 			aria-describedby={describedBy}
 			class={inputClasses}></textarea>
-	{:else if type === 'password' && revealable}
+	{:else if type === 'password'}
 		<PasswordInput
 			{id}
 			bind:value

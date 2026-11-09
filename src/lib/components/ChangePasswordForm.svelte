@@ -18,6 +18,7 @@
 	let errors: PasswordErrors = $state({});
 	let outcome: Note | null = $state(null);
 	let isSubmitting = $state(false);
+	let currentPasswordVisible = $state(false);
 	let newPasswordVisible = $state(false);
 	let repeatPasswordVisible = $state(false);
 	let form: HTMLFormElement;
@@ -48,6 +49,7 @@
 		try {
 			await onSubmit({ currentPassword: change.currentPassword, newPassword: change.newPassword });
 			change = emptyPasswordForm();
+			currentPasswordVisible = false;
 			newPasswordVisible = false;
 			repeatPasswordVisible = false;
 			outcome = { text: '✓ Password updated', tone: 'ok' };
@@ -85,7 +87,7 @@
 			label="Current password"
 			type="password"
 			bind:value={change.currentPassword}
-			revealable={false}
+			bind:visible={currentPasswordVisible}
 			autocomplete="current-password"
 			error={errors.currentPassword}
 		/>

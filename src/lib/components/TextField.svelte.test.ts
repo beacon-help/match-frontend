@@ -39,16 +39,7 @@ describe('TextField', () => {
 		expect(screen.getByRole('button', { name: 'Hide' })).toBeInTheDocument();
 	});
 
-	it('can render a password without a toggle', () => {
-		render(TextField, {
-			props: { label: 'Current password', type: 'password', value: '', revealable: false }
-		});
-
-		expect(screen.getByLabelText('Current password')).toHaveAttribute('type', 'password');
-		expect(screen.queryByRole('button')).not.toBeInTheDocument();
-	});
-
-	it('can start a revealable password hidden', () => {
+	it('can start a password hidden', () => {
 		render(TextField, {
 			props: { label: 'New password', type: 'password', value: '', visible: false }
 		});

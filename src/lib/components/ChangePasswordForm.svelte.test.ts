@@ -52,7 +52,7 @@ describe('ChangePasswordForm', () => {
 		expect(screen.queryByText('Unsaved')).not.toBeInTheDocument();
 	});
 
-	it('hides every password, with Show only on the new and repeated one', async () => {
+	it('hides every password, each with its own Show', async () => {
 		render(ChangePasswordForm, { props: { onSubmit: vi.fn() } });
 
 		expect(field('Current password')).toHaveAttribute('type', 'password');
@@ -61,13 +61,15 @@ describe('ChangePasswordForm', () => {
 
 		const showButtons = screen.getAllByRole('button', { name: 'Show' });
 		expect(showButtons.map((button) => button.getAttribute('aria-controls'))).toEqual([
+			field('Current password').id,
 			field('New password').id,
 			field('Repeat new password').id
 		]);
 
 		await fireEvent.click(showButtons[0]);
 
-		expect(field('New password')).toHaveAttribute('type', 'text');
+		expect(field('Current password')).toHaveAttribute('type', 'text');
+		expect(field('New password')).toHaveAttribute('type', 'password');
 		expect(field('Repeat new password')).toHaveAttribute('type', 'password');
 	});
 
@@ -131,6 +133,7 @@ describe('ChangePasswordForm', () => {
 		expect(field('Current password')).toHaveValue('');
 		expect(field('New password')).toHaveValue('');
 		expect(field('Repeat new password')).toHaveValue('');
+		expect(field('Current password')).toHaveAttribute('type', 'password');
 		expect(field('New password')).toHaveAttribute('type', 'password');
 		expect(field('Repeat new password')).toHaveAttribute('type', 'password');
 		expect(screen.queryByText('Unsaved')).not.toBeInTheDocument();
