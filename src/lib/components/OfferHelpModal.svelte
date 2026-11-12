@@ -19,8 +19,9 @@
 </script>
 
 <Modal title="Offer help" {onClose}>
-	<p class="mb-4 text-sm text-gray-600">
-		Send a message to the person who posted <span class="font-medium">{task.title}</span>.
+	<p class="mb-4 text-ink-soft">
+		Send a message to the person who posted <span class="font-semibold text-ink">{task.title}</span
+		>.
 	</p>
 
 	<form
@@ -38,14 +39,14 @@
 		/>
 
 		{#if error}
-			<p class="text-sm text-red-600">{error}</p>
+			<p class="text-base text-danger">{error}</p>
 		{/if}
 
-		<div class="flex justify-end gap-3">
-			<Button variant="neutral" onclick={onClose}>Cancel</Button>
+		<div class="flex flex-wrap items-center gap-3">
 			<Button variant="primary" disabled={isSubmitting} onclick={() => onSubmit(message)}>
-				{isSubmitting ? 'Sending…' : 'Send'}
+				{isSubmitting ? 'Sending…' : 'Send offer'}
 			</Button>
+			<Button variant="link" onclick={onClose}>Cancel</Button>
 		</div>
 	</form>
 </Modal>

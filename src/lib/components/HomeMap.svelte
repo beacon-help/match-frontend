@@ -14,9 +14,10 @@
 		markers: MapMarker[];
 		center?: [number, number];
 		zoom?: number;
+		short?: boolean;
 	}
 
-	let { markers, center = [39.47, -0.38], zoom = 9 }: Props = $props();
+	let { markers, center = [39.47, -0.38], zoom = 9, short = false }: Props = $props();
 
 	let container: HTMLDivElement;
 	// One atomic handle rather than four variables: the marker $effect reads it first, so a
@@ -27,7 +28,7 @@
 	onMount(() => {
 		const aborter = new AbortController();
 
-		createMap(container, { center, zoom, signal: aborter.signal })
+		createMap(container, { center, zoom, scrollsWithPage: true, signal: aborter.signal })
 			.then((created) => {
 				if (!created) return;
 				if (aborter.signal.aborted) {
@@ -70,5 +71,5 @@
 	bind:this={container}
 	role="application"
 	aria-label="Map of task locations"
-	class="isolate aspect-[5/3] w-full overflow-hidden rounded-2xl border border-gray-200"
+	class={['isolate w-full border border-line', short ? 'h-64' : 'h-72 sm:h-[400px]']}
 ></div>

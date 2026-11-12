@@ -3,6 +3,9 @@
 	import type { VolunteerSignup } from '$lib/types/signup';
 	import type { VolunteerSignupErrors } from '$lib/validation/volunteerSignup';
 	import TextField from '$lib/components/TextField.svelte';
+	import Button from '$lib/components/Button.svelte';
+	import Inset from '$lib/components/Inset.svelte';
+	import CheckboxOption from '$lib/components/CheckboxOption.svelte';
 
 	interface Props {
 		signup: VolunteerSignup;
@@ -23,68 +26,55 @@
 	}
 </script>
 
-<div class="mx-auto max-w-xl rounded-2xl border border-gray-200 bg-white p-6 shadow-lg">
-	<h2 class="mb-4 text-2xl font-bold text-gray-800">Create your volunteer account</h2>
+<form class="max-w-xl space-y-6" onsubmit={onSubmit}>
+	{#if submitError}
+		<Inset tone="error">{submitError}</Inset>
+	{/if}
 
-	<form class="space-y-4" onsubmit={onSubmit}>
-		{#if submitError}
-			<div class="rounded-lg border border-red-300 bg-red-50 px-4 py-2 text-sm text-red-700">
-				{submitError}
-			</div>
-		{/if}
-
-		<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-			<TextField
-				label="First name"
-				bind:value={signup.firstName}
-				placeholder="e.g. Sam"
-				error={errors.firstName}
-			/>
-			<TextField
-				label="Surname"
-				bind:value={signup.lastName}
-				placeholder="e.g. Rivera"
-				error={errors.lastName}
-			/>
-		</div>
-
+	<div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
 		<TextField
-			label="Email"
-			type="email"
-			bind:value={signup.email}
-			placeholder="e.g. sam@example.com"
-			error={errors.email}
+			label="First name"
+			bind:value={signup.firstName}
+			autocomplete="given-name"
+			error={errors.firstName}
 		/>
-
 		<TextField
-			label="Password"
-			type="password"
-			bind:value={signup.password}
-			placeholder="At least 8 characters"
-			error={errors.password}
+			label="Surname"
+			bind:value={signup.lastName}
+			autocomplete="family-name"
+			error={errors.lastName}
 		/>
+	</div>
 
-		<fieldset class="flex flex-col gap-2">
-			<legend class="mb-1 text-sm font-medium text-gray-700">How can you help?</legend>
-			{#each config.volunteer_properties as option (option.value)}
-				<label class="flex items-center gap-2 text-sm text-gray-700">
-					<input
-						type="checkbox"
-						checked={signup.properties.includes(option.value)}
-						onchange={() => toggle(option.value)}
-						class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-					/>
-					{option.label}
-				</label>
-			{/each}
-		</fieldset>
+	<TextField
+		label="Email"
+		type="email"
+		bind:value={signup.email}
+		autocomplete="email"
+		error={errors.email}
+	/>
 
-		<button
-			type="submit"
-			disabled={isSubmitting}
-			class="w-full rounded-lg bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
-		>
-			{isSubmitting ? 'Creating account…' : 'Create account'}
-		</button>
-	</form>
-</div>
+	<TextField
+		label="Password"
+		type="password"
+		bind:value={signup.password}
+		autocomplete="new-password"
+		hint="At least 8 characters."
+		error={errors.password}
+	/>
+
+	<fieldset>
+		<legend class="mb-1.5 font-semibold">How can you help?</legend>
+		{#each config.volunteer_properties as option (option.value)}
+			<CheckboxOption
+				label={option.label}
+				checked={signup.properties.includes(option.value)}
+				onchange={() => toggle(option.value)}
+			/>
+		{/each}
+	</fieldset>
+
+	<Button variant="primary" type="submit" disabled={isSubmitting}>
+		{isSubmitting ? 'Creating account…' : 'Create account'}
+	</Button>
+</form>

@@ -16,6 +16,7 @@
 	import TextField from '$lib/components/TextField.svelte';
 	import Button from '$lib/components/Button.svelte';
 	import FormNote from '$lib/components/FormNote.svelte';
+	import CheckboxOption from '$lib/components/CheckboxOption.svelte';
 
 	interface Props {
 		user: UserSchema;
@@ -86,17 +87,17 @@
 	}
 </script>
 
-<div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-lg">
-	<h2 class="mb-4 text-xl font-semibold text-gray-800">Profile</h2>
+<section>
+	<h2 class="mb-5 border-b-2 border-ink pb-2 text-2xl font-bold">Profile</h2>
 
 	<form
 		bind:this={form}
-		class="space-y-4"
+		class="space-y-6"
 		novalidate
 		onsubmit={handleSubmit}
 		oninput={clearOutcome}
 	>
-		<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+		<div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
 			<TextField
 				label="First name"
 				bind:value={profile.firstName}
@@ -121,34 +122,24 @@
 
 		{#if isVolunteer}
 			<fieldset>
-				<legend class="mb-1 text-sm font-medium text-gray-700">How can you help?</legend>
-				<p class="mb-2 text-sm text-gray-500">We use this to suggest tasks that fit you.</p>
-				<div class="divide-y divide-gray-200 rounded-lg border border-gray-200">
-					{#each config.volunteer_properties as option (option.value)}
-						<label class="flex cursor-pointer items-center gap-3 px-4 py-3 text-sm text-gray-700">
-							<input
-								type="checkbox"
-								checked={profile.properties.includes(option.value)}
-								onchange={() => toggle(option.value)}
-								class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-							/>
-							{option.label}
-						</label>
-					{/each}
-				</div>
+				<legend class="font-semibold">How can you help?</legend>
+				<p class="mb-1.5 text-base text-ink-soft">We use this to suggest tasks that fit you.</p>
+				{#each config.volunteer_properties as option (option.value)}
+					<CheckboxOption
+						label={option.label}
+						checked={profile.properties.includes(option.value)}
+						onchange={() => toggle(option.value)}
+					/>
+				{/each}
 			</fieldset>
 		{/if}
 
-		<div class="flex flex-wrap items-center justify-end gap-3 border-t border-gray-100 pt-4">
+		<div class="flex flex-wrap items-center justify-end gap-3 border-t border-line pt-5">
 			<FormNote {note} />
 			<Button variant="neutral" disabled={isSaving} onclick={cancel}>Cancel</Button>
-			<button
-				type="submit"
-				disabled={!canSave}
-				class="rounded-lg bg-blue-600 px-6 py-2 font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
-			>
+			<Button variant="primary" type="submit" disabled={!canSave}>
 				{isSaving ? 'Saving…' : 'Save changes'}
-			</button>
+			</Button>
 		</div>
 	</form>
-</div>
+</section>

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { liveLabel, statsHeadline, statsSubline } from './headline';
+import { statsFigures, statsSentence } from './headline';
 import type { Stats } from '$lib/types/stats';
 
 function stats(tasks: Partial<Stats['tasks']> = {}, users: Partial<Stats['users']> = {}): Stats {
@@ -9,70 +9,69 @@ function stats(tasks: Partial<Stats['tasks']> = {}, users: Partial<Stats['users'
 	};
 }
 
-const text = (parts: { text: string }[]) => parts.map((p) => p.text).join('');
-
-describe('statsHeadline', () => {
-	it('names completed requests and volunteers, highlighting both counts', () => {
-		const parts = statsHeadline(stats({ successful: 128 }, { total_helpers: 1312 }));
-
-		expect(text(parts)).toBe(
+describe('statsSentence', () => {
+	it('names completed requests and volunteers', () => {
+		expect(statsSentence(stats({ successful: 128 }, { total_helpers: 1312 }))).toBe(
 			'128 requests for help completed — and 1,312 volunteers ready for the next one.'
 		);
-		expect(parts.filter((p) => p.highlight).map((p) => p.text)).toEqual([
-			'128 requests',
-			'1,312 volunteers'
-		]);
 	});
 
 	it('uses singular nouns for a count of one', () => {
-		expect(text(statsHeadline(stats({ successful: 1 }, { total_helpers: 1 })))).toBe(
+		expect(statsSentence(stats({ successful: 1 }, { total_helpers: 1 }))).toBe(
 			'1 request for help completed — and 1 volunteer ready for the next one.'
 		);
 	});
 
 	it('leads with volunteers before any task is completed', () => {
-		expect(text(statsHeadline(stats({}, { total_helpers: 14 })))).toBe(
+		expect(statsSentence(stats({}, { total_helpers: 14 }))).toBe(
 			'14 volunteers are ready to help people hit by the DANA.'
 		);
-		expect(text(statsHeadline(stats({}, { total_helpers: 1 })))).toBe(
+		expect(statsSentence(stats({}, { total_helpers: 1 }))).toBe(
 			'1 volunteer is ready to help people hit by the DANA.'
 		);
 	});
 
 	it('mentions only completed requests when there are no volunteers', () => {
-		expect(text(statsHeadline(stats({ successful: 3 })))).toBe('3 requests for help completed.');
+		expect(statsSentence(stats({ successful: 3 }))).toBe('3 requests for help completed.');
 	});
 
-	it('falls back to a number-free headline when everything is zero or stats are missing', () => {
-		const expected = 'Neighbours helping neighbours after the DANA.';
-		expect(text(statsHeadline(stats()))).toBe(expected);
-		expect(text(statsHeadline(null))).toBe(expected);
-	});
-});
-
-describe('statsSubline', () => {
-	it('counts the people who asked for help', () => {
-		expect(statsSubline(stats({}, { total_help_seekers: 97 }))).toMatch(
-			/^97 people have asked for help here so far/
-		);
-		expect(statsSubline(stats({}, { total_help_seekers: 1 }))).toMatch(
-			/^1 person has asked for help/
-		);
-	});
-
-	it('invites a first request when nobody has asked yet', () => {
-		expect(statsSubline(null)).toMatch(/^Post what you need/);
+	it('invites a first request when everything is zero or stats are missing', () => {
+		expect(statsSentence(stats())).toMatch(/^Post what you need/);
+		expect(statsSentence(null)).toMatch(/^Post what you need/);
 	});
 });
 
-describe('liveLabel', () => {
-	it('counts tasks underway', () => {
-		expect(liveLabel(stats({ in_progress: 41 }))).toBe('41 tasks underway right now');
-		expect(liveLabel(stats({ in_progress: 1 }))).toBe('1 task underway right now');
+describe('statsFigures', () => {
+	it('lists every count that is above zero', () => {
+		const figures = statsFigures(
+			stats({ successful: 1280, in_progress: 41 }, { total_helpers: 312, total_help_seekers: 97 })
+		);
+
+		expect(figures).toEqual([
+			{ value: '1,280', label: 'requests completed' },
+			{ value: '312', label: 'volunteers signed up' },
+			{ value: '97', label: 'people have asked for help' },
+			{ value: '41', label: 'tasks underway now' }
+		]);
 	});
 
-	it('is null when nothing is underway', () => {
-		expect(liveLabel(stats())).toBeNull();
-		expect(liveLabel(null)).toBeNull();
+	it('uses singular labels for a count of one', () => {
+		const figures = statsFigures(
+			stats({ successful: 1, in_progress: 1 }, { total_helpers: 1, total_help_seekers: 1 })
+		);
+
+		expect(figures.map((figure) => figure.label)).toEqual([
+			'request completed',
+			'volunteer signed up',
+			'person has asked for help',
+			'task underway now'
+		]);
+	});
+
+	it('leaves out zero counts and is empty without stats', () => {
+		expect(statsFigures(stats({ successful: 3 }))).toEqual([
+			{ value: '3', label: 'requests completed' }
+		]);
+		expect(statsFigures(null)).toEqual([]);
 	});
 });

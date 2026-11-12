@@ -1,5 +1,8 @@
 <script lang="ts">
 	import SignupForm from '$lib/components/SignupForm.svelte';
+	import Page from '$lib/components/Page.svelte';
+	import PageHeader from '$lib/components/PageHeader.svelte';
+	import Inset from '$lib/components/Inset.svelte';
 	import { signupHelpseeker } from '$lib/api/user';
 	import { describeApiError } from '$lib/api/client';
 	import { validateSignup, type SignupErrors } from '$lib/validation/signup';
@@ -37,12 +40,12 @@
 	}
 </script>
 
-<section class="container mx-auto px-4 py-10">
-	<h3 class="mb-6 text-4xl font-bold">Sign up to get help</h3>
+<Page>
+	<PageHeader title="Sign up to get help" />
 
 	{#if succeeded}
-		<p class="text-lg text-green-700">Account created! Check your email to verify your account.</p>
+		<Inset>Account created. Check your email to verify your account.</Inset>
 	{:else}
 		<SignupForm {signup} {errors} {isSubmitting} {submitError} onSubmit={handleSubmit} />
 	{/if}
-</section>
+</Page>

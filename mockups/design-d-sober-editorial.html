@@ -1,0 +1,1268 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Match Valencia — Direction D, sober editorial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+	href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap"
+	rel="stylesheet"
+/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+	:root {
+		--bg: #fafaf8;
+		--surface: #ffffff;
+		--ink: #1b1d1b;
+		--ink-2: #5a605b;
+		--line: #d8d9d3;
+		--line-soft: #e8e9e4;
+		--field: #a9aca5;
+		--green: #2a5445;
+		--amber: #7a5a12;
+		--slate: #33556f;
+		--red: #9b2c1f;
+		--serif: 'Source Serif 4', 'Source Serif Pro', Georgia, 'Times New Roman', serif;
+		--sans: 'Libre Franklin', 'Franklin Gothic Medium', system-ui, -apple-system, 'Segoe UI',
+			sans-serif;
+		--wrap: 1080px;
+	}
+
+	*,
+	*::before,
+	*::after {
+		box-sizing: border-box;
+	}
+	html {
+		-webkit-text-size-adjust: 100%;
+	}
+	body {
+		margin: 0;
+		background: var(--bg);
+		color: var(--ink);
+		font: 400 16px/1.6 var(--sans);
+		-webkit-font-smoothing: antialiased;
+	}
+	h1,
+	h2,
+	h3,
+	p,
+	dl,
+	dd,
+	ul,
+	ol,
+	figure,
+	blockquote {
+		margin: 0;
+		padding: 0;
+	}
+	ul,
+	ol {
+		list-style: none;
+	}
+	a {
+		color: inherit;
+		text-decoration-color: var(--field);
+		text-underline-offset: 3px;
+	}
+	a:hover {
+		text-decoration-color: currentColor;
+	}
+	[hidden] {
+		display: none !important;
+	}
+	:focus-visible {
+		outline: 2px solid var(--ink);
+		outline-offset: 3px;
+	}
+
+	/* ---------- Mockup chrome (not part of the design) ---------- */
+	.mock-bar {
+		position: sticky;
+		top: 0;
+		z-index: 2000;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 6px 18px;
+		padding: 8px 16px;
+		background: #23262b;
+		color: #c9cdd3;
+		font: 500 13px/1.4 system-ui, sans-serif;
+	}
+	.mock-bar strong {
+		color: #fff;
+		font-weight: 600;
+	}
+	.mock-bar nav {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 4px;
+	}
+	.mock-bar nav:first-of-type {
+		margin-right: auto;
+	}
+	.mock-bar a {
+		padding: 4px 10px;
+		border-radius: 6px;
+		color: #c9cdd3;
+		text-decoration: none;
+	}
+	.mock-bar a:hover {
+		background: #33373e;
+		color: #fff;
+	}
+	.mock-bar a[aria-current='page'] {
+		background: #fff;
+		color: #23262b;
+	}
+
+	/* ---------- Layout ---------- */
+	.wrap {
+		width: 100%;
+		max-width: var(--wrap);
+		margin: 0 auto;
+		padding: 0 28px;
+	}
+	.page {
+		padding-top: 44px;
+		padding-bottom: 96px;
+	}
+
+	/* ---------- Header ---------- */
+	.site-header .wrap {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 16px;
+		min-height: 68px;
+	}
+	.site-header::after {
+		content: '';
+		display: block;
+		max-width: calc(var(--wrap) - 56px);
+		margin: 0 auto;
+		border-bottom: 1px solid var(--ink);
+	}
+	.brand {
+		display: flex;
+		align-items: baseline;
+		gap: 12px;
+		font: 600 1.3rem/1 var(--serif);
+		letter-spacing: -0.005em;
+		text-decoration: none;
+	}
+	.brand-role {
+		color: var(--ink-2);
+		font: 400 0.85rem/1 var(--sans);
+		letter-spacing: 0;
+	}
+	.site-nav {
+		display: flex;
+		align-items: center;
+		gap: 26px;
+		font-size: 0.92rem;
+	}
+	.nav-link {
+		padding: 8px 0;
+		text-decoration: none;
+		white-space: nowrap;
+	}
+	.nav-link:hover {
+		text-decoration: underline;
+	}
+	.nav-link[aria-current='page'] {
+		font-weight: 600;
+	}
+	.nav-account {
+		color: var(--ink-2);
+		white-space: nowrap;
+	}
+
+	/* ---------- Buttons ---------- */
+	.btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 42px;
+		padding: 0 18px;
+		border: 1px solid transparent;
+		border-radius: 4px;
+		background: none;
+		color: var(--ink);
+		font: 500 0.94rem/1 var(--sans);
+		text-decoration: none;
+		white-space: nowrap;
+		cursor: pointer;
+		transition: background-color 0.15s;
+	}
+	.btn--primary {
+		background: var(--ink);
+		color: #fff;
+	}
+	.btn--primary:hover {
+		background: #000;
+	}
+	.btn--secondary {
+		border-color: var(--ink);
+	}
+	.btn--secondary:hover {
+		background: #efefeb;
+	}
+	.btn--text {
+		padding: 0 2px;
+		color: var(--ink-2);
+		font-weight: 400;
+		text-decoration: underline;
+		text-decoration-color: var(--field);
+	}
+	.btn--text:hover {
+		color: var(--ink);
+	}
+	.btn--lg {
+		min-height: 48px;
+		padding: 0 22px;
+		font-size: 1rem;
+	}
+	.btn--sm {
+		min-height: 36px;
+		padding: 0 14px;
+		font-size: 0.88rem;
+	}
+
+	/* ---------- Type ---------- */
+	.kicker {
+		color: var(--ink-2);
+		font-size: 0.85rem;
+	}
+	.h-page {
+		font: 600 clamp(1.9rem, 3.2vw, 2.4rem) / 1.15 var(--serif);
+		letter-spacing: -0.01em;
+		text-wrap: balance;
+	}
+	.h-section {
+		font: 600 1.35rem/1.25 var(--serif);
+	}
+	.h-label {
+		padding-bottom: 8px;
+		border-bottom: 1px solid var(--ink);
+		font-weight: 600;
+		font-size: 0.85rem;
+	}
+	.reading {
+		font: 400 1.09rem/1.65 var(--serif);
+	}
+	.reading p + p {
+		margin-top: 0.9em;
+	}
+	.muted {
+		color: var(--ink-2);
+	}
+	.small {
+		font-size: 0.88rem;
+	}
+
+	/* ---------- Status ---------- */
+	.state {
+		display: inline-flex;
+		align-items: center;
+		gap: 7px;
+		font-weight: 500;
+		font-size: 0.88rem;
+		white-space: nowrap;
+	}
+	.state::before {
+		content: '';
+		width: 7px;
+		height: 7px;
+		border-radius: 50%;
+		background: currentColor;
+	}
+	.state--open {
+		color: var(--green);
+	}
+	.state--pending {
+		color: var(--amber);
+	}
+	.state--progress {
+		color: var(--slate);
+	}
+	.state--done {
+		color: var(--ink);
+	}
+	.state--closed {
+		color: var(--ink-2);
+	}
+	.state--closed::before {
+		border: 1px solid currentColor;
+		background: none;
+	}
+
+	/* ---------- Map ---------- */
+	.map {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 420px;
+		border: 1px solid var(--line);
+		background: #eeeeea;
+		color: var(--ink-2);
+		font-size: 0.88rem;
+	}
+	.map--short {
+		height: 250px;
+	}
+	.leaflet-container {
+		font: inherit;
+		font-size: 0.8rem;
+	}
+	.pin {
+		color: var(--ink);
+	}
+	figcaption {
+		margin-top: 8px;
+		color: var(--ink-2);
+		font-size: 0.85rem;
+	}
+
+	/* ---------- Home ---------- */
+	.lead {
+		display: grid;
+		grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+		gap: 72px;
+		align-items: start;
+		padding: 56px 0 52px;
+	}
+	.lead h1 {
+		margin-top: 12px;
+		font: 600 clamp(2rem, 3.6vw, 2.75rem) / 1.14 var(--serif);
+		letter-spacing: -0.012em;
+		text-wrap: balance;
+	}
+	.standfirst {
+		max-width: 46ch;
+		margin-top: 16px;
+		color: var(--ink-2);
+		font: 400 1.2rem/1.5 var(--serif);
+	}
+	.lead-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		margin-top: 30px;
+	}
+	.facts-box {
+		padding-top: 4px;
+	}
+	.facts-box dl div {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 16px;
+		padding: 11px 0;
+		border-bottom: 1px solid var(--line);
+	}
+	.facts-box dt {
+		color: var(--ink-2);
+		font-size: 0.94rem;
+	}
+	.facts-box dd {
+		font: 600 1.3rem/1.2 var(--serif);
+		font-variant-numeric: tabular-nums;
+	}
+	.facts-box p {
+		margin-top: 14px;
+		color: var(--ink-2);
+		font-size: 0.88rem;
+	}
+	.columns {
+		display: grid;
+		grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+		gap: 72px;
+		padding-top: 56px;
+	}
+	.columns .reading {
+		margin-top: 16px;
+	}
+	.howto li {
+		padding: 13px 0;
+		border-bottom: 1px solid var(--line);
+	}
+	.howto b {
+		font-weight: 600;
+	}
+	.howto span {
+		display: block;
+		color: var(--ink-2);
+		font-size: 0.94rem;
+	}
+	.site-footer {
+		margin-top: 80px;
+		color: var(--ink-2);
+		font-size: 0.88rem;
+	}
+	.site-footer .wrap > div {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		gap: 10px 40px;
+		padding: 22px 0 40px;
+		border-top: 1px solid var(--ink);
+	}
+
+	/* ---------- Page heads ---------- */
+	.page-head {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: end;
+		justify-content: space-between;
+		gap: 16px;
+		margin-bottom: 30px;
+	}
+	.page-head p {
+		margin-top: 6px;
+		color: var(--ink-2);
+	}
+	.back {
+		display: inline-block;
+		margin-bottom: 20px;
+		color: var(--ink-2);
+		font-size: 0.88rem;
+	}
+
+	/* ---------- Fields ---------- */
+	.label {
+		display: block;
+		margin-bottom: 6px;
+		font-weight: 600;
+		font-size: 0.9rem;
+	}
+	.input {
+		width: 100%;
+		min-height: 44px;
+		padding: 9px 12px;
+		border: 1px solid var(--field);
+		border-radius: 4px;
+		background: var(--surface);
+		color: var(--ink);
+		font: inherit;
+	}
+	textarea.input {
+		min-height: 136px;
+		resize: vertical;
+	}
+	.input::placeholder {
+		color: #8a8e88;
+	}
+	.input:focus {
+		outline: 2px solid var(--ink);
+		outline-offset: 1px;
+		border-color: var(--ink);
+	}
+	.hint {
+		margin-top: 6px;
+		color: var(--ink-2);
+		font-size: 0.86rem;
+	}
+	.field--error .input {
+		border-color: var(--red);
+	}
+	.error {
+		margin-top: 6px;
+		color: var(--red);
+		font-size: 0.86rem;
+	}
+	input[type='checkbox'] {
+		width: 17px;
+		height: 17px;
+		margin: 0;
+		accent-color: var(--ink);
+	}
+	input[type='range'] {
+		width: 100%;
+		accent-color: var(--ink);
+	}
+
+	/* ---------- Search ---------- */
+	.filterrow {
+		display: grid;
+		grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+		gap: 22px 40px;
+		padding: 22px 0 24px;
+		border-top: 1px solid var(--ink);
+		border-bottom: 1px solid var(--line);
+	}
+	.filterrow fieldset {
+		grid-column: 1 / -1;
+		margin: 0;
+		padding: 0;
+		border: 0;
+	}
+	.filterrow legend {
+		margin-bottom: 8px;
+		padding: 0;
+		font-weight: 600;
+		font-size: 0.9rem;
+	}
+	.checkrow {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px 26px;
+	}
+	.checkrow label {
+		display: flex;
+		align-items: center;
+		gap: 9px;
+		min-height: 30px;
+		font-size: 0.94rem;
+		cursor: pointer;
+	}
+	.split {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+		gap: 48px;
+		align-items: start;
+		margin-top: 30px;
+	}
+	.split .map {
+		position: sticky;
+		top: 64px;
+		height: 520px;
+	}
+	.item {
+		padding: 20px 0;
+		border-bottom: 1px solid var(--line);
+	}
+	.item-top {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 16px;
+	}
+	.item h3 {
+		margin-top: 4px;
+		font: 600 1.25rem/1.25 var(--serif);
+	}
+	.item h3 a {
+		text-decoration: none;
+	}
+	.item h3 a:hover {
+		text-decoration: underline;
+	}
+	.item .where {
+		margin-top: 2px;
+		color: var(--ink-2);
+		font-size: 0.94rem;
+	}
+	.actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 10px;
+	}
+	.item .actions {
+		margin-top: 14px;
+	}
+
+	/* ---------- Task detail ---------- */
+	.detail {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) 300px;
+		gap: 72px;
+		align-items: start;
+	}
+	.byline {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 6px 18px;
+		margin-top: 12px;
+		padding-bottom: 20px;
+		border-bottom: 1px solid var(--line);
+		color: var(--ink-2);
+		font-size: 0.9rem;
+	}
+	.notice {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px 24px;
+		margin: 24px 0;
+		padding: 18px 20px;
+		border: 1px solid var(--ink);
+		background: var(--surface);
+	}
+	.notice b {
+		font: 600 1.1rem/1.3 var(--serif);
+	}
+	.notice p {
+		color: var(--ink-2);
+		font-size: 0.92rem;
+	}
+	.photos {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 10px;
+		margin-top: 24px;
+	}
+	.photo {
+		display: flex;
+		align-items: end;
+		aspect-ratio: 3/2;
+		padding: 8px 10px;
+		background: #e2e3de;
+		color: var(--ink-2);
+		font-size: 0.76rem;
+	}
+	.meta {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 0 40px;
+		margin-top: 28px;
+		border-top: 1px solid var(--line);
+	}
+	.meta div {
+		padding: 12px 0;
+		border-bottom: 1px solid var(--line-soft);
+	}
+	.meta dt {
+		color: var(--ink-2);
+		font-size: 0.82rem;
+	}
+	.detail .map {
+		margin-top: 28px;
+	}
+	.detail article > .actions {
+		margin-top: 24px;
+	}
+	.log li {
+		padding: 14px 0;
+		border-bottom: 1px solid var(--line);
+	}
+	.log time {
+		display: block;
+		color: var(--ink-2);
+		font-size: 0.82rem;
+	}
+	.log blockquote {
+		margin-top: 8px;
+		color: var(--ink-2);
+		font: italic 400 1rem/1.5 var(--serif);
+	}
+
+	/* ---------- Create ---------- */
+	.compose {
+		display: grid;
+		grid-template-columns: minmax(0, 600px) minmax(0, 280px);
+		gap: 88px;
+		align-items: start;
+	}
+	.form {
+		display: grid;
+		gap: 24px;
+	}
+	.upload {
+		padding: 20px;
+		border: 1px dashed var(--field);
+		border-radius: 4px;
+		color: var(--ink-2);
+		font-size: 0.92rem;
+	}
+	.form-actions {
+		display: flex;
+		align-items: center;
+		gap: 14px;
+		padding-top: 24px;
+		border-top: 1px solid var(--line);
+	}
+	.next li {
+		display: grid;
+		grid-template-columns: 22px 1fr;
+		padding: 12px 0;
+		border-bottom: 1px solid var(--line);
+		color: var(--ink-2);
+		font-size: 0.92rem;
+		counter-increment: n;
+	}
+	.next {
+		counter-reset: n;
+	}
+	.next li::before {
+		content: counter(n) '.';
+		color: var(--ink);
+		font-weight: 600;
+	}
+
+	/* ---------- My tasks ---------- */
+	.rows {
+		border-top: 1px solid var(--ink);
+	}
+	.row {
+		display: grid;
+		grid-template-columns: 130px minmax(0, 1fr) auto;
+		gap: 10px 28px;
+		align-items: baseline;
+		padding: 22px 0;
+		border-bottom: 1px solid var(--line);
+	}
+	.row h2 {
+		font: 600 1.25rem/1.25 var(--serif);
+	}
+	.row h2 a {
+		text-decoration: none;
+	}
+	.row h2 a:hover {
+		text-decoration: underline;
+	}
+	.row p {
+		max-width: 56ch;
+		margin-top: 3px;
+		color: var(--ink-2);
+		font-size: 0.94rem;
+	}
+	.row .actions {
+		justify-content: flex-end;
+	}
+
+	/* ---------- Responsive ---------- */
+	@media (max-width: 900px) {
+		.lead,
+		.columns,
+		.split,
+		.detail,
+		.compose {
+			grid-template-columns: minmax(0, 1fr);
+			gap: 36px;
+		}
+		.split .map {
+			position: static;
+			height: 300px;
+			order: -1;
+		}
+	}
+	@media (max-width: 640px) {
+		.wrap {
+			padding: 0 18px;
+		}
+		.site-header::after {
+			max-width: none;
+			margin: 0 18px;
+		}
+		.site-nav {
+			gap: 16px;
+		}
+		.lead {
+			padding: 36px 0;
+		}
+		.filterrow,
+		.meta,
+		.row {
+			grid-template-columns: minmax(0, 1fr);
+		}
+		.row .actions {
+			justify-content: flex-start;
+			margin-top: 6px;
+		}
+		.brand-role,
+		.nav-account {
+			display: none;
+		}
+		.map {
+			height: 300px;
+		}
+	}
+</style>
+</head>
+<body>
+<div class="mock-bar">
+	<span><strong>Direction D</strong> · Sober editorial · sample data</span>
+	<nav aria-label="Mockup screens" data-tabs>
+		<a href="#home">Home</a>
+		<a href="#search">Find a task</a>
+		<a href="#task">Task</a>
+		<a href="#create">Ask for help</a>
+		<a href="#mine">My tasks</a>
+	</nav>
+	<nav aria-label="Other directions">
+		<a href="design-a-warm-editorial.html">A</a>
+		<a href="design-b-calm-civic.html">B</a>
+		<a href="design-c-plain-institutional.html">C</a>
+		<a href="design-d-sober-editorial.html" aria-current="page">D</a>
+	</nav>
+</div>
+
+<!-- ================================================= HOME -->
+<div data-screen="home">
+	<header class="site-header">
+		<div class="wrap">
+			<a class="brand" href="#home">Match Valencia</a>
+			<nav class="site-nav">
+				<a class="nav-link" href="#home">Mission</a>
+				<a class="nav-link" href="#home">Sign in</a>
+				<a class="nav-link" href="#home">Register</a>
+			</nav>
+		</div>
+	</header>
+
+	<main class="wrap">
+		<section class="lead">
+			<div>
+				<p class="kicker">Valencia, after the DANA</p>
+				<h1>128 requests for help completed — and 342 volunteers ready for the next one.</h1>
+				<p class="standfirst">
+					Post what you need — cleanup, food, repairs, a lift — and a nearby volunteer can pick it
+					up.
+				</p>
+				<div class="lead-actions">
+					<a class="btn btn--primary btn--lg" href="#create">I need help</a>
+					<a class="btn btn--secondary btn--lg" href="#search">I want to help</a>
+				</div>
+			</div>
+
+			<aside class="facts-box">
+				<h2 class="h-label">Match so far</h2>
+				<dl>
+					<div><dt>Requests completed</dt><dd>128</dd></div>
+					<div><dt>Volunteers signed up</dt><dd>342</dd></div>
+					<div><dt>People who have asked for help</dt><dd>96</dd></div>
+					<div><dt>Tasks underway now</dt><dd>17</dd></div>
+				</dl>
+				<p>Free for everyone, always. Run by volunteers from Valencia. Not a company, and no ads.</p>
+			</aside>
+		</section>
+
+		<figure>
+			<div
+				class="map"
+				data-map
+				data-pins='[[39.4371,-0.4655,"Rehang a front door swollen by water"],[39.4322,-0.4731,"Winter clothes for two children"],[39.4405,-0.458,"A lift to the health centre"],[39.4612,-0.39,"Food for a family of four"],[39.151,-0.435,"Clear mud from a ground-floor flat"],[39.1562,-0.429,"Check the wiring"],[39.122,-0.449,"Empty and wash out a garage"]]'
+			>
+				Map (needs an internet connection)
+			</div>
+			<figcaption>Open requests across the affected area.</figcaption>
+		</figure>
+
+		<section class="columns">
+			<div>
+				<h2 class="h-section">What happened</h2>
+				<div class="reading">
+					<p>
+						On November 4, 2025, the city of Valencia experienced a severe weather event that
+						brought torrential rain, flash floods, and widespread damage across urban and rural
+						areas. The storm disrupted transportation, flooded homes, and affected essential
+						infrastructure.
+					</p>
+					<p>
+						The most affected areas include the municipalities of <strong>Torrent</strong>,
+						<strong>Alzira</strong>, and <strong>Carcaixent</strong>. Rescue and recovery
+						operations remain ongoing as local communities work to restore normal conditions.
+					</p>
+				</div>
+			</div>
+			<div>
+				<h2 class="h-label">How it works</h2>
+				<ol class="howto">
+					<li><b>1. Post a task</b><span>One concrete need, with a place on the map.</span></li>
+					<li><b>2. A volunteer offers</b><span>Someone nearby sends you a message.</span></li>
+					<li><b>3. You accept</b><span>You decide, then agree on the details.</span></li>
+					<li><b>4. Mark it done</b><span>Small tasks, finished, add up.</span></li>
+				</ol>
+			</div>
+		</section>
+	</main>
+
+	<footer class="site-footer">
+		<div class="wrap">
+			<div>
+				<p>Match Valencia — a free, volunteer-run platform. <a href="#home">Our mission</a></p>
+				<p>Questions or want to partner with us? <a href="mailto:hello@match-valencia.org">hello@match-valencia.org</a></p>
+			</div>
+		</div>
+	</footer>
+</div>
+
+<!-- ================================================= SEARCH -->
+<div data-screen="search" hidden>
+	<header class="site-header">
+		<div class="wrap">
+			<a class="brand" href="#home">Match Valencia <span class="brand-role">Volunteer</span></a>
+			<nav class="site-nav">
+				<a class="nav-link" href="#search" aria-current="page">Find a task</a>
+				<a class="nav-link" href="#mine">My tasks</a>
+				<span class="nav-account">Lucía M. ▾</span>
+			</nav>
+		</div>
+	</header>
+
+	<main class="wrap page">
+		<div class="page-head">
+			<div>
+				<h1 class="h-page">Find a task</h1>
+				<p>Requests from people near you. Offer help on any that you can take on.</p>
+			</div>
+		</div>
+
+		<div class="filterrow">
+			<label>
+				<span class="label">Location</span>
+				<input class="input" type="text" placeholder="Search an address…" />
+			</label>
+			<label>
+				<span class="label">Within 50 km</span>
+				<input type="range" min="1" max="100" value="50" style="margin-top: 12px" />
+			</label>
+			<fieldset>
+				<legend>Kind of help</legend>
+				<div class="checkrow">
+					<label><input type="checkbox" /> Transport people</label>
+					<label><input type="checkbox" /> Food</label>
+					<label><input type="checkbox" /> Accommodation</label>
+					<label><input type="checkbox" /> Clothes</label>
+					<label><input type="checkbox" /> Medical help</label>
+					<label><input type="checkbox" checked /> Cleaning</label>
+					<label><input type="checkbox" checked /> Repairs</label>
+					<label><input type="checkbox" /> Other</label>
+				</div>
+			</fieldset>
+		</div>
+
+		<div class="split">
+			<div>
+				<h2 class="h-label">4 tasks match</h2>
+				<ul>
+					<li class="item">
+						<div class="item-top"><span class="kicker">Cleaning</span><span class="state state--open">Open</span></div>
+						<h3><a href="#task">Clear mud from a ground-floor flat</a></h3>
+						<p class="where">Carrer de Sant Roc 12, Alzira</p>
+						<div class="actions">
+							<a class="btn btn--primary btn--sm" href="#task">Offer help</a>
+							<a class="btn btn--text btn--sm" href="#task">See more</a>
+						</div>
+					</li>
+					<li class="item">
+						<div class="item-top"><span class="kicker">Repairs</span><span class="state state--open">Open</span></div>
+						<h3><a href="#task">Rehang a front door swollen by water</a></h3>
+						<p class="where">Avinguda al Vedat 41, Torrent</p>
+						<div class="actions">
+							<a class="btn btn--primary btn--sm" href="#task">Offer help</a>
+							<a class="btn btn--text btn--sm" href="#task">See more</a>
+						</div>
+					</li>
+					<li class="item">
+						<div class="item-top"><span class="kicker">Cleaning</span><span class="state state--pending">Offer sent</span></div>
+						<h3><a href="#task">Empty and wash out a garage</a></h3>
+						<p class="where">Carrer de la Marquesa 7, Carcaixent</p>
+						<div class="actions">
+							<a class="btn btn--secondary btn--sm" href="#task">See more</a>
+							<a class="btn btn--text btn--sm" href="#search">Cancel offer</a>
+						</div>
+					</li>
+					<li class="item">
+						<div class="item-top"><span class="kicker">Repairs</span><span class="state state--open">Open</span></div>
+						<h3><a href="#task">Check the wiring before power goes back on</a></h3>
+						<p class="where">Plaça Major 3, Alzira</p>
+						<div class="actions">
+							<a class="btn btn--primary btn--sm" href="#task">Offer help</a>
+							<a class="btn btn--text btn--sm" href="#task">See more</a>
+						</div>
+					</li>
+				</ul>
+			</div>
+
+			<div
+				class="map"
+				data-map
+				data-pins='[[39.4371,-0.4655,"Rehang a front door swollen by water"],[39.151,-0.435,"Clear mud from a ground-floor flat"],[39.1535,-0.4302,"Check the wiring before power goes back on"],[39.122,-0.449,"Empty and wash out a garage"]]'
+			>
+				Map (needs an internet connection)
+			</div>
+		</div>
+	</main>
+</div>
+
+<!-- ================================================= TASK DETAIL -->
+<div data-screen="task" hidden>
+	<header class="site-header">
+		<div class="wrap">
+			<a class="brand" href="#home">Match Valencia <span class="brand-role">Help seeker</span></a>
+			<nav class="site-nav">
+				<a class="nav-link" href="#create">Ask for help</a>
+				<a class="nav-link" href="#mine">My tasks</a>
+				<span class="nav-account">Amparo G. ▾</span>
+			</nav>
+		</div>
+	</header>
+
+	<main class="wrap page">
+		<a class="back" href="#mine">← My tasks</a>
+		<div class="detail">
+			<article>
+				<p class="kicker">Cleaning</p>
+				<h1 class="h-page" style="margin-top: 6px">Clear mud from a ground-floor flat</h1>
+				<div class="byline">
+					<span class="state state--pending">Offer received</span>
+					<span>Posted 9 Nov 2026</span>
+					<span>Carrer de Sant Roc 12, Alzira</span>
+				</div>
+
+				<div class="notice">
+					<div>
+						<b>Lucía has offered to help.</b>
+						<p>Read the message and decide whether to accept.</p>
+					</div>
+					<a class="btn btn--primary" href="#task">Review request</a>
+				</div>
+
+				<div class="reading">
+					<p>
+						The water reached about a metre in the living room and kitchen. It has drained, but
+						there is a thick layer of mud on the floors and the furniture needs carrying out to
+						the street. I am 71 and cannot do the lifting myself. Shovels and buckets would help —
+						I only have one of each.
+					</p>
+				</div>
+
+				<div class="photos">
+					<div class="photo">Photo 1</div>
+					<div class="photo">Photo 2</div>
+					<div class="photo">Photo 3</div>
+				</div>
+
+				<dl class="meta">
+					<div><dt>Category</dt><dd>Cleaning</dd></div>
+					<div><dt>Location</dt><dd>Carrer de Sant Roc 12, Alzira</dd></div>
+					<div><dt>Posted</dt><dd>9 Nov 2026</dd></div>
+					<div><dt>Owner</dt><dd>Amparo (you)</dd></div>
+				</dl>
+
+				<div class="map map--short" data-map data-zoom="15" data-pins='[[39.151,-0.435,"Clear mud from a ground-floor flat"]]'>
+					Map (needs an internet connection)
+				</div>
+
+				<div class="actions">
+					<a class="btn btn--secondary" href="#create">Edit</a>
+					<a class="btn btn--text" href="#mine">Remove task</a>
+				</div>
+			</article>
+
+			<aside>
+				<h2 class="h-label">Activity</h2>
+				<ol class="log">
+					<li>
+						<time datetime="2026-11-09T10:40">9 Nov, 10:40</time>
+						Lucía offered help
+						<blockquote>“I live ten minutes away and can come on Saturday morning with two friends, boots and buckets.”</blockquote>
+					</li>
+					<li>
+						<time datetime="2026-11-09T08:12">9 Nov, 08:12</time>
+						You posted the task
+					</li>
+				</ol>
+			</aside>
+		</div>
+	</main>
+</div>
+
+<!-- ================================================= CREATE TASK -->
+<div data-screen="create" hidden>
+	<header class="site-header">
+		<div class="wrap">
+			<a class="brand" href="#home">Match Valencia <span class="brand-role">Help seeker</span></a>
+			<nav class="site-nav">
+				<a class="nav-link" href="#create" aria-current="page">Ask for help</a>
+				<a class="nav-link" href="#mine">My tasks</a>
+				<span class="nav-account">Amparo G. ▾</span>
+			</nav>
+		</div>
+	</header>
+
+	<main class="wrap page">
+		<div class="page-head">
+			<div>
+				<h1 class="h-page">Ask for help</h1>
+				<p>Describe one thing you need. You can post as many tasks as you like.</p>
+			</div>
+		</div>
+
+		<div class="compose">
+			<form class="form" onsubmit="return false">
+				<label>
+					<span class="label">Title</span>
+					<input class="input" type="text" value="Clear mud from a ground-floor flat" />
+				</label>
+				<label>
+					<span class="label">Describe your situation</span>
+					<textarea class="input" placeholder="Explain what you need help with…"></textarea>
+					<p class="hint">A few sentences is enough. Mention anything a volunteer should bring.</p>
+				</label>
+				<label class="field--error">
+					<span class="label">Category</span>
+					<select class="input">
+						<option>Select a category…</option>
+						<option>Transport people</option>
+						<option>Food</option>
+						<option>Accommodation</option>
+						<option>Clothes</option>
+						<option>Medical help</option>
+						<option>Cleaning</option>
+						<option>Repairs</option>
+						<option>Other</option>
+					</select>
+					<p class="error">Choose a category so volunteers can find your task.</p>
+				</label>
+				<label>
+					<span class="label">Address</span>
+					<input class="input" type="text" placeholder="Start typing your street…" />
+					<p class="hint">Used to place your task on the map.</p>
+				</label>
+				<div>
+					<span class="label">Photos <span class="muted" style="font-weight: 400">(optional)</span></span>
+					<div class="upload"><a href="#create">Choose photos</a> or drop them here. They help volunteers know what to expect.</div>
+				</div>
+				<div class="form-actions">
+					<a class="btn btn--primary btn--lg" href="#task">Create task</a>
+					<a class="btn btn--text" href="#mine">Cancel</a>
+				</div>
+			</form>
+
+			<aside>
+				<h2 class="h-label">What happens next</h2>
+				<ol class="next">
+					<li>Your task appears on the map for volunteers nearby.</li>
+					<li>When someone offers to help, you see their message.</li>
+					<li>You decide whether to accept, then agree on the details together.</li>
+				</ol>
+				<p class="small muted" style="margin-top: 16px">
+					Need a hand with this form? Write to
+					<a href="mailto:hello@match-valencia.org">hello@match-valencia.org</a>
+				</p>
+			</aside>
+		</div>
+	</main>
+</div>
+
+<!-- ================================================= MY TASKS -->
+<div data-screen="mine" hidden>
+	<header class="site-header">
+		<div class="wrap">
+			<a class="brand" href="#home">Match Valencia <span class="brand-role">Help seeker</span></a>
+			<nav class="site-nav">
+				<a class="nav-link" href="#create">Ask for help</a>
+				<a class="nav-link" href="#mine" aria-current="page">My tasks</a>
+				<span class="nav-account">Amparo G. ▾</span>
+			</nav>
+		</div>
+	</header>
+
+	<main class="wrap page">
+		<div class="page-head">
+			<div>
+				<h1 class="h-page">My tasks</h1>
+				<p>Five tasks. One is waiting for your answer.</p>
+			</div>
+			<a class="btn btn--primary" href="#create">Ask for help</a>
+		</div>
+
+		<div class="rows">
+			<article class="row">
+				<span class="state state--pending">Offer received</span>
+				<div>
+					<h2><a href="#task">Clear mud from a ground-floor flat</a></h2>
+					<p>Lucía has offered to help. Read the message and decide whether to accept.</p>
+				</div>
+				<div class="actions">
+					<a class="btn btn--primary btn--sm" href="#task">Review request</a>
+					<a class="btn btn--text btn--sm" href="#mine">Remove</a>
+				</div>
+			</article>
+			<article class="row">
+				<span class="state state--progress">In progress</span>
+				<div>
+					<h2><a href="#task">A lift to the health centre on Thursday</a></h2>
+					<p>My car was lost in the flood and I have an appointment at 10:30 that I cannot miss.</p>
+				</div>
+				<div class="actions">
+					<a class="btn btn--primary btn--sm" href="#task">Mark done</a>
+					<a class="btn btn--secondary btn--sm" href="#task">See helper</a>
+					<a class="btn btn--text btn--sm" href="#mine">Remove</a>
+				</div>
+			</article>
+			<article class="row">
+				<span class="state state--open">Open</span>
+				<div>
+					<h2><a href="#task">Winter clothes for two children</a></h2>
+					<p>Ages 6 and 9. Coats and shoes most of all — everything stored downstairs was ruined.</p>
+				</div>
+				<div class="actions">
+					<a class="btn btn--secondary btn--sm" href="#create">Edit</a>
+					<a class="btn btn--text btn--sm" href="#mine">Remove</a>
+				</div>
+			</article>
+			<article class="row">
+				<span class="state state--done">Done</span>
+				<div>
+					<h2><a href="#task">Food for a family of four</a></h2>
+					<p>We had no working kitchen for the first week. Anything that does not need cooking.</p>
+				</div>
+				<div class="actions">
+					<a class="btn btn--secondary btn--sm" href="#task">See helper</a>
+				</div>
+			</article>
+			<article class="row">
+				<span class="state state--closed">Closed</span>
+				<div>
+					<h2><a href="#task">Borrow a dehumidifier for a week</a></h2>
+					<p>The walls are still wet. A neighbour lent us one in the end.</p>
+				</div>
+				<div class="actions"></div>
+			</article>
+		</div>
+	</main>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+	const PIN =
+		'<svg viewBox="0 0 22 28" width="22" height="28"><path d="M11 27C6 20 2 15.5 2 10.5a9 9 0 0 1 18 0C20 15.5 16 20 11 27z" fill="currentColor" stroke="#fff" stroke-width="1.5"/><circle cx="11" cy="10.5" r="3.2" fill="#fff"/></svg>';
+	const built = new WeakSet();
+
+	// Same tiles and attribution as src/lib/map/createMap.ts.
+	function buildMaps(root) {
+		if (!window.L) return;
+		root.querySelectorAll('[data-map]').forEach((el) => {
+			if (built.has(el)) return;
+			built.add(el);
+			el.textContent = '';
+			const pins = JSON.parse(el.dataset.pins);
+			const map = L.map(el, { scrollWheelZoom: false });
+			L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+				attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+				maxZoom: 19
+			}).addTo(map);
+			const icon = L.divIcon({ className: 'pin', html: PIN, iconSize: [22, 28], iconAnchor: [11, 28], popupAnchor: [0, -26] });
+			const group = L.featureGroup(pins.map((p) => L.marker([p[0], p[1]], { icon }).bindPopup(p[2]))).addTo(map);
+			if (pins.length > 1) map.fitBounds(group.getBounds(), { padding: [40, 40], maxZoom: 13 });
+			else map.setView([pins[0][0], pins[0][1]], Number(el.dataset.zoom) || 14);
+		});
+	}
+
+	const screens = [...document.querySelectorAll('[data-screen]')];
+	const tabs = [...document.querySelectorAll('[data-tabs] a')];
+	function show() {
+		const wanted = location.hash.slice(1);
+		const active = screens.some((s) => s.dataset.screen === wanted) ? wanted : 'home';
+		screens.forEach((s) => (s.hidden = s.dataset.screen !== active));
+		tabs.forEach((a) =>
+			a.hash === '#' + active ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current')
+		);
+		buildMaps(screens.find((s) => s.dataset.screen === active));
+		window.scrollTo(0, 0);
+	}
+	addEventListener('hashchange', show);
+	show();
+</script>
+</body>
+</html>

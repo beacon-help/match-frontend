@@ -9,8 +9,8 @@
 	let { purpose }: Props = $props();
 </script>
 
-<p class="text-gray-600">
-	You need to <a href={resolve('/login')} class="font-medium text-blue-600 hover:text-blue-700"
+<p class="text-ink-soft">
+	You need to <a href={resolve('/login')} class="text-navy underline hover:text-navy-dark"
 		>sign in</a
 	>
 	{purpose}.

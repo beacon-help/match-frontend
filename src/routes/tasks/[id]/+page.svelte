@@ -4,6 +4,8 @@
 	import { resolve } from '$app/paths';
 	import { getTask } from '$lib/api/task';
 	import { taskPermission } from '$lib/tasks/permission';
+	import { nextStep } from '$lib/tasks/nextStep';
+	import type { TaskActionKind } from '$lib/tasks/actions';
 	import { categoryLabel } from '$lib/tasks/categories';
 	import { helperOfferMessage } from '$lib/tasks/offers';
 	import { imageSrc } from '$lib/tasks/images';
@@ -18,6 +20,10 @@
 	import ReviewOfferModal from '$lib/components/ReviewOfferModal.svelte';
 	import ProfileModal from '$lib/components/ProfileModal.svelte';
 	import SignInPrompt from '$lib/components/SignInPrompt.svelte';
+	import TaskNextStep from '$lib/components/TaskNextStep.svelte';
+	import SummaryRow from '$lib/components/SummaryRow.svelte';
+	import Page from '$lib/components/Page.svelte';
+	import PageHeader from '$lib/components/PageHeader.svelte';
 
 	const taskId = Number(page.params.id);
 
@@ -47,6 +53,43 @@
 		task ? new Date(task.created_at).toLocaleDateString(undefined, { dateStyle: 'medium' }) : ''
 	);
 
+	const facts = $derived(
+		task
+			? [
+					{ label: 'Category', value: categoryLabel(task.category) },
+					{ label: 'Location', value: task.location.address },
+					{ label: 'Posted', value: postedAt },
+					{ label: 'Owner', value: task.owner.first_name }
+				]
+			: []
+	);
+	const back = $derived(
+		permission === 'public'
+			? { href: resolve('/tasks/search'), label: 'Back to task search' }
+			: { href: resolve('/tasks'), label: 'Back to my tasks' }
+	);
+
+	const step = $derived(task ? nextStep(task, permission) : null);
+	const stepHandlers: Partial<Record<TaskActionKind, () => void>> = {
+		review: openReview,
+		'offer-help': openOffer,
+		'mark-done': () => runAction('report_success')
+	};
+	const onStepAction = $derived(step?.action ? stepHandlers[step.action] : undefined);
+	const omittedActions = $derived<TaskActionKind[]>(
+		step?.action ? ['see-more', step.action] : ['see-more']
+	);
+
+	function openOffer() {
+		actionError = null;
+		showOffer = true;
+	}
+
+	function openReview() {
+		actionError = null;
+		showReview = true;
+	}
+
 	function runAction(action: 'close' | 'report_success') {
 		if (!task) return;
 		return actions.runAction(task, action, (msg) => (authed.error = msg));
@@ -65,75 +108,65 @@
 	}
 </script>
 
-<section class="container mx-auto max-w-5xl px-4 py-10">
+<Page>
 	{#if authed.isLoading}
-		<p class="text-gray-600">Loading task…</p>
+		<p class="text-ink-soft">Loading task…</p>
 	{:else if authed.needsSignIn}
 		<SignInPrompt purpose="to view this task" />
 	{:else if authed.error}
-		<p class="text-red-600">{authed.error}</p>
+		<p class="text-danger">{authed.error}</p>
 	{:else if task}
-		<div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
-			<div
-				class="flex min-w-0 flex-col gap-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm"
-			>
-				<div class="flex items-start justify-between gap-4">
-					<h1 class="text-3xl font-bold text-gray-900">{task.title}</h1>
-					<StatusBadge status={task.status} />
-				</div>
+		<a
+			href={back.href}
+			class="mb-1 inline-flex min-h-11 items-center text-base text-navy underline hover:text-navy-dark"
+		>
+			‹ {back.label}
+		</a>
+		<PageHeader title={task.title}>
+			{#snippet badge()}
+				<StatusBadge status={task.status} {permission} />
+			{/snippet}
+		</PageHeader>
 
-				<HomeMap {markers} />
+		<div class="grid items-start gap-x-14 gap-y-10 lg:grid-cols-[minmax(0,1fr)_20rem]">
+			<article class="min-w-0 space-y-5 sm:space-y-7">
+				{#if step}
+					<TaskNextStep {step} busy={actions.busy} onAction={onStepAction} />
+				{/if}
+
+				<p>{task.description}</p>
 
 				{#if task.images.length > 0}
-					<div class="grid grid-cols-3 gap-3">
+					<div class="grid grid-cols-3 gap-2.5">
 						{#each task.images as image, i (image.id)}
 							<img
 								src={imageSrc(image.path)}
 								alt="Task photo {i + 1}"
-								class="aspect-[3/2] w-full rounded-lg object-cover"
+								class="aspect-[3/2] w-full object-cover"
 							/>
 						{/each}
 					</div>
 				{/if}
 
-				<p class="text-gray-700">{task.description}</p>
-
-				<dl class="grid grid-cols-1 gap-3 border-t border-gray-100 pt-4 sm:grid-cols-2">
-					<div>
-						<dt class="text-sm font-medium text-gray-500">Category</dt>
-						<dd class="text-gray-900">{categoryLabel(task.category)}</dd>
-					</div>
-					<div>
-						<dt class="text-sm font-medium text-gray-500">Location</dt>
-						<dd class="text-gray-900">{task.location.address}</dd>
-					</div>
-					<div>
-						<dt class="text-sm font-medium text-gray-500">Posted</dt>
-						<dd class="text-gray-900">{postedAt}</dd>
-					</div>
-					<div>
-						<dt class="text-sm font-medium text-gray-500">Owner</dt>
-						<dd class="text-gray-900">{task.owner.first_name}</dd>
-					</div>
+				<dl class="border-t border-line">
+					{#each facts as fact (fact.label)}
+						<SummaryRow label={fact.label}>{fact.value}</SummaryRow>
+					{/each}
 				</dl>
 
+				<HomeMap {markers} short />
+
 				{#if actionError}
-					<p class="text-sm text-red-600">{actionError}</p>
+					<p class="text-base text-danger">{actionError}</p>
 				{/if}
 
 				<TaskActionsBar
 					{task}
 					{permission}
-					hideSeeMore
+					omit={omittedActions}
 					busy={actions.busy}
-					onOfferHelp={() => {
-						actionError = null;
-						showOffer = true;
-					}}
-					onReview={() => {
-						actionError = null;
-						showReview = true;
-					}}
+					onOfferHelp={openOffer}
+					onReview={openReview}
 					onSeeOwner={() => task && (profileUserId = task.owner.id)}
 					onSeeHelper={() => task?.helper && (profileUserId = task.helper.id)}
 					onMarkDone={() => runAction('report_success')}
@@ -141,12 +174,12 @@
 					onCancel={() => runAction('close')}
 					onEdit={() => goto(resolve('/tasks/[id]/edit', { id: String(taskId) }))}
 				/>
-			</div>
+			</article>
 
 			<TaskActivity events={task.events} ownerId={task.owner.id} viewerId={currentUserId} />
 		</div>
 	{/if}
-</section>
+</Page>
 
 {#if showOffer && task}
 	<OfferHelpModal

@@ -5,12 +5,12 @@ const ATTRIBUTION =
 	'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 const MAX_ZOOM = 19;
 
-// Reuse the wireframe's pin asset; anchor its tip (bottom-centre) on the point.
+// Anchor the pin's tip (bottom-centre) on the point.
 const ICON_OPTIONS = {
 	iconUrl: '/home/marker.svg',
-	iconSize: [16, 20],
-	iconAnchor: [8, 20],
-	popupAnchor: [0, -18]
+	iconSize: [22, 28],
+	iconAnchor: [11, 28],
+	popupAnchor: [0, -26]
 } satisfies Leaflet.IconOptions;
 
 export type MapHandle = {
@@ -22,6 +22,8 @@ export type MapHandle = {
 export type CreateMapOptions = {
 	center: [number, number];
 	zoom: number;
+	/** On phones, leave one-finger drags to the page so the map cannot trap scrolling. */
+	scrollsWithPage?: boolean;
 	/** Abort to skip construction when the caller unmounts during the import. */
 	signal?: AbortSignal;
 };
@@ -41,7 +43,8 @@ export async function createMap(
 	if (options.signal?.aborted) return null;
 
 	const L = module.default;
-	const map = L.map(container).setView(options.center, options.zoom);
+	const dragging = !(options.scrollsWithPage && L.Browser.mobile);
+	const map = L.map(container, { dragging }).setView(options.center, options.zoom);
 	L.tileLayer(TILE_URL, { attribution: ATTRIBUTION, maxZoom: MAX_ZOOM }).addTo(map);
 
 	return { L, map, icon: L.icon(ICON_OPTIONS) };

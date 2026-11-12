@@ -1,1 +1,34 @@
 @import 'tailwindcss';
+@import '@fontsource-variable/source-sans-3';
+
+@theme {
+	--font-sans:
+		'Source Sans 3 Variable', 'Source Sans 3', system-ui, -apple-system, 'Segoe UI', Roboto,
+		sans-serif;
+
+	--color-ink: #0f1419;
+	--color-ink-soft: #505a65;
+	--color-line: #cfd4da;
+	--color-field: #7d8792;
+	--color-fill: #f3f4f5;
+	--color-navy: #1d3a5f;
+	--color-navy-dark: #142b47;
+	--color-navy-tint: #e8eef5;
+	--color-wait: #6d4c08;
+	--color-wait-tint: #f6ecd3;
+	--color-ok: #1e5a45;
+	--color-ok-tint: #e2efe9;
+	--color-danger: #a1281c;
+	--color-focus: #f0b429;
+}
+
+@layer base {
+	body {
+		@apply bg-white text-lg leading-relaxed text-ink;
+	}
+
+	:focus-visible {
+		outline: 3px solid var(--color-focus);
+		outline-offset: 1px;
+	}
+}

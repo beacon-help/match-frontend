@@ -22,29 +22,23 @@
 	);
 </script>
 
-<aside
-	class="flex min-w-0 flex-col gap-3 self-start rounded-2xl border border-gray-200 bg-white p-5 shadow-sm"
->
-	<h2 class="text-lg font-semibold text-gray-900">Activity</h2>
-	<table class="w-full text-sm">
-		<tbody class="divide-y divide-gray-100">
-			{#each rows as row (row.id)}
-				<tr>
-					<td class="py-2 pr-4 align-top whitespace-nowrap text-gray-500">
-						<time datetime={row.occurredAt}>{row.time}</time>
-					</td>
-					<td class="py-2 text-gray-900">
-						{row.sentence}
-						{#if row.message && row.canReadMessage}
-							<p class="text-gray-600">“{row.message}”</p>
-						{:else if row.message}
-							<p class="mt-1 text-xs text-gray-400 italic">
-								Message visible to the task owner and the helper
-							</p>
-						{/if}
-					</td>
-				</tr>
-			{/each}
-		</tbody>
-	</table>
+<aside class="min-w-0">
+	<h2 class="border-b-2 border-ink pb-2 font-bold">Activity</h2>
+	<ol>
+		{#each rows as row (row.id)}
+			<li class="border-b border-line py-3.5">
+				<time datetime={row.occurredAt} class="block text-sm text-ink-soft">{row.time}</time>
+				{row.sentence}
+				{#if row.message && row.canReadMessage}
+					<p class="mt-2 border-l-[3px] border-line pl-3 text-base text-ink-soft">
+						“{row.message}”
+					</p>
+				{:else if row.message}
+					<p class="mt-1 text-sm text-ink-soft italic">
+						Message visible to the task owner and the helper
+					</p>
+				{/if}
+			</li>
+		{/each}
+	</ol>
 </aside>

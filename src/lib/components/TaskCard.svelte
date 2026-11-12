@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import type { Task } from '$lib/types/task';
 	import { taskPermission } from '$lib/tasks/permission';
 	import { categoryLabel } from '$lib/tasks/categories';
@@ -9,7 +10,6 @@
 		task: Task;
 		currentUserId: number;
 		busy?: boolean;
-		onSeeMore: () => void;
 		onOfferHelp?: () => void;
 		onSeeOwner?: () => void;
 		onSeeHelper?: () => void;
@@ -24,7 +24,6 @@
 		task,
 		currentUserId,
 		busy = false,
-		onSeeMore,
 		onOfferHelp,
 		onSeeOwner,
 		onSeeHelper,
@@ -36,31 +35,33 @@
 	}: Props = $props();
 
 	const permission = $derived(taskPermission(task, currentUserId));
+	const href = $derived(resolve('/tasks/[id]', { id: String(task.id) }));
 </script>
 
-<div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:shadow-md">
-	<div class="flex flex-col gap-4">
-		<div class="flex items-start justify-between gap-4">
-			<div class="flex flex-col gap-1">
-				<h3 class="text-xl font-semibold text-gray-900">{task.title}</h3>
-				<p class="text-sm font-medium text-gray-500">{categoryLabel(task.category)}</p>
-				<p class="text-sm text-gray-600">{task.location.address}</p>
-			</div>
-			<StatusBadge status={task.status} />
-		</div>
-		<TaskActionsBar
-			{task}
-			{permission}
-			{busy}
-			{onSeeMore}
-			{onOfferHelp}
-			{onSeeOwner}
-			{onSeeHelper}
-			{onReview}
-			{onMarkDone}
-			{onRemove}
-			{onCancel}
-			{onEdit}
-		/>
+<li
+	class="grid items-center gap-x-6 gap-y-3 border-b border-line py-4 sm:grid-cols-[minmax(0,1fr)_auto]"
+>
+	<div>
+		<h3 class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xl leading-snug font-semibold">
+			<a {href} class="-my-2 py-2 text-navy underline hover:text-navy-dark">{task.title}</a>
+			<StatusBadge status={task.status} {permission} />
+		</h3>
+		<p class="mt-1 text-base text-ink-soft">
+			{categoryLabel(task.category)} · {task.location.address}
+		</p>
 	</div>
-</div>
+	<TaskActionsBar
+		{task}
+		{permission}
+		omit={['see-more']}
+		{busy}
+		{onOfferHelp}
+		{onSeeOwner}
+		{onSeeHelper}
+		{onReview}
+		{onMarkDone}
+		{onRemove}
+		{onCancel}
+		{onEdit}
+	/>
+</li>

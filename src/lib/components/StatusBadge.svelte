@@ -1,16 +1,17 @@
 <script lang="ts">
 	import type { TaskStatus } from '$lib/types/task';
+	import type { TaskPermission } from '$lib/tasks/permission';
 	import { statusBadge } from '$lib/tasks/status';
+	import Tag from '$lib/components/Tag.svelte';
 
 	interface Props {
 		status: TaskStatus;
+		permission?: TaskPermission;
 	}
 
-	let { status }: Props = $props();
+	let { status, permission = 'public' }: Props = $props();
 
-	const badge = $derived(statusBadge(status));
+	const badge = $derived(statusBadge(status, permission));
 </script>
 
-<span class={`rounded-lg border px-3 py-2 text-sm font-medium ${badge.classes}`}>
-	{badge.label}
-</span>
+<Tag tone={badge.tone}>{badge.label}</Tag>

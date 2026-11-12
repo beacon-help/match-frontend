@@ -3,31 +3,40 @@
 	import type { ResolvedPathname } from '$app/types';
 
 	interface Props {
-		variant?: 'primary' | 'success' | 'neutral';
+		variant?: 'primary' | 'neutral' | 'link' | 'danger';
+		type?: 'button' | 'submit';
 		disabled?: boolean;
 		href?: ResolvedPathname;
 		onclick?: () => void;
 		children: Snippet;
 	}
 
-	let { variant = 'neutral', disabled = false, href, onclick, children }: Props = $props();
+	let {
+		variant = 'neutral',
+		type = 'button',
+		disabled = false,
+		href,
+		onclick,
+		children
+	}: Props = $props();
 
 	const variantClasses: Record<NonNullable<Props['variant']>, string> = {
-		primary: 'bg-gray-900 text-white hover:bg-gray-800',
-		success: 'bg-green-600 text-white hover:bg-green-700',
-		neutral: 'border border-gray-300 bg-gray-100 text-gray-900 hover:bg-gray-200'
+		primary: 'bg-navy px-4 font-semibold text-white hover:bg-navy-dark',
+		neutral: 'border border-field bg-white px-4 font-semibold text-ink hover:border-ink',
+		link: 'px-1 text-navy underline underline-offset-3 hover:text-navy-dark',
+		danger: 'px-1 text-danger underline underline-offset-3 hover:decoration-2'
 	};
 
 	const baseClasses =
-		'rounded-lg px-4 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50';
+		'inline-flex min-h-11 items-center justify-center rounded-xs text-base whitespace-nowrap disabled:cursor-not-allowed disabled:opacity-50';
 </script>
 
 {#if href && !disabled}
-	<a {href} class={`${baseClasses} ${variantClasses[variant]} inline-block`}>
+	<a {href} class={[baseClasses, variantClasses[variant]]}>
 		{@render children()}
 	</a>
 {:else}
-	<button type="button" {disabled} {onclick} class={`${baseClasses} ${variantClasses[variant]}`}>
+	<button {type} {disabled} {onclick} class={[baseClasses, variantClasses[variant]]}>
 		{@render children()}
 	</button>
 {/if}
