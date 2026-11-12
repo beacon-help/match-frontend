@@ -77,6 +77,32 @@ describe('apiFetch', () => {
 		await expect(apiFetch('/foo')).rejects.toMatchObject({ status: 500 });
 	});
 
+	it('keeps the server detail message of a non-422 error', async () => {
+		vi.mocked(fetch).mockResolvedValue(
+			mockFetchResponse(400, { detail: 'Current password is incorrect.' })
+		);
+
+		await expect(apiFetch('/foo')).rejects.toMatchObject({
+			status: 400,
+			serverMessage: 'Current password is incorrect.'
+		});
+	});
+
+	it('leaves the server message empty when the error body is not JSON', async () => {
+		vi.mocked(fetch).mockResolvedValue({
+			ok: false,
+			status: 500,
+			json: async () => {
+				throw new SyntaxError('Unexpected token <');
+			}
+		} as unknown as Response);
+
+		const error = await apiFetch('/foo').catch((err: unknown) => err);
+
+		expect(error).toBeInstanceOf(ApiError);
+		expect((error as ApiError).serverMessage).toBeUndefined();
+	});
+
 	it('throws ApiError with status 0 on a network failure', async () => {
 		vi.mocked(fetch).mockRejectedValue(new TypeError('network down'));
 

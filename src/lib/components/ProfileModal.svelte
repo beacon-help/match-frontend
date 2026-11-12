@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { getUser, type UserSchema } from '$lib/api/user';
+	import { getUser, type PublicUserSchema } from '$lib/api/user';
 	import { getAccessToken } from '$lib/auth/tokens';
 	import { describeApiError } from '$lib/api/client';
 	import Modal from '$lib/components/Modal.svelte';
-	import ProfileCard from '$lib/components/ProfileCard.svelte';
+	import PublicProfileCard from '$lib/components/PublicProfileCard.svelte';
 
 	interface Props {
 		userId: number;
@@ -13,7 +13,7 @@
 
 	let { userId, onClose }: Props = $props();
 
-	let user: UserSchema | null = $state(null);
+	let user: PublicUserSchema | null = $state(null);
 	let isLoading = $state(true);
 	let error: string | null = $state(null);
 
@@ -41,7 +41,6 @@
 	{:else if error}
 		<p class="text-red-600">{error}</p>
 	{:else if user}
-		<!-- Backend only returns id/name/email/verified; richer Figma fields are omitted. -->
-		<ProfileCard {user} />
+		<PublicProfileCard {user} />
 	{/if}
 </Modal>

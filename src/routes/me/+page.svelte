@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
+	import Button from '$lib/components/Button.svelte';
 	import ProfileCard from '$lib/components/ProfileCard.svelte';
 	import SignInPrompt from '$lib/components/SignInPrompt.svelte';
 	import { session } from '$lib/auth/session.svelte';
@@ -18,5 +20,8 @@
 		<p class="text-red-600">{authed.error}</p>
 	{:else if session.user}
 		<ProfileCard user={session.user} />
+		<div class="mx-auto mt-4 flex max-w-xl justify-end">
+			<Button variant="neutral" href={resolve('/me/edit')}>Edit profile</Button>
+		</div>
 	{/if}
 </section>

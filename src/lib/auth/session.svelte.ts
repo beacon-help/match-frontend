@@ -61,6 +61,11 @@ export function loadSession(): Promise<void> {
 	return (inflight = load());
 }
 
+/** Replaces the signed-in user with a fresher copy, e.g. the response to a profile save. */
+export function setSessionUser(next: UserSchema): void {
+	user = next;
+}
+
 export function endSession(): void {
 	clearTokens();
 	user = null;
