@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import config from 'virtual:match-config';
 	import { listPublicTasks } from '$lib/api/task';
 	import { getStats } from '$lib/api/stats';
 	import { describeApiError } from '$lib/api/client';
@@ -10,6 +11,7 @@
 	import { statsFigures } from '$lib/stats/headline';
 	import type { Stats } from '$lib/types/stats';
 	import { ABOUT_MATCH, HOW_IT_WORKS } from '$lib/home/content';
+	import { spans } from '$lib/home/richText';
 
 	type MapMarker = { lat: number; lon: number; label?: string };
 
@@ -69,24 +71,13 @@
 			<section>
 				<h2 class="text-2xl font-bold">What happened</h2>
 				<div class="mt-3.5 space-y-4">
-					<p>
-						On November 4, 2025, the city of Valencia experienced a severe weather event that
-						brought torrential rain, flash floods, and widespread damage across urban and rural
-						areas. The storm disrupted transportation, flooded homes, and affected essential
-						infrastructure.
-					</p>
-					<p>
-						This phenomenon, known as a DANA (Isolated Depression in High Levels), has left many
-						residents in need of urgent assistance. Volunteers are requested to support cleanup
-						efforts, deliver essential supplies, and assist affected families in coordination with
-						local authorities and emergency services.
-					</p>
-					<p>
-						The most affected areas include the municipalities of <strong>Torrent</strong>,
-						<strong>Alzira</strong>, and <strong>Carcaixent</strong>, where severe flooding has
-						impacted residential zones, roads, and public facilities. Rescue and recovery operations
-						remain ongoing as local communities work to restore normal conditions.
-					</p>
+					{#each config.what_happened as paragraph (paragraph)}
+						<p>
+							{#each spans(paragraph) as span, i (i)}
+								{#if span.strong}<strong>{span.text}</strong>{:else}{span.text}{/if}
+							{/each}
+						</p>
+					{/each}
 				</div>
 			</section>
 
