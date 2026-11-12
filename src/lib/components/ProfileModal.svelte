@@ -37,9 +37,9 @@
 
 <Modal title="Profile" {onClose}>
 	{#if isLoading}
-		<p class="text-gray-600">Loading profile…</p>
+		<p class="text-ink-soft">Loading profile…</p>
 	{:else if error}
-		<p class="text-red-600">{error}</p>
+		<p class="text-danger">{error}</p>
 	{:else if user}
 		<PublicProfileCard {user} />
 	{/if}

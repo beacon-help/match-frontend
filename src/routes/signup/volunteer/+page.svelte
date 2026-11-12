@@ -1,5 +1,8 @@
 <script lang="ts">
 	import VolunteerSignupForm from '$lib/components/VolunteerSignupForm.svelte';
+	import Page from '$lib/components/Page.svelte';
+	import PageHeader from '$lib/components/PageHeader.svelte';
+	import Inset from '$lib/components/Inset.svelte';
 	import { signupVolunteer } from '$lib/api/user';
 	import { describeApiError } from '$lib/api/client';
 	import {
@@ -41,12 +44,12 @@
 	}
 </script>
 
-<section class="container mx-auto px-4 py-10">
-	<h3 class="mb-6 text-4xl font-bold">Sign up to volunteer</h3>
+<Page>
+	<PageHeader title="Sign up to volunteer" />
 
 	{#if succeeded}
-		<p class="text-lg text-green-700">Account created! Check your email to verify your account.</p>
+		<Inset>Account created. Check your email to verify your account.</Inset>
 	{:else}
 		<VolunteerSignupForm {signup} {errors} {isSubmitting} {submitError} onSubmit={handleSubmit} />
 	{/if}
-</section>
+</Page>

@@ -10,29 +10,35 @@ const stats: Stats = {
 };
 
 describe('StatsHero', () => {
-	it('shows the stats headline and the live count', () => {
+	it('shows the fixed headline and the stats sentence', () => {
 		render(StatsHero, { props: { stats, role: null } });
 
 		expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
-			'128 requests for help completed — and 312 volunteers ready for the next one.'
+			'Neighbours helping neighbours after the DANA.'
 		);
-		expect(screen.getByText('41 tasks underway right now')).toBeInTheDocument();
+		expect(
+			screen.getByText(
+				'128 requests for help completed — and 312 volunteers ready for the next one.'
+			)
+		).toBeInTheDocument();
 	});
 
-	it('hides the live count when nothing is underway', () => {
-		render(StatsHero, {
-			props: { stats: { ...stats, tasks: { ...stats.tasks, in_progress: 0 } }, role: null }
-		});
+	it('invites a first request when the stats are missing', () => {
+		render(StatsHero, { props: { stats: null, role: null } });
 
-		expect(screen.queryByText(/underway right now/)).not.toBeInTheDocument();
+		expect(screen.getByText(/^Post what you need/)).toBeInTheDocument();
 	});
 
 	it('offers both sign-up paths to visitors', () => {
 		render(StatsHero, { props: { stats: null, role: null } });
 
-		expect(screen.getByRole('link', { name: 'I want to help' })).toHaveAttribute(
+		expect(screen.getByRole('link', { name: 'Sign up to volunteer' })).toHaveAttribute(
 			'href',
 			'/signup/volunteer'
+		);
+		expect(screen.getByRole('link', { name: 'Sign up to get help' })).toHaveAttribute(
+			'href',
+			'/signup/helpseeker'
 		);
 		expect(screen.getByRole('link', { name: 'I need help' })).toHaveAttribute(
 			'href',
@@ -47,13 +53,13 @@ describe('StatsHero', () => {
 			'href',
 			'/tasks/search'
 		);
-		expect(screen.queryByRole('link', { name: 'I need help' })).not.toBeInTheDocument();
+		expect(screen.queryByRole('link', { name: 'Sign up to get help' })).not.toBeInTheDocument();
 	});
 
 	it('sends a help seeker to create a task', () => {
 		render(StatsHero, { props: { stats, role: 'help-seeker' } });
 
-		expect(screen.getByRole('link', { name: 'Create a task' })).toHaveAttribute(
+		expect(screen.getByRole('link', { name: 'Ask for help' })).toHaveAttribute(
 			'href',
 			'/tasks/create'
 		);

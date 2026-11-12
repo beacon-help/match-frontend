@@ -104,7 +104,9 @@
 </script>
 
 <fieldset class="flex flex-col gap-2">
-	<legend class="text-sm font-medium text-gray-700">Photos</legend>
+	<legend class="mb-1 font-semibold"
+		>Photos <span class="font-normal text-ink-soft">(optional)</span></legend
+	>
 
 	<div class="grid grid-cols-3 gap-3 sm:grid-cols-4">
 		{#each kept as image, index (image.id)}
@@ -112,14 +114,14 @@
 				<img
 					src={imageSrc(image.path)}
 					alt="Attachment {index + 1}"
-					class="aspect-square w-full rounded-lg object-cover"
+					class="aspect-square w-full object-cover"
 				/>
 				<button
 					type="button"
 					{disabled}
 					onclick={() => removeExisting(image.id)}
 					aria-label="Remove attachment {index + 1}"
-					class="absolute top-1 right-1 rounded-full bg-gray-900/70 px-2 py-0.5 text-sm text-white hover:bg-gray-900 disabled:opacity-50"
+					class="absolute top-1 right-1 flex h-8 w-8 items-center justify-center rounded-xs bg-ink/75 text-lg leading-none text-white hover:bg-ink disabled:opacity-50"
 				>
 					×
 				</button>
@@ -128,23 +130,17 @@
 
 		{#each pending as file (file)}
 			<div class="relative">
-				<img
-					src={previewUrl(file)}
-					alt={file.name}
-					class="aspect-square w-full rounded-lg object-cover"
-				/>
+				<img src={previewUrl(file)} alt={file.name} class="aspect-square w-full object-cover" />
 				<button
 					type="button"
 					{disabled}
 					onclick={() => removePending(file)}
 					aria-label="Remove {file.name}"
-					class="absolute top-1 right-1 rounded-full bg-gray-900/70 px-2 py-0.5 text-sm text-white hover:bg-gray-900 disabled:opacity-50"
+					class="absolute top-1 right-1 flex h-8 w-8 items-center justify-center rounded-xs bg-ink/75 text-lg leading-none text-white hover:bg-ink disabled:opacity-50"
 				>
 					×
 				</button>
-				<span
-					class="absolute right-1 bottom-1 left-1 truncate rounded bg-gray-900/70 px-1 text-xs text-white"
-				>
+				<span class="absolute right-1 bottom-1 left-1 truncate bg-ink/75 px-1 text-xs text-white">
 					{file.name}
 				</span>
 			</div>
@@ -154,9 +150,10 @@
 			<!-- The input stays in the tab order (sr-only, not hidden) so the picker is
 			     reachable by keyboard; the label is styled as the visible target. -->
 			<label
-				class="flex aspect-square w-full cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-gray-300 text-sm text-gray-500 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500 hover:border-blue-400 hover:text-blue-600 {isLocked
-					? 'pointer-events-none opacity-50'
-					: ''}"
+				class={[
+					'flex aspect-square w-full cursor-pointer flex-col items-center justify-center gap-1 rounded-xs border border-dashed border-field text-base text-ink-soft focus-within:outline-3 focus-within:outline-focus hover:border-ink hover:text-ink',
+					isLocked && 'pointer-events-none opacity-50'
+				]}
 			>
 				<span class="text-xl" aria-hidden="true">+</span>
 				<span>{addLabel}</span>
@@ -173,14 +170,14 @@
 		{/if}
 	</div>
 
-	<p id="photo-hint" class="text-xs text-gray-500">
+	<p id="photo-hint" class="text-base text-ink-soft">
 		{total} of {MAX_IMAGES} photos · {TYPE_LABEL}, up to {LIMIT_LABEL} each
 	</p>
 
 	<div role="alert" class="flex flex-col gap-1">
 		<!-- Keyed by position: two files can fail the same way and produce the same text. -->
 		{#each errors as message, index (index)}
-			<p class="text-sm text-red-600">{message}</p>
+			<p class="text-base text-danger">{message}</p>
 		{/each}
 	</div>
 </fieldset>

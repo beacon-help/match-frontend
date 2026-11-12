@@ -2,6 +2,8 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import LoginForm from '$lib/components/LoginForm.svelte';
+	import Page from '$lib/components/Page.svelte';
+	import PageHeader from '$lib/components/PageHeader.svelte';
 	import { loginUser } from '$lib/api/user';
 	import { saveTokens } from '$lib/auth/tokens';
 	import { loadSession } from '$lib/auth/session.svelte';
@@ -47,8 +49,15 @@
 	}
 </script>
 
-<section class="container mx-auto px-4 py-10">
-	<h3 class="mb-6 text-4xl font-bold">Sign in</h3>
+<Page>
+	<PageHeader title="Sign in" />
 
 	<LoginForm {login} {errors} {isSubmitting} {submitError} onSubmit={handleSubmit} />
-</section>
+
+	<p class="mt-8 text-base text-ink-soft">
+		New to Match?
+		<a href={resolve('/signup')} class="inline-block py-2 text-navy underline hover:text-navy-dark"
+			>Register</a
+		>
+	</p>
+</Page>

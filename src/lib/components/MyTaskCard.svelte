@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import type { Task } from '$lib/types/task';
 	import { taskPermission } from '$lib/tasks/permission';
 	import StatusBadge from '$lib/components/StatusBadge.svelte';
@@ -8,7 +9,6 @@
 		task: Task;
 		currentUserId: number;
 		busy?: boolean;
-		onSeeMore?: () => void;
 		onEdit?: () => void;
 		onRemove?: () => void;
 		onCancel?: () => void;
@@ -23,7 +23,6 @@
 		task,
 		currentUserId,
 		busy = false,
-		onSeeMore,
 		onEdit,
 		onRemove,
 		onCancel,
@@ -35,30 +34,37 @@
 	}: Props = $props();
 
 	const permission = $derived(taskPermission(task, currentUserId));
+	const href = $derived(resolve('/tasks/[id]', { id: String(task.id) }));
 </script>
 
-<div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-	<div class="flex flex-col gap-4">
-		<div class="flex flex-col gap-2">
-			<h2 class="text-2xl font-semibold text-gray-900">{task.title}</h2>
-			<p class="text-gray-500">{task.description}</p>
-		</div>
-		<div class="flex flex-wrap items-center justify-between gap-4">
-			<StatusBadge status={task.status} />
-			<TaskActionsBar
-				{task}
-				{permission}
-				{busy}
-				{onSeeMore}
-				{onEdit}
-				{onRemove}
-				{onCancel}
-				{onMarkDone}
-				{onSeeHelper}
-				{onSeeOwner}
-				{onOfferHelp}
-				{onReview}
-			/>
-		</div>
+<li
+	class="grid items-start gap-x-6 gap-y-2.5 border-b border-line py-4.5 lg:grid-cols-[minmax(0,1fr)_9.5rem_20rem]"
+>
+	<div>
+		<h2 class="text-xl leading-snug font-semibold">
+			<a {href} class="-my-2 inline-block py-2 text-navy underline hover:text-navy-dark"
+				>{task.title}</a
+			>
+		</h2>
+		<p class="mt-0.5 line-clamp-2 max-w-[52ch] text-base text-ink-soft">{task.description}</p>
 	</div>
-</div>
+	<div class="lg:pt-0.5">
+		<StatusBadge status={task.status} {permission} />
+	</div>
+	<div class="flex lg:justify-end">
+		<TaskActionsBar
+			{task}
+			{permission}
+			omit={['see-more']}
+			{busy}
+			{onEdit}
+			{onRemove}
+			{onCancel}
+			{onMarkDone}
+			{onSeeHelper}
+			{onSeeOwner}
+			{onOfferHelp}
+			{onReview}
+		/>
+	</div>
+</li>

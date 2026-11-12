@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { HTMLInputAttributes } from 'svelte/elements';
 	import PasswordInput from '$lib/components/PasswordInput.svelte';
+	import { INPUT_CLASSES } from '$lib/forms/inputClasses';
 
 	interface Props {
 		label: string;
@@ -43,12 +44,17 @@
 		[hint && hintId, error && errorId].filter(Boolean).join(' ') || undefined
 	);
 
-	const inputClasses =
-		'w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-800 read-only:bg-gray-50 read-only:text-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none';
+	const inputClasses = `${INPUT_CLASSES} px-3 read-only:bg-fill read-only:text-ink-soft`;
 </script>
 
-<div>
-	<label class="mb-1 block text-sm font-medium text-gray-700" for={id}>{label}</label>
+<div class={error ? 'border-l-4 border-danger pl-3.5' : undefined}>
+	<label class="mb-1 block font-semibold" for={id}>{label}</label>
+	{#if hint}
+		<p id={hintId} class="mb-1.5 text-base text-ink-soft">{hint}</p>
+	{/if}
+	{#if error}
+		<p id={errorId} class="mb-1.5 text-base font-semibold text-danger">{error}</p>
+	{/if}
 	{#if multiline}
 		<textarea
 			{id}
@@ -80,11 +86,5 @@
 			aria-describedby={describedBy}
 			class={inputClasses}
 		/>
-	{/if}
-	{#if hint}
-		<p id={hintId} class="mt-1 text-sm text-gray-500">{hint}</p>
-	{/if}
-	{#if error}
-		<p id={errorId} class="mt-1 text-sm text-red-600">{error}</p>
 	{/if}
 </div>

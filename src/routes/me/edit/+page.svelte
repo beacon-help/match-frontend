@@ -3,6 +3,8 @@
 	import EditProfileForm from '$lib/components/EditProfileForm.svelte';
 	import ChangePasswordForm from '$lib/components/ChangePasswordForm.svelte';
 	import SignInPrompt from '$lib/components/SignInPrompt.svelte';
+	import Page from '$lib/components/Page.svelte';
+	import PageHeader from '$lib/components/PageHeader.svelte';
 	import { changePassword, updateMe, type UserSchema } from '$lib/api/user';
 	import { ApiError } from '$lib/api/client';
 	import { getAccessToken } from '$lib/auth/tokens';
@@ -31,22 +33,25 @@
 	}
 </script>
 
-<section class="container mx-auto px-4 py-10">
-	<a href={resolve('/me')} class="text-sm font-medium text-blue-600 hover:text-blue-700">
+<Page>
+	<a
+		href={resolve('/me')}
+		class="mb-1 inline-flex min-h-11 items-center text-base text-navy underline hover:text-navy-dark"
+	>
 		← Back to profile
 	</a>
-	<h3 class="mt-2 mb-6 text-4xl font-bold">Edit profile</h3>
+	<PageHeader title="Edit profile" />
 
 	{#if authed.isLoading}
-		<p class="text-gray-600">Loading your profile…</p>
+		<p class="text-ink-soft">Loading your profile…</p>
 	{:else if authed.needsSignIn}
 		<SignInPrompt purpose="to edit your profile" />
 	{:else if authed.error}
-		<p class="text-red-600">{authed.error}</p>
+		<p class="text-danger">{authed.error}</p>
 	{:else if session.user}
-		<div class="mx-auto max-w-xl space-y-6">
+		<div class="max-w-xl space-y-12">
 			<EditProfileForm user={session.user} onSave={saveProfile} />
 			<ChangePasswordForm onSubmit={savePassword} />
 		</div>
 	{/if}
-</section>
+</Page>

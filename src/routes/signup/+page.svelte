@@ -1,26 +1,28 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
+	import Page from '$lib/components/Page.svelte';
+	import PageHeader from '$lib/components/PageHeader.svelte';
+	import PathChoice from '$lib/components/PathChoice.svelte';
 </script>
 
-<section class="container mx-auto px-4 py-10">
-	<div class="mx-auto max-w-xl rounded-2xl border border-gray-200 bg-white p-8 shadow-lg">
-		<h2 class="mb-8 text-center text-3xl font-bold text-gray-800">
-			Tell us why do you want to register?
-		</h2>
+<Page>
+	<PageHeader
+		title="Register"
+		lede="Tell us why you are here, so we can set up the right account."
+	/>
 
-		<div class="flex flex-col gap-4 sm:flex-row">
-			<a
-				href={resolve('/signup/helpseeker')}
-				class="flex-1 rounded-xl border border-gray-300 bg-gray-50 px-6 py-8 text-center text-lg font-semibold text-gray-900 transition hover:border-blue-500 hover:bg-blue-50"
-			>
-				I need help
-			</a>
-			<a
-				href={resolve('/signup/volunteer')}
-				class="flex-1 rounded-xl border border-gray-300 bg-gray-50 px-6 py-8 text-center text-lg font-semibold text-gray-900 transition hover:border-blue-500 hover:bg-blue-50"
-			>
-				I want to help
-			</a>
-		</div>
+	<div class="grid border-t-2 border-b border-t-ink border-b-line sm:grid-cols-2">
+		<PathChoice
+			title="I need help"
+			text="Describe one thing you need. Volunteers near you will see it."
+			href={resolve('/signup/helpseeker')}
+			cta="Sign up to get help"
+		/>
+		<PathChoice
+			title="I want to help"
+			text="See what people near you need, and offer what you can."
+			href={resolve('/signup/volunteer')}
+			cta="Sign up to volunteer"
+		/>
 	</div>
-</section>
+</Page>

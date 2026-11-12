@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-	import { resolve } from '$app/paths';
 	import { listTasks } from '$lib/api/task';
 	import { haversineKm, locationLatLon } from '$lib/tasks/distance';
 	import { helperOfferMessage } from '$lib/tasks/offers';
@@ -15,6 +13,10 @@
 	import ReviewOfferModal from '$lib/components/ReviewOfferModal.svelte';
 	import ProfileModal from '$lib/components/ProfileModal.svelte';
 	import SignInPrompt from '$lib/components/SignInPrompt.svelte';
+	import TextField from '$lib/components/TextField.svelte';
+	import Button from '$lib/components/Button.svelte';
+	import Page from '$lib/components/Page.svelte';
+	import PageHeader from '$lib/components/PageHeader.svelte';
 
 	// Valencia — the client-side radius filter is measured from here (geocoding is mocked).
 	const CENTER = { lat: 39.47, lon: -0.38 };
@@ -23,6 +25,7 @@
 	let searchAddress = $state('');
 	let radiusKm = $state(50);
 	let selectedCategories: string[] = $state([]);
+	let filtersOpen = $state(false);
 
 	// Interactions
 	let offerTask: Task | null = $state(null);
@@ -60,6 +63,11 @@
 			.filter((m): m is { lat: number; lon: number; label: string } => m !== null)
 	);
 
+	const filterToggleLabel = $derived(filtersOpen ? 'Hide filters' : 'Show filters');
+	const resultCount = $derived(
+		filtered.length === 1 ? '1 task matches' : `${filtered.length} tasks match`
+	);
+
 	// Runs a direct backend action (close / report_success) and syncs the list.
 	function runAction(task: Task, action: 'close' | 'report_success') {
 		return actions.runAction(task, action, (msg) => (authed.error = msg));
@@ -78,54 +86,58 @@
 	}
 </script>
 
-<section class="container mx-auto px-4 py-10">
-	<h3 class="mb-6 text-4xl font-bold">Search Task</h3>
+<Page>
+	<PageHeader
+		title="Find a task"
+		lede="Requests from people near you. Offer help on any that you can take on."
+	/>
 
 	{#if authed.isLoading}
-		<p class="text-gray-600">Loading tasks…</p>
+		<p class="text-ink-soft">Loading tasks…</p>
 	{:else if authed.needsSignIn}
 		<SignInPrompt purpose="to browse tasks" />
 	{:else if authed.error}
-		<p class="text-red-600">{authed.error}</p>
+		<p class="text-danger">{authed.error}</p>
 	{:else}
-		<div class="grid gap-8 lg:grid-cols-[300px_1fr]">
-			<aside class="flex flex-col gap-6">
-				<div class="flex flex-col gap-2">
-					<label class="text-sm font-medium text-gray-700" for="search-address">Location</label>
+		<div class="grid items-start gap-x-12 gap-y-9 lg:grid-cols-[15.5rem_minmax(0,1fr)]">
+			<aside>
+				<div class="lg:hidden">
+					<Button onclick={() => (filtersOpen = !filtersOpen)}>{filterToggleLabel}</Button>
+				</div>
+				<div class={['grid gap-6 max-lg:pt-5', !filtersOpen && 'max-lg:hidden']}>
 					<!-- TODO: backend — no geocoding endpoint; filtering is measured from Valencia
 					     regardless of what is typed here. -->
-					<input
-						id="search-address"
-						type="text"
-						bind:value={searchAddress}
-						placeholder="Search an address…"
-						class="w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-					/>
-				</div>
+					<TextField label="Location" bind:value={searchAddress} placeholder="Search an address…" />
 
-				<div class="flex flex-col gap-2">
-					<label class="text-sm font-medium text-gray-700" for="radius">
-						Radius: {radiusKm} km
-					</label>
-					<input id="radius" type="range" min="1" max="100" bind:value={radiusKm} class="w-full" />
-				</div>
+					<div>
+						<label class="mb-1 block font-semibold" for="radius">Within {radiusKm} km</label>
+						<input
+							id="radius"
+							type="range"
+							min="1"
+							max="100"
+							bind:value={radiusKm}
+							class="w-full accent-navy"
+						/>
+					</div>
 
-				<CategoryCheckboxes bind:selected={selectedCategories} />
+					<CategoryCheckboxes bind:selected={selectedCategories} />
+				</div>
 			</aside>
 
-			<div class="flex flex-col gap-6">
+			<div class="min-w-0">
 				<HomeMap {markers} />
 
+				<h2 class="mt-7 border-b-2 border-ink pb-2.5 font-bold">{resultCount}</h2>
 				{#if filtered.length === 0}
-					<p class="text-gray-600">No tasks match your filters.</p>
+					<p class="pt-4 text-ink-soft">No tasks match your filters.</p>
 				{:else}
-					<div class="grid gap-4 sm:grid-cols-2">
+					<ul>
 						{#each filtered as task (task.id)}
 							<TaskCard
 								{task}
 								{currentUserId}
 								busy={actions.busy}
-								onSeeMore={() => goto(resolve('/tasks/[id]', { id: String(task.id) }))}
 								onOfferHelp={() => {
 									actionError = null;
 									offerTask = task;
@@ -141,12 +153,12 @@
 								onCancel={() => runAction(task, 'close')}
 							/>
 						{/each}
-					</div>
+					</ul>
 				{/if}
 			</div>
 		</div>
 	{/if}
-</section>
+</Page>
 
 {#if offerTask}
 	<OfferHelpModal

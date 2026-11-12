@@ -29,8 +29,8 @@ describe('TaskActionsBar', () => {
 		expect(screen.getByText('Remove')).toBeInTheDocument();
 	});
 
-	it('hides See more when asked', () => {
-		render(TaskActionsBar, { task, permission: 'owner', hideSeeMore: true });
+	it('leaves out the actions it is asked to omit', () => {
+		render(TaskActionsBar, { task, permission: 'owner', omit: ['see-more'] });
 
 		expect(screen.queryByText('See more')).not.toBeInTheDocument();
 		expect(screen.getByText('Edit')).toBeInTheDocument();

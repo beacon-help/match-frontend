@@ -2,6 +2,7 @@
 	import type { Task } from '$lib/types/task';
 	import Modal from '$lib/components/Modal.svelte';
 	import Button from '$lib/components/Button.svelte';
+	import Inset from '$lib/components/Inset.svelte';
 
 	interface Props {
 		task: Task;
@@ -28,28 +29,26 @@
 </script>
 
 <Modal title="Review request" {onClose}>
-	<p class="mb-2 text-sm text-gray-600">
-		<span class="font-medium">{helperName}</span> offered to help with
-		<span class="font-medium">{task.title}</span>.
+	<p class="mb-3 text-ink-soft">
+		<span class="font-semibold text-ink">{helperName}</span> offered to help with
+		<span class="font-semibold text-ink">{task.title}</span>.
 	</p>
 
-	<div class="mb-4 rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700">
-		{message ?? 'No message was provided.'}
-	</div>
+	<Inset>{message ?? 'No message was provided.'}</Inset>
 
 	<!-- TODO: backend — phone numbers are not exposed by the API. -->
-	<p class="mb-4 text-xs text-gray-500">
+	<p class="mt-3 mb-5 text-base text-ink-soft">
 		If you accept, you'll be able to share contact details to coordinate.
 	</p>
 
 	{#if error}
-		<p class="mb-3 text-sm text-red-600">{error}</p>
+		<p class="mb-3 text-base text-danger">{error}</p>
 	{/if}
 
-	<div class="flex justify-end gap-3">
-		<Button variant="neutral" disabled={isSubmitting} onclick={onReject}>Reject</Button>
+	<div class="flex flex-wrap gap-3">
 		<Button variant="primary" disabled={isSubmitting} onclick={onAccept}>
 			{isSubmitting ? 'Working…' : 'Accept'}
 		</Button>
+		<Button variant="neutral" disabled={isSubmitting} onclick={onReject}>Reject</Button>
 	</div>
 </Modal>

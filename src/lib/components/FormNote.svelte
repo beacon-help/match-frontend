@@ -8,11 +8,12 @@
 	let { note }: Props = $props();
 
 	const toneClasses: Record<NoteTone, string> = {
-		muted: 'text-gray-500',
-		dirty: 'font-medium text-amber-700',
-		error: 'font-medium text-red-600',
-		ok: 'font-medium text-green-700'
+		muted: 'text-ink-soft',
+		dirty: 'font-semibold text-wait',
+		error: 'font-semibold text-danger',
+		ok: 'font-semibold text-ok'
 	};
 </script>
 
-<span role="status" class={['mr-auto text-sm', note && toneClasses[note.tone]]}>{note?.text}</span>
+<span role="status" class={['mr-auto text-base', note && toneClasses[note.tone]]}>{note?.text}</span
+>

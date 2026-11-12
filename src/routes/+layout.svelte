@@ -8,6 +8,7 @@
 	import { onServerUnreachable } from '$lib/api/client';
 	import { shouldShowUnavailable } from '$lib/api/availability';
 	import Header from '$lib/components/Header.svelte';
+	import Footer from '$lib/components/Footer.svelte';
 	import { ensureSession } from '$lib/auth/session.svelte';
 
 	interface Props {
@@ -31,5 +32,10 @@
 	});
 </script>
 
-<Header />
-{@render children()}
+<div class="flex min-h-screen flex-col">
+	<Header />
+	<div class="flex-1">
+		{@render children()}
+	</div>
+	<Footer />
+</div>

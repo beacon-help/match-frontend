@@ -27,7 +27,7 @@
 	}}
 >
 	<div
-		class="relative w-full max-w-lg rounded-2xl border border-gray-200 bg-white p-6 shadow-xl"
+		class="relative max-h-full w-full max-w-lg overflow-y-auto border border-line bg-white p-5 shadow-lg sm:p-6"
 		role="dialog"
 		aria-modal="true"
 		aria-label={title ?? 'Dialog'}
@@ -35,7 +35,7 @@
 	>
 		<div class="mb-4 flex items-center justify-between gap-4">
 			{#if title}
-				<h2 class="text-xl font-bold text-gray-800">{title}</h2>
+				<h2 class="text-2xl font-bold">{title}</h2>
 			{:else}
 				<span></span>
 			{/if}
@@ -43,7 +43,7 @@
 				type="button"
 				onclick={onClose}
 				aria-label="Close"
-				class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100"
+				class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xs text-ink-soft hover:bg-fill hover:text-ink"
 			>
 				<svg class="h-5 w-5" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
 					<path d="M5 5l10 10M15 5L5 15" stroke-linecap="round" />
