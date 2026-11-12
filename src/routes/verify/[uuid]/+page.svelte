@@ -4,6 +4,8 @@
 	import { resolve } from '$app/paths';
 	import { verifyUser } from '$lib/api/user';
 	import { describeApiError } from '$lib/api/client';
+	import Page from '$lib/components/Page.svelte';
+	import PageHeader from '$lib/components/PageHeader.svelte';
 
 	const uuid = page.params.uuid ?? '';
 
@@ -21,21 +23,19 @@
 	});
 </script>
 
-<section
-	class="mx-auto flex min-h-[calc(100vh-106px)] max-w-md flex-col items-center justify-center px-4 text-center"
->
+<Page>
 	{#if isLoading}
-		<p class="text-gray-600">Verifying your account…</p>
+		<p class="text-ink-soft">Verifying your account…</p>
 	{:else if error}
-		<h3 class="mb-2 text-2xl font-bold text-gray-900">Verification failed</h3>
-		<p class="text-red-600">{error}</p>
+		<PageHeader title="Verification failed" />
+		<p class="text-danger">{error}</p>
 	{:else}
-		<h3 class="mb-2 text-2xl font-bold text-gray-900">Account verified</h3>
-		<p class="text-gray-600">
+		<PageHeader title="Account verified" />
+		<p>
 			Your account has been verified. You can now <a
 				href={resolve('/login')}
-				class="font-medium text-blue-600 hover:text-blue-700">sign in</a
+				class="text-navy underline hover:text-navy-dark">sign in</a
 			>.
 		</p>
 	{/if}
-</section>
+</Page>

@@ -8,8 +8,8 @@
 	interface Props {
 		task: Task;
 		permission: TaskPermission;
-		/** Hide the "See more" button (e.g. on the detail page, which is already "more"). */
-		hideSeeMore?: boolean;
+		/** Actions the surrounding page already offers another way. */
+		omit?: TaskActionKind[];
 		/** Disables every button while an action is in flight. */
 		busy?: boolean;
 		onSeeMore?: () => void;
@@ -26,7 +26,7 @@
 	let {
 		task,
 		permission,
-		hideSeeMore = false,
+		omit = [],
 		busy = false,
 		onSeeMore,
 		onEdit,
@@ -55,11 +55,11 @@
 	});
 
 	const specs = $derived(
-		taskActions(task.status, permission).filter((s) => !(hideSeeMore && s.kind === 'see-more'))
+		taskActions(task.status, permission).filter((s) => !omit.includes(s.kind))
 	);
 </script>
 
-<div class="flex flex-wrap items-center gap-4">
+<div class="flex flex-wrap items-center gap-2">
 	{#each specs as spec (spec.kind)}
 		<Button
 			variant={spec.variant}

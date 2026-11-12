@@ -1,0 +1,1537 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Match Valencia — Direction A, warm editorial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+	href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Public+Sans:wght@400;500;600&display=swap"
+	rel="stylesheet"
+/>
+<style>
+	:root {
+		--paper: #f6f2ea;
+		--surface: #fffdf8;
+		--ink: #1e2926;
+		--ink-2: #4f5b56;
+		--ink-3: #68726c;
+		--line: #ded6c6;
+		--line-soft: #eae4d7;
+		--pine: #1f4d43;
+		--pine-deep: #163a32;
+		--pine-tint: #e2ebe5;
+		--clay: #a84e2c;
+		--clay-tint: #f4e4d9;
+		--ochre: #76570f;
+		--ochre-tint: #f3e9cc;
+		--slate: #2c5470;
+		--slate-tint: #e0e9ef;
+		--stone-tint: #ebe6da;
+		--serif: 'Newsreader', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+		--sans: 'Public Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+		--wrap: 1120px;
+	}
+
+	*,
+	*::before,
+	*::after {
+		box-sizing: border-box;
+	}
+	html {
+		-webkit-text-size-adjust: 100%;
+	}
+	body {
+		margin: 0;
+		background: var(--paper);
+		color: var(--ink);
+		font: 400 17px/1.6 var(--sans);
+		-webkit-font-smoothing: antialiased;
+	}
+	h1,
+	h2,
+	h3,
+	p,
+	dl,
+	dd,
+	ul,
+	ol,
+	figure {
+		margin: 0;
+		padding: 0;
+	}
+	ul,
+	ol {
+		list-style: none;
+	}
+	a {
+		color: inherit;
+	}
+	[hidden] {
+		display: none !important;
+	}
+	:focus-visible {
+		outline: 3px solid var(--pine);
+		outline-offset: 3px;
+		border-radius: 4px;
+	}
+
+	/* ---------- Mockup chrome (not part of the design) ---------- */
+	.mock-bar {
+		position: sticky;
+		top: 0;
+		z-index: 50;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 6px 18px;
+		padding: 8px 16px;
+		background: #23262b;
+		color: #c9cdd3;
+		font: 500 13px/1.4 var(--sans);
+	}
+	.mock-bar strong {
+		color: #fff;
+		font-weight: 600;
+	}
+	.mock-bar nav {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 4px;
+		margin-right: auto;
+	}
+	.mock-bar a {
+		padding: 4px 10px;
+		border-radius: 6px;
+		color: #c9cdd3;
+		text-decoration: none;
+	}
+	.mock-bar a:hover {
+		background: #33373e;
+		color: #fff;
+	}
+	.mock-bar a[aria-current='page'] {
+		background: #fff;
+		color: #23262b;
+	}
+	.mock-bar .other {
+		border: 1px solid #4a4f58;
+	}
+
+	/* ---------- Layout ---------- */
+	.wrap {
+		width: 100%;
+		max-width: var(--wrap);
+		margin: 0 auto;
+		padding: 0 24px;
+	}
+	.page {
+		padding-top: 48px;
+		padding-bottom: 88px;
+	}
+
+	/* ---------- Header ---------- */
+	.site-header {
+		border-bottom: 1px solid var(--line);
+		background: var(--paper);
+	}
+	.site-header .wrap {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 16px;
+		min-height: 76px;
+	}
+	.brand {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		text-decoration: none;
+	}
+	.brand svg {
+		width: 38px;
+		height: 38px;
+		flex: none;
+	}
+	.brand-name {
+		font: 500 1.35rem/1 var(--serif);
+		letter-spacing: -0.01em;
+	}
+	.brand-role {
+		padding-left: 12px;
+		border-left: 1px solid var(--line);
+		color: var(--ink-2);
+		font-size: 0.9rem;
+	}
+	.site-nav {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+	}
+	.nav-link {
+		padding: 10px 14px;
+		border-radius: 8px;
+		font-weight: 500;
+		font-size: 0.97rem;
+		text-decoration: none;
+		white-space: nowrap;
+	}
+	.nav-link:hover {
+		background: var(--line-soft);
+	}
+	.nav-link[aria-current='page'] {
+		box-shadow: inset 0 -2px 0 var(--pine);
+		border-radius: 0;
+		color: var(--pine);
+	}
+	.avatar {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 40px;
+		height: 40px;
+		margin-left: 8px;
+		border-radius: 50%;
+		background: var(--pine);
+		color: #fff;
+		font-weight: 600;
+		font-size: 0.85rem;
+		letter-spacing: 0.02em;
+	}
+
+	/* ---------- Buttons ---------- */
+	.btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		min-height: 44px;
+		padding: 0 18px;
+		border: 1px solid transparent;
+		border-radius: 8px;
+		background: none;
+		color: var(--ink);
+		font: 600 0.95rem/1 var(--sans);
+		text-decoration: none;
+		white-space: nowrap;
+		cursor: pointer;
+		transition:
+			background-color 0.15s,
+			border-color 0.15s;
+	}
+	.btn--primary {
+		background: var(--pine);
+		color: #fff;
+	}
+	.btn--primary:hover {
+		background: var(--pine-deep);
+	}
+	.btn--quiet {
+		border-color: var(--line);
+		background: var(--surface);
+	}
+	.btn--quiet:hover {
+		border-color: var(--ink-3);
+	}
+	.btn--plain {
+		padding: 0 6px;
+		color: var(--ink-2);
+		font-weight: 500;
+		text-decoration: underline;
+		text-decoration-color: var(--line);
+		text-underline-offset: 4px;
+	}
+	.btn--plain:hover {
+		color: var(--ink);
+		text-decoration-color: currentColor;
+	}
+	.btn--lg {
+		min-height: 52px;
+		padding: 0 24px;
+		font-size: 1.02rem;
+	}
+
+	/* ---------- Type helpers ---------- */
+	.eyebrow {
+		color: var(--ink-2);
+		font-weight: 600;
+		font-size: 0.78rem;
+		letter-spacing: 0.09em;
+		text-transform: uppercase;
+	}
+	.h-page {
+		font: 500 clamp(2rem, 3.6vw, 2.75rem) / 1.12 var(--serif);
+		letter-spacing: -0.015em;
+		text-wrap: balance;
+	}
+	.h-section {
+		font: 500 1.75rem/1.2 var(--serif);
+		letter-spacing: -0.01em;
+	}
+	.muted {
+		color: var(--ink-2);
+	}
+	.prose p + p {
+		margin-top: 1em;
+	}
+	.rule {
+		height: 1px;
+		border: 0;
+		margin: 0;
+		background: var(--line);
+	}
+
+	/* ---------- Status ---------- */
+	.status {
+		display: inline-flex;
+		align-items: center;
+		gap: 7px;
+		padding: 5px 12px 5px 10px;
+		border-radius: 999px;
+		font-weight: 600;
+		font-size: 0.82rem;
+		line-height: 1.3;
+		white-space: nowrap;
+	}
+	.status::before {
+		content: '';
+		width: 7px;
+		height: 7px;
+		border-radius: 50%;
+		background: currentColor;
+	}
+	.status--open {
+		background: var(--pine-tint);
+		color: var(--pine);
+	}
+	.status--pending {
+		background: var(--ochre-tint);
+		color: var(--ochre);
+	}
+	.status--progress {
+		background: var(--slate-tint);
+		color: var(--slate);
+	}
+	.status--done {
+		background: var(--pine);
+		color: #fff;
+	}
+	.status--closed {
+		background: var(--stone-tint);
+		color: var(--ink-2);
+	}
+
+	/* ---------- Map (static stand-in for Leaflet) ---------- */
+	.map {
+		position: relative;
+		overflow: hidden;
+		border: 1px solid var(--line);
+		border-radius: 10px;
+		background: #efe8da;
+	}
+	.map svg {
+		display: block;
+		width: 100%;
+		height: auto;
+	}
+	.map-note {
+		position: absolute;
+		left: 12px;
+		bottom: 12px;
+		padding: 5px 10px;
+		border-radius: 6px;
+		background: rgba(255, 253, 248, 0.92);
+		color: var(--ink-2);
+		font-size: 0.78rem;
+	}
+	.pin {
+		fill: var(--pine);
+	}
+	.pin--self {
+		fill: var(--clay);
+	}
+
+	/* ---------- Home ---------- */
+	.hero {
+		padding: 72px 0 56px;
+	}
+	.hero h1 {
+		max-width: 21ch;
+		margin-top: 18px;
+		font: 500 clamp(2.3rem, 5vw, 3.9rem) / 1.08 var(--serif);
+		letter-spacing: -0.02em;
+		text-wrap: balance;
+	}
+	.hero h1 em {
+		color: var(--pine);
+		font-style: normal;
+	}
+	.hero .lede {
+		max-width: 52ch;
+		margin-top: 22px;
+		color: var(--ink-2);
+		font-size: 1.18rem;
+	}
+	.doors {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 20px;
+		margin-top: 40px;
+	}
+	.door {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		padding: 26px 28px 24px;
+		border: 1px solid var(--line);
+		border-top: 3px solid var(--pine);
+		border-radius: 4px 4px 10px 10px;
+		background: var(--surface);
+		text-decoration: none;
+		transition: border-color 0.15s;
+	}
+	.door:hover {
+		border-color: var(--ink-3);
+		border-top-color: var(--pine);
+	}
+	.door--need {
+		border-top-color: var(--clay);
+	}
+	.door--need:hover {
+		border-top-color: var(--clay);
+	}
+	.door strong {
+		font: 500 1.7rem/1.15 var(--serif);
+		letter-spacing: -0.01em;
+	}
+	.door span {
+		color: var(--ink-2);
+	}
+	.door .go {
+		margin-top: 10px;
+		color: var(--pine);
+		font-weight: 600;
+		font-size: 0.97rem;
+	}
+	.door--need .go {
+		color: var(--clay);
+	}
+	.live {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		margin-top: 24px;
+		color: var(--ink-2);
+		font-size: 0.95rem;
+	}
+	.live i {
+		width: 9px;
+		height: 9px;
+		border-radius: 50%;
+		background: var(--pine);
+		box-shadow: 0 0 0 4px var(--pine-tint);
+	}
+	.assurances {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		border-top: 1px solid var(--line);
+		border-bottom: 1px solid var(--line);
+	}
+	.assurances li {
+		padding: 22px 28px;
+		font-size: 0.97rem;
+		color: var(--ink-2);
+	}
+	.assurances li + li {
+		border-left: 1px solid var(--line);
+	}
+	.assurances li:first-child {
+		padding-left: 0;
+	}
+	.assurances b {
+		display: block;
+		color: var(--ink);
+		font: 500 1.15rem/1.3 var(--serif);
+	}
+	.story {
+		display: grid;
+		grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.15fr);
+		gap: 56px;
+		align-items: start;
+		padding: 72px 0;
+	}
+	.story .prose {
+		margin-top: 18px;
+		font-size: 1.06rem;
+		line-height: 1.7;
+	}
+	.story figcaption {
+		margin-top: 10px;
+		color: var(--ink-2);
+		font-size: 0.9rem;
+	}
+	.steps {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		gap: 32px;
+		margin-top: 32px;
+	}
+	.steps li {
+		padding-top: 18px;
+		border-top: 1px solid var(--ink);
+	}
+	.steps .n {
+		display: block;
+		color: var(--pine);
+		font: 400 2.2rem/1 var(--serif);
+	}
+	.steps b {
+		display: block;
+		margin-top: 12px;
+		font: 500 1.2rem/1.3 var(--serif);
+	}
+	.steps p {
+		margin-top: 6px;
+		color: var(--ink-2);
+		font-size: 0.97rem;
+	}
+	.site-footer {
+		border-top: 1px solid var(--line);
+		background: var(--surface);
+	}
+	.site-footer .wrap {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		gap: 16px 40px;
+		padding-top: 36px;
+		padding-bottom: 44px;
+		color: var(--ink-2);
+		font-size: 0.93rem;
+	}
+	.site-footer p {
+		max-width: 46ch;
+	}
+	.link {
+		color: var(--pine);
+		font-weight: 500;
+		text-underline-offset: 4px;
+	}
+
+	/* ---------- Page heads ---------- */
+	.page-head {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: end;
+		justify-content: space-between;
+		gap: 16px;
+		margin-bottom: 32px;
+	}
+	.page-head p {
+		margin-top: 8px;
+		color: var(--ink-2);
+	}
+
+	/* ---------- Search ---------- */
+	.search {
+		display: grid;
+		grid-template-columns: 270px minmax(0, 1fr);
+		gap: 48px;
+		align-items: start;
+	}
+	.filters {
+		display: grid;
+		gap: 28px;
+	}
+	.filters fieldset {
+		margin: 0;
+		padding: 0;
+		border: 0;
+	}
+	.filters legend,
+	.label {
+		display: block;
+		margin-bottom: 8px;
+		padding: 0;
+		font-weight: 600;
+		font-size: 0.92rem;
+	}
+	.checks {
+		display: grid;
+		gap: 2px;
+	}
+	.checks label {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		min-height: 38px;
+		cursor: pointer;
+	}
+	input[type='checkbox'] {
+		width: 19px;
+		height: 19px;
+		margin: 0;
+		accent-color: var(--pine);
+	}
+	input[type='range'] {
+		width: 100%;
+		accent-color: var(--pine);
+	}
+	.results-bar {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		margin: 28px 0 14px;
+		padding-bottom: 12px;
+		border-bottom: 1px solid var(--line);
+	}
+	.results-bar b {
+		font: 500 1.25rem/1.3 var(--serif);
+	}
+	.cards {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 18px;
+	}
+	.card {
+		display: flex;
+		flex-direction: column;
+		gap: 14px;
+		padding: 22px 24px;
+		border: 1px solid var(--line);
+		border-radius: 10px;
+		background: var(--surface);
+	}
+	.card-top {
+		display: flex;
+		align-items: start;
+		justify-content: space-between;
+		gap: 12px;
+	}
+	.card h3 {
+		font: 500 1.3rem/1.25 var(--serif);
+		letter-spacing: -0.005em;
+	}
+	.place {
+		display: flex;
+		gap: 7px;
+		align-items: start;
+		color: var(--ink-2);
+		font-size: 0.93rem;
+	}
+	.place svg {
+		flex: none;
+		width: 15px;
+		height: 15px;
+		margin-top: 4px;
+	}
+	.card-actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 8px;
+		margin-top: auto;
+		padding-top: 4px;
+	}
+
+	/* ---------- Fields ---------- */
+	.field {
+		display: block;
+	}
+	.input,
+	select.input,
+	textarea.input {
+		width: 100%;
+		min-height: 46px;
+		padding: 10px 14px;
+		border: 1px solid #c9bfab;
+		border-radius: 8px;
+		background: var(--surface);
+		color: var(--ink);
+		font: inherit;
+	}
+	textarea.input {
+		min-height: 132px;
+		resize: vertical;
+		line-height: 1.55;
+	}
+	.input::placeholder {
+		color: #8b9089;
+	}
+	.input:focus {
+		outline: 3px solid var(--pine-tint);
+		border-color: var(--pine);
+	}
+	.hint {
+		margin-top: 6px;
+		color: var(--ink-2);
+		font-size: 0.88rem;
+	}
+	.field--error .input {
+		border-color: var(--clay);
+	}
+	.error {
+		margin-top: 6px;
+		color: var(--clay);
+		font-weight: 500;
+		font-size: 0.88rem;
+	}
+
+	/* ---------- Task detail ---------- */
+	.back {
+		display: inline-block;
+		margin-bottom: 22px;
+		color: var(--ink-2);
+		font-size: 0.93rem;
+		text-underline-offset: 4px;
+	}
+	.detail {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) 340px;
+		gap: 56px;
+		align-items: start;
+	}
+	.detail-head {
+		display: flex;
+		align-items: start;
+		justify-content: space-between;
+		gap: 16px;
+		margin-top: 10px;
+	}
+	.next-step {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 16px;
+		margin: 28px 0;
+		padding: 20px 24px;
+		border-left: 3px solid var(--pine);
+		border-radius: 2px 10px 10px 2px;
+		background: var(--pine-tint);
+	}
+	.next-step b {
+		display: block;
+		font: 500 1.25rem/1.3 var(--serif);
+	}
+	.next-step p {
+		color: var(--ink-2);
+		font-size: 0.97rem;
+	}
+	.photos {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 12px;
+		margin-top: 12px;
+	}
+	.photo {
+		display: flex;
+		align-items: end;
+		aspect-ratio: 3/2;
+		padding: 10px 12px;
+		border-radius: 8px;
+		background: linear-gradient(160deg, #d9d2c2, #c5bdaa);
+		color: #5f5a4d;
+		font-size: 0.78rem;
+	}
+	.description {
+		margin-top: 28px;
+		font-size: 1.08rem;
+		line-height: 1.7;
+	}
+	.facts {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 0 32px;
+		margin-top: 28px;
+		border-top: 1px solid var(--line);
+	}
+	.facts div {
+		padding: 14px 0;
+		border-bottom: 1px solid var(--line-soft);
+	}
+	.facts dt {
+		color: var(--ink-2);
+		font-size: 0.85rem;
+	}
+	.facts dd {
+		font-weight: 500;
+	}
+	.detail-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		margin-top: 28px;
+	}
+	.activity {
+		padding: 26px 26px 10px;
+		border: 1px solid var(--line);
+		border-radius: 10px;
+		background: var(--surface);
+	}
+	.timeline {
+		margin-top: 20px;
+	}
+	.timeline li {
+		position: relative;
+		padding: 0 0 24px 26px;
+	}
+	.timeline li::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 7px;
+		width: 9px;
+		height: 9px;
+		border: 2px solid var(--pine);
+		border-radius: 50%;
+		background: var(--surface);
+	}
+	.timeline li::after {
+		content: '';
+		position: absolute;
+		left: 4px;
+		top: 20px;
+		bottom: 0;
+		width: 1px;
+		background: var(--line);
+	}
+	.timeline li:last-child::after {
+		display: none;
+	}
+	.timeline li:last-child::before {
+		background: var(--pine);
+	}
+	.timeline time {
+		display: block;
+		color: var(--ink-2);
+		font-size: 0.82rem;
+	}
+	.timeline blockquote {
+		margin: 8px 0 0;
+		padding-left: 14px;
+		border-left: 2px solid var(--line);
+		color: var(--ink-2);
+		font: italic 400 1.02rem/1.5 var(--serif);
+	}
+
+	/* ---------- Create task ---------- */
+	.compose {
+		display: grid;
+		grid-template-columns: minmax(0, 620px) minmax(0, 320px);
+		gap: 72px;
+		align-items: start;
+	}
+	.form {
+		display: grid;
+		gap: 24px;
+	}
+	.dropzone {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 4px;
+		padding: 26px;
+		border: 1px dashed #b9ae98;
+		border-radius: 8px;
+		color: var(--ink-2);
+		font-size: 0.93rem;
+		text-align: center;
+	}
+	.dropzone b {
+		color: var(--pine);
+		font-weight: 600;
+		text-decoration: underline;
+		text-underline-offset: 4px;
+	}
+	.form-actions {
+		display: flex;
+		justify-content: flex-end;
+		gap: 10px;
+		padding-top: 24px;
+		border-top: 1px solid var(--line);
+	}
+	.aside-note {
+		padding-top: 18px;
+		border-top: 1px solid var(--ink);
+	}
+	.aside-note h2 {
+		font: 500 1.3rem/1.3 var(--serif);
+	}
+	.aside-note ol {
+		display: grid;
+		gap: 16px;
+		margin-top: 18px;
+		counter-reset: n;
+	}
+	.aside-note ol li {
+		position: relative;
+		padding-left: 36px;
+		color: var(--ink-2);
+		font-size: 0.97rem;
+		counter-increment: n;
+	}
+	.aside-note ol li::before {
+		content: counter(n);
+		position: absolute;
+		left: 0;
+		top: -4px;
+		color: var(--pine);
+		font: 400 1.6rem/1.2 var(--serif);
+	}
+	.aside-note .small {
+		margin-top: 24px;
+		padding-top: 18px;
+		border-top: 1px solid var(--line);
+		color: var(--ink-2);
+		font-size: 0.92rem;
+	}
+
+	/* ---------- My tasks ---------- */
+	.rows {
+		border-top: 1px solid var(--ink);
+	}
+	.row {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		gap: 12px 32px;
+		align-items: center;
+		padding: 26px 0;
+		border-bottom: 1px solid var(--line);
+	}
+	.row h2 {
+		margin-top: 10px;
+		font: 500 1.45rem/1.25 var(--serif);
+		letter-spacing: -0.005em;
+	}
+	.row p {
+		max-width: 62ch;
+		margin-top: 4px;
+		color: var(--ink-2);
+	}
+	.row-actions {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: flex-end;
+		gap: 8px;
+	}
+
+	/* ---------- Responsive ---------- */
+	@media (max-width: 920px) {
+		.story,
+		.search,
+		.detail,
+		.compose {
+			grid-template-columns: minmax(0, 1fr);
+			gap: 36px;
+		}
+		.steps {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+	@media (max-width: 640px) {
+		body {
+			font-size: 16px;
+		}
+		.wrap {
+			padding: 0 18px;
+		}
+		.hero {
+			padding: 44px 0 40px;
+		}
+		.doors,
+		.cards,
+		.assurances,
+		.facts,
+		.row {
+			grid-template-columns: minmax(0, 1fr);
+		}
+		.assurances li {
+			padding: 16px 0;
+		}
+		.assurances li + li {
+			border-left: 0;
+			border-top: 1px solid var(--line);
+		}
+		.row-actions {
+			justify-content: flex-start;
+		}
+		.brand-name,
+		.brand-role {
+			display: none;
+		}
+		.nav-link {
+			padding: 10px;
+		}
+		.form-actions .btn {
+			flex: 1;
+		}
+	}
+</style>
+</head>
+<body>
+<!-- Shared SVG: the map base stands in for the live Leaflet map -->
+<svg width="0" height="0" style="position: absolute" aria-hidden="true">
+	<symbol id="map-base" viewBox="0 0 800 480">
+		<rect width="800" height="480" fill="#efe8da" />
+		<path d="M0 0h240c-30 60-90 80-140 150S40 300 0 330z" fill="#e6dfcd" />
+		<path d="M260 480c20-50 90-70 150-60s110 30 150 60z" fill="#e6dfcd" />
+		<path d="M628 0c-22 110 44 230 16 480h156V0z" fill="#d6e2e0" />
+		<ellipse cx="584" cy="214" rx="20" ry="40" fill="#d6e2e0" />
+		<path d="M0 78c120-10 260 30 400 24s170 10 232 8" fill="none" stroke="#cbdad8" stroke-width="7" stroke-linecap="round" />
+		<path d="M120 480c40-70 150-110 260-128s190 10 266 4" fill="none" stroke="#cbdad8" stroke-width="7" stroke-linecap="round" />
+		<g fill="none" stroke="#fffdf8" stroke-width="4" stroke-linecap="round">
+			<path d="M0 190c140-20 300-60 520-80" />
+			<path d="M520 110c-30 80-50 150-70 220s-20 100-30 150" />
+			<path d="M440 140c-80 30-200 40-300 110S60 420 20 480" />
+			<path d="M450 330c-110 0-250 20-450 40" />
+			<path d="M520 110c30 60 60 150 80 370" />
+		</g>
+		<g fill="#6f6a5c" font-size="13" font-weight="500">
+			<circle cx="520" cy="110" r="5" fill="#8d8776" />
+			<text x="532" y="100">València</text>
+			<text x="366" y="134">Torrent</text>
+			<text x="466" y="322">Alzira</text>
+			<text x="330" y="398">Carcaixent</text>
+		</g>
+		<text x="662" y="250" fill="#7e9a9b" font-size="15" font-style="italic" font-family="Newsreader, Georgia, serif">Mediterranean</text>
+	</symbol>
+	<symbol id="pin" viewBox="-14 -36 28 38" overflow="visible">
+		<path d="M0 0c-6-9-12-14-12-22a12 12 0 1 1 24 0c0 8-6 13-12 22z" stroke="#fffdf8" stroke-width="2" />
+		<circle cy="-22" r="4.5" fill="#fffdf8" />
+	</symbol>
+	<symbol id="i-pin" viewBox="0 0 16 16">
+		<path d="M8 14.5c-2.6-3-4.5-5.1-4.5-7.6a4.5 4.5 0 0 1 9 0c0 2.5-1.9 4.6-4.5 7.6z" fill="none" stroke="currentColor" stroke-width="1.4" />
+		<circle cx="8" cy="6.8" r="1.6" fill="currentColor" />
+	</symbol>
+	<symbol id="logo" viewBox="0 0 40 40">
+		<circle cx="15" cy="20" r="11" fill="none" stroke="#1f4d43" stroke-width="2.6" />
+		<circle cx="25" cy="20" r="11" fill="none" stroke="#a84e2c" stroke-width="2.6" />
+	</symbol>
+</svg>
+
+<div class="mock-bar">
+	<span><strong>Direction A</strong> · Warm editorial · sample data</span>
+	<nav aria-label="Mockup screens">
+		<a href="#home">Home</a>
+		<a href="#search">Find a task</a>
+		<a href="#task">Task</a>
+		<a href="#create">Ask for help</a>
+		<a href="#mine">My tasks</a>
+	</nav>
+	<a class="other" href="design-b-calm-civic.html">Direction B →</a>
+</div>
+
+<!-- ================================================= HOME -->
+<div data-screen="home">
+	<header class="site-header">
+		<div class="wrap">
+			<a class="brand" href="#home">
+				<svg aria-hidden="true"><use href="#logo" /></svg>
+				<span class="brand-name">Match Valencia</span>
+			</a>
+			<nav class="site-nav">
+				<a class="nav-link" href="#home">Mission</a>
+				<a class="nav-link" href="#home">Sign in</a>
+				<a class="btn btn--primary" href="#home">Register</a>
+			</nav>
+		</div>
+	</header>
+
+	<main>
+		<div class="wrap">
+			<section class="hero">
+				<p class="eyebrow">Valencia · after the DANA</p>
+				<h1><em>128 requests</em> for help completed — and <em>342 volunteers</em> ready for the next one.</h1>
+				<p class="lede">
+					96 people have asked for help here so far — cleanup, food, repairs, a lift and more.
+				</p>
+
+				<div class="doors">
+					<a class="door door--need" href="#create">
+						<strong>I need help</strong>
+						<span>Post what you need. A volunteer nearby can pick it up.</span>
+						<span class="go">Ask for help →</span>
+					</a>
+					<a class="door" href="#search">
+						<strong>I want to help</strong>
+						<span>See what your neighbours need, and offer what you can.</span>
+						<span class="go">Find a task →</span>
+					</a>
+				</div>
+
+				<p class="live"><i aria-hidden="true"></i>17 tasks underway right now</p>
+			</section>
+
+			<ul class="assurances">
+				<li><b>Free for everyone, always</b>Help seekers never pay. Volunteers are never paid.</li>
+				<li><b>Run by volunteers</b>A small team of volunteers and developers from Valencia.</li>
+				<li><b>Not a company</b>No ads, and nothing to sell.</li>
+			</ul>
+
+			<section class="story">
+				<div>
+					<p class="eyebrow">What happened</p>
+					<h2 class="h-section" style="margin-top: 10px">Torrential rain, flash floods, and neighbours left to recover.</h2>
+					<div class="prose">
+						<p>
+							On November 4, 2025, the city of Valencia experienced a severe weather event that
+							brought torrential rain, flash floods, and widespread damage across urban and rural
+							areas. The storm disrupted transportation, flooded homes, and affected essential
+							infrastructure.
+						</p>
+						<p>
+							The most affected areas include the municipalities of <strong>Torrent</strong>,
+							<strong>Alzira</strong>, and <strong>Carcaixent</strong>. Rescue and recovery
+							operations remain ongoing as local communities work to restore normal conditions.
+						</p>
+					</div>
+				</div>
+				<figure>
+					<div class="map">
+						<svg viewBox="0 0 800 480" role="img" aria-label="Map of open requests around Valencia">
+							<use href="#map-base" width="800" height="480" />
+							<g class="pin">
+								<use href="#pin" x="428" y="150" width="28" height="38" />
+								<use href="#pin" x="404" y="170" width="28" height="38" />
+								<use href="#pin" x="458" y="176" width="28" height="38" />
+								<use href="#pin" x="436" y="336" width="28" height="38" />
+								<use href="#pin" x="470" y="352" width="28" height="38" />
+								<use href="#pin" x="414" y="382" width="28" height="38" />
+								<use href="#pin" x="500" y="128" width="28" height="38" />
+							</g>
+						</svg>
+					</div>
+					<figcaption>Open requests across the affected area.</figcaption>
+				</figure>
+			</section>
+
+			<hr class="rule" />
+
+			<section style="padding: 64px 0 24px">
+				<p class="eyebrow">How it works</p>
+				<h2 class="h-section" style="margin-top: 10px">Small tasks, finished, add up.</h2>
+				<ol class="steps">
+					<li><span class="n">1</span><b>Post a task</b><p>One concrete need, with a place on the map.</p></li>
+					<li><span class="n">2</span><b>A volunteer offers</b><p>Someone nearby sends you a message.</p></li>
+					<li><span class="n">3</span><b>You accept</b><p>You decide, then agree on the details.</p></li>
+					<li><span class="n">4</span><b>Mark it done</b><p>So help can move on to the next street.</p></li>
+				</ol>
+			</section>
+		</div>
+	</main>
+
+	<footer class="site-footer" style="margin-top: 64px">
+		<div class="wrap">
+			<p>
+				Match is a free, volunteer-run platform that connects people affected by the DANA with
+				neighbours ready to help.
+			</p>
+			<p>
+				Questions or want to partner with us?<br />
+				<a class="link" href="mailto:hello@match-valencia.org">hello@match-valencia.org</a>
+			</p>
+		</div>
+	</footer>
+</div>
+
+<!-- ================================================= SEARCH -->
+<div data-screen="search" hidden>
+	<header class="site-header">
+		<div class="wrap">
+			<a class="brand" href="#home">
+				<svg aria-hidden="true"><use href="#logo" /></svg>
+				<span class="brand-name">Match Valencia</span>
+				<span class="brand-role">Volunteer</span>
+			</a>
+			<nav class="site-nav">
+				<a class="nav-link" href="#search" aria-current="page">Find a task</a>
+				<a class="nav-link" href="#mine">My tasks</a>
+				<span class="avatar" aria-label="Your account">LM</span>
+			</nav>
+		</div>
+	</header>
+
+	<main class="wrap page">
+		<div class="page-head">
+			<div>
+				<h1 class="h-page">Find a task</h1>
+				<p>Requests from people near you. Offer help on any that you can take on.</p>
+			</div>
+		</div>
+
+		<div class="search">
+			<aside class="filters">
+				<label class="field">
+					<span class="label">Location</span>
+					<input class="input" type="text" placeholder="Search an address…" />
+				</label>
+				<label class="field">
+					<span class="label">Within 50 km</span>
+					<input type="range" min="1" max="100" value="50" />
+				</label>
+				<fieldset>
+					<legend>Kind of help</legend>
+					<div class="checks">
+						<label><input type="checkbox" /> Transport people</label>
+						<label><input type="checkbox" /> Food</label>
+						<label><input type="checkbox" /> Accommodation</label>
+						<label><input type="checkbox" /> Clothes</label>
+						<label><input type="checkbox" /> Medical help</label>
+						<label><input type="checkbox" checked /> Cleaning</label>
+						<label><input type="checkbox" checked /> Repairs</label>
+						<label><input type="checkbox" /> Other</label>
+					</div>
+				</fieldset>
+			</aside>
+
+			<div>
+				<div class="map">
+					<svg viewBox="0 0 800 400" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Map of matching tasks">
+						<use href="#map-base" width="800" height="480" />
+						<g class="pin">
+							<use href="#pin" x="428" y="150" width="28" height="38" />
+							<use href="#pin" x="404" y="170" width="28" height="38" />
+							<use href="#pin" x="436" y="336" width="28" height="38" />
+							<use href="#pin" x="470" y="352" width="28" height="38" />
+						</g>
+					</svg>
+				</div>
+
+				<div class="results-bar">
+					<b>4 tasks match</b>
+					<span class="muted" style="font-size: 0.92rem">Cleaning, Repairs · within 50 km</span>
+				</div>
+
+				<div class="cards">
+					<article class="card">
+						<div class="card-top">
+							<p class="eyebrow">Cleaning</p>
+							<span class="status status--open">Open</span>
+						</div>
+						<h3>Clear mud from a ground-floor flat</h3>
+						<p class="place"><svg aria-hidden="true"><use href="#i-pin" /></svg>Carrer de Sant Roc 12, Alzira</p>
+						<div class="card-actions">
+							<a class="btn btn--primary" href="#task">Offer help</a>
+							<a class="btn btn--plain" href="#task">See more</a>
+						</div>
+					</article>
+					<article class="card">
+						<div class="card-top">
+							<p class="eyebrow">Repairs</p>
+							<span class="status status--open">Open</span>
+						</div>
+						<h3>Rehang a front door swollen by water</h3>
+						<p class="place"><svg aria-hidden="true"><use href="#i-pin" /></svg>Avinguda al Vedat 41, Torrent</p>
+						<div class="card-actions">
+							<a class="btn btn--primary" href="#task">Offer help</a>
+							<a class="btn btn--plain" href="#task">See more</a>
+						</div>
+					</article>
+					<article class="card">
+						<div class="card-top">
+							<p class="eyebrow">Cleaning</p>
+							<span class="status status--pending">Offer sent</span>
+						</div>
+						<h3>Empty and wash out a garage</h3>
+						<p class="place"><svg aria-hidden="true"><use href="#i-pin" /></svg>Carrer de la Marquesa 7, Carcaixent</p>
+						<div class="card-actions">
+							<a class="btn btn--quiet" href="#task">See more</a>
+							<a class="btn btn--plain" href="#task">Cancel offer</a>
+						</div>
+					</article>
+					<article class="card">
+						<div class="card-top">
+							<p class="eyebrow">Repairs</p>
+							<span class="status status--open">Open</span>
+						</div>
+						<h3>Check the wiring before power goes back on</h3>
+						<p class="place"><svg aria-hidden="true"><use href="#i-pin" /></svg>Plaça Major 3, Alzira</p>
+						<div class="card-actions">
+							<a class="btn btn--primary" href="#task">Offer help</a>
+							<a class="btn btn--plain" href="#task">See more</a>
+						</div>
+					</article>
+				</div>
+			</div>
+		</div>
+	</main>
+</div>
+
+<!-- ================================================= TASK DETAIL -->
+<div data-screen="task" hidden>
+	<header class="site-header">
+		<div class="wrap">
+			<a class="brand" href="#home">
+				<svg aria-hidden="true"><use href="#logo" /></svg>
+				<span class="brand-name">Match Valencia</span>
+				<span class="brand-role">Help seeker</span>
+			</a>
+			<nav class="site-nav">
+				<a class="nav-link" href="#create">Ask for help</a>
+				<a class="nav-link" href="#mine">My tasks</a>
+				<span class="avatar" aria-label="Your account">AG</span>
+			</nav>
+		</div>
+	</header>
+
+	<main class="wrap page">
+		<a class="back" href="#mine">← My tasks</a>
+		<div class="detail">
+			<article>
+				<p class="eyebrow">Cleaning</p>
+				<div class="detail-head">
+					<h1 class="h-page">Clear mud from a ground-floor flat</h1>
+					<span class="status status--pending">Offer received</span>
+				</div>
+
+				<div class="next-step">
+					<div>
+						<b>Lucía has offered to help.</b>
+						<p>Read the message and decide whether to accept.</p>
+					</div>
+					<a class="btn btn--primary" href="#task">Review request</a>
+				</div>
+
+				<div class="map">
+					<svg viewBox="0 200 800 280" role="img" aria-label="Map showing the task location in Alzira">
+						<use href="#map-base" width="800" height="480" />
+						<g class="pin pin--self"><use href="#pin" x="436" y="336" width="28" height="38" /></g>
+					</svg>
+				</div>
+				<div class="photos">
+					<div class="photo">Photo 1</div>
+					<div class="photo">Photo 2</div>
+					<div class="photo">Photo 3</div>
+				</div>
+
+				<p class="description">
+					The water reached about a metre in the living room and kitchen. It has drained, but
+					there is a thick layer of mud on the floors and the furniture needs carrying out to the
+					street. I am 71 and cannot do the lifting myself. Shovels and buckets would help — I
+					only have one of each.
+				</p>
+
+				<dl class="facts">
+					<div><dt>Category</dt><dd>Cleaning</dd></div>
+					<div><dt>Location</dt><dd>Carrer de Sant Roc 12, Alzira</dd></div>
+					<div><dt>Posted</dt><dd>9 Nov 2026</dd></div>
+					<div><dt>Owner</dt><dd>Amparo (you)</dd></div>
+				</dl>
+
+				<div class="detail-actions">
+					<a class="btn btn--quiet" href="#create">Edit</a>
+					<a class="btn btn--plain" href="#mine">Remove task</a>
+				</div>
+			</article>
+
+			<aside class="activity">
+				<h2 class="h-section" style="font-size: 1.35rem">Activity</h2>
+				<ol class="timeline">
+					<li>
+						<time datetime="2026-11-09T08:12">9 Nov, 08:12</time>
+						You posted the task
+					</li>
+					<li>
+						<time datetime="2026-11-09T10:40">9 Nov, 10:40</time>
+						Lucía offered help
+						<blockquote>
+							I live ten minutes away and can come on Saturday morning with two friends, boots
+							and buckets.
+						</blockquote>
+					</li>
+				</ol>
+			</aside>
+		</div>
+	</main>
+</div>
+
+<!-- ================================================= CREATE TASK -->
+<div data-screen="create" hidden>
+	<header class="site-header">
+		<div class="wrap">
+			<a class="brand" href="#home">
+				<svg aria-hidden="true"><use href="#logo" /></svg>
+				<span class="brand-name">Match Valencia</span>
+				<span class="brand-role">Help seeker</span>
+			</a>
+			<nav class="site-nav">
+				<a class="nav-link" href="#create" aria-current="page">Ask for help</a>
+				<a class="nav-link" href="#mine">My tasks</a>
+				<span class="avatar" aria-label="Your account">AG</span>
+			</nav>
+		</div>
+	</header>
+
+	<main class="wrap page">
+		<div class="page-head">
+			<div>
+				<h1 class="h-page">Ask for help</h1>
+				<p>Describe one thing you need. You can post as many tasks as you like.</p>
+			</div>
+		</div>
+
+		<div class="compose">
+			<form class="form" onsubmit="return false">
+				<label class="field">
+					<span class="label">Title</span>
+					<input class="input" type="text" value="Clear mud from a ground-floor flat" />
+				</label>
+				<label class="field">
+					<span class="label">Describe your situation</span>
+					<textarea class="input" placeholder="Explain what you need help with…"></textarea>
+					<p class="hint">A few sentences is enough. Mention anything a volunteer should bring.</p>
+				</label>
+				<label class="field field--error">
+					<span class="label">Category</span>
+					<select class="input">
+						<option>Select a category…</option>
+						<option>Transport people</option>
+						<option>Food</option>
+						<option>Accommodation</option>
+						<option>Clothes</option>
+						<option>Medical help</option>
+						<option>Cleaning</option>
+						<option>Repairs</option>
+						<option>Other</option>
+					</select>
+					<p class="error">Choose a category so volunteers can find your task.</p>
+				</label>
+				<label class="field">
+					<span class="label">Address</span>
+					<input class="input" type="text" placeholder="Start typing your street…" />
+					<p class="hint">Used to place your task on the map.</p>
+				</label>
+				<div class="field">
+					<span class="label">Photos <span class="muted" style="font-weight: 400">(optional)</span></span>
+					<div class="dropzone"><span><b>Choose photos</b> or drop them here</span><span>They help volunteers know what to expect.</span></div>
+				</div>
+				<div class="form-actions">
+					<a class="btn btn--quiet" href="#mine">Cancel</a>
+					<a class="btn btn--primary btn--lg" href="#task">Create task</a>
+				</div>
+			</form>
+
+			<aside class="aside-note">
+				<h2>What happens next</h2>
+				<ol>
+					<li>Your task appears on the map for volunteers nearby.</li>
+					<li>When someone offers to help, you see their message.</li>
+					<li>You decide whether to accept, then agree on the details together.</li>
+				</ol>
+				<p class="small">
+					Need a hand with this form? Write to
+					<a class="link" href="mailto:hello@match-valencia.org">hello@match-valencia.org</a>
+				</p>
+			</aside>
+		</div>
+	</main>
+</div>
+
+<!-- ================================================= MY TASKS -->
+<div data-screen="mine" hidden>
+	<header class="site-header">
+		<div class="wrap">
+			<a class="brand" href="#home">
+				<svg aria-hidden="true"><use href="#logo" /></svg>
+				<span class="brand-name">Match Valencia</span>
+				<span class="brand-role">Help seeker</span>
+			</a>
+			<nav class="site-nav">
+				<a class="nav-link" href="#create">Ask for help</a>
+				<a class="nav-link" href="#mine" aria-current="page">My tasks</a>
+				<span class="avatar" aria-label="Your account">AG</span>
+			</nav>
+		</div>
+	</header>
+
+	<main class="wrap page">
+		<div class="page-head">
+			<div>
+				<h1 class="h-page">My tasks</h1>
+				<p>Five tasks. One is waiting for your answer.</p>
+			</div>
+			<a class="btn btn--primary" href="#create">Ask for help</a>
+		</div>
+
+		<div class="rows">
+			<article class="row">
+				<div>
+					<span class="status status--pending">Offer received</span>
+					<h2>Clear mud from a ground-floor flat</h2>
+					<p>The water reached about a metre in the living room and kitchen. It has drained, but there is a thick layer of mud…</p>
+				</div>
+				<div class="row-actions">
+					<a class="btn btn--primary" href="#task">Review request</a>
+					<a class="btn btn--quiet" href="#task">See more</a>
+					<a class="btn btn--plain" href="#mine">Remove</a>
+				</div>
+			</article>
+			<article class="row">
+				<div>
+					<span class="status status--progress">In progress</span>
+					<h2>A lift to the health centre on Thursday</h2>
+					<p>My car was lost in the flood and I have an appointment at 10:30 that I cannot miss.</p>
+				</div>
+				<div class="row-actions">
+					<a class="btn btn--primary" href="#task">Mark done</a>
+					<a class="btn btn--quiet" href="#task">See more</a>
+					<a class="btn btn--quiet" href="#task">See helper</a>
+					<a class="btn btn--plain" href="#mine">Remove</a>
+				</div>
+			</article>
+			<article class="row">
+				<div>
+					<span class="status status--open">Open</span>
+					<h2>Winter clothes for two children</h2>
+					<p>Ages 6 and 9. Coats and shoes most of all — everything stored downstairs was ruined.</p>
+				</div>
+				<div class="row-actions">
+					<a class="btn btn--quiet" href="#task">See more</a>
+					<a class="btn btn--quiet" href="#create">Edit</a>
+					<a class="btn btn--plain" href="#mine">Remove</a>
+				</div>
+			</article>
+			<article class="row">
+				<div>
+					<span class="status status--done">Done</span>
+					<h2>Food for a family of four</h2>
+					<p>We had no working kitchen for the first week. Anything that does not need cooking.</p>
+				</div>
+				<div class="row-actions">
+					<a class="btn btn--quiet" href="#task">See more</a>
+					<a class="btn btn--quiet" href="#task">See helper</a>
+				</div>
+			</article>
+			<article class="row">
+				<div>
+					<span class="status status--closed">Closed</span>
+					<h2>Borrow a dehumidifier for a week</h2>
+					<p>The walls are still wet. A neighbour lent us one in the end.</p>
+				</div>
+				<div class="row-actions">
+					<a class="btn btn--quiet" href="#task">See more</a>
+				</div>
+			</article>
+		</div>
+	</main>
+</div>
+
+<script>
+	const screens = [...document.querySelectorAll('[data-screen]')];
+	const tabs = [...document.querySelectorAll('.mock-bar nav a')];
+	function show() {
+		const wanted = location.hash.slice(1);
+		const active = screens.some((s) => s.dataset.screen === wanted) ? wanted : 'home';
+		screens.forEach((s) => (s.hidden = s.dataset.screen !== active));
+		tabs.forEach((a) =>
+			a.hash === '#' + active ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current')
+		);
+		window.scrollTo(0, 0);
+	}
+	addEventListener('hashchange', show);
+	show();
+</script>
+</body>
+</html>

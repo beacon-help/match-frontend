@@ -3,6 +3,9 @@
 	import { page } from '$app/state';
 	import { isServerUp, safeReturnPath } from '$lib/api/availability';
 	import Button from '$lib/components/Button.svelte';
+	import Page from '$lib/components/Page.svelte';
+	import PageHeader from '$lib/components/PageHeader.svelte';
+	import Inset from '$lib/components/Inset.svelte';
 
 	let checking = $state(false);
 	let lastCheckedAt = $state(new Date());
@@ -23,47 +26,28 @@
 	}
 </script>
 
-<section class="container mx-auto flex justify-center px-4 py-16">
-	<div class="flex max-w-md flex-col items-center gap-4 text-center">
-		<span class="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
-			<svg
-				width="28"
-				height="28"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-				stroke-linecap="round"
-				class="text-gray-500"
-				aria-hidden="true"
-			>
-				<path d="M3 3l18 18" />
-				<path d="M8.5 16.5a5 5 0 0 1 7 0" />
-				<path d="M5 12.9a10 10 0 0 1 5.1-2.8" />
-				<path d="M19 12.9a10 10 0 0 0-2-1.5" />
-				<circle cx="12" cy="20" r="0.6" fill="currentColor" />
-			</svg>
-		</span>
-		<h1 class="text-2xl font-bold text-gray-900">We can’t reach Match Valencia</h1>
-		<p class="text-gray-600">
+<Page>
+	<div class="max-w-xl">
+		<PageHeader title="We can’t reach Match Valencia" />
+		<p>
 			Our server isn’t answering right now. If you were sending something, such as an offer or a new
 			task, it may not have been saved. Check it once you’re back.
 		</p>
-		<div class="flex flex-wrap justify-center gap-3 pt-2">
+		<div class="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
 			<Button variant="primary" disabled={checking} onclick={tryAgain}>
 				{checking ? 'Checking…' : 'Try again'}
 			</Button>
+			<p class="text-base text-ink-soft">No answer from the server · {lastChecked}</p>
 		</div>
-		<p class="text-xs text-gray-400">No answer from the server · {lastChecked}</p>
 
-		<div
-			class="mt-4 flex flex-col gap-1 rounded-2xl border border-gray-200 bg-gray-50 p-5 text-left"
-		>
-			<p class="font-semibold text-gray-900">Need help urgently?</p>
-			<p class="text-gray-700">
-				Call <b class="font-semibold">112</b>, the emergency number in Spain. It’s free from any
-				phone, works without credit, and they answer in English.
-			</p>
+		<div class="mt-10">
+			<Inset>
+				<p class="font-bold">Need help urgently?</p>
+				<p>
+					Call <b class="font-bold">112</b>, the emergency number in Spain. It’s free from any
+					phone, works without credit, and they answer in English.
+				</p>
+			</Inset>
 		</div>
 	</div>
-</section>
+</Page>

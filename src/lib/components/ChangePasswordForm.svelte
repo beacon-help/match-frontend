@@ -6,6 +6,8 @@
 	import { focusFirstInvalid } from '$lib/forms/focusFirstInvalid';
 	import TextField from '$lib/components/TextField.svelte';
 	import FormNote from '$lib/components/FormNote.svelte';
+	import Button from '$lib/components/Button.svelte';
+	import Tag from '$lib/components/Tag.svelte';
 
 	interface Props {
 		/** Sends the change; rejects with the server's error. */
@@ -66,19 +68,17 @@
 	}
 </script>
 
-<div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-lg">
-	<div class="mb-4 flex items-center justify-between gap-4">
-		<h2 class="text-xl font-semibold text-gray-800">Password</h2>
+<section>
+	<div class="mb-5 flex items-center justify-between gap-4 border-b-2 border-ink pb-2">
+		<h2 class="text-2xl font-bold">Password</h2>
 		{#if hasText}
-			<span class="rounded-full bg-amber-100 px-3 py-1 text-sm font-medium text-amber-700">
-				Unsaved
-			</span>
+			<Tag tone="wait">Unsaved</Tag>
 		{/if}
 	</div>
 
 	<form
 		bind:this={form}
-		class="space-y-4"
+		class="space-y-6"
 		novalidate
 		onsubmit={handleSubmit}
 		oninput={clearOutcome}
@@ -109,15 +109,11 @@
 			error={errors.repeatPassword}
 		/>
 
-		<div class="flex flex-wrap items-center justify-end gap-3 border-t border-gray-100 pt-4">
+		<div class="flex flex-wrap items-center justify-end gap-3 border-t border-line pt-5">
 			<FormNote note={outcome} />
-			<button
-				type="submit"
-				disabled={!canSubmit}
-				class="rounded-lg bg-blue-600 px-6 py-2 font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
-			>
+			<Button variant="primary" type="submit" disabled={!canSubmit}>
 				{isSubmitting ? 'Updating…' : 'Update password'}
-			</button>
+			</Button>
 		</div>
 	</form>
-</div>
+</section>

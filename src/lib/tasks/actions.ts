@@ -24,27 +24,31 @@ export interface TaskActionSpec {
 	kind: TaskActionKind;
 	label: string;
 	action: TaskAction | null;
-	variant: 'primary' | 'neutral';
+	variant: 'primary' | 'neutral' | 'danger';
 	mock?: boolean;
 }
 
 const SPECS: Record<TaskActionKind, TaskActionSpec> = {
 	'see-more': { kind: 'see-more', label: 'See more', action: null, variant: 'neutral' },
 	edit: { kind: 'edit', label: 'Edit', action: null, variant: 'neutral' },
-	remove: { kind: 'remove', label: 'Remove', action: 'close', variant: 'neutral' },
-	cancel: { kind: 'cancel', label: 'Cancel', action: 'close', variant: 'neutral' },
+	remove: { kind: 'remove', label: 'Remove', action: 'close', variant: 'danger' },
+	cancel: { kind: 'cancel', label: 'Cancel offer', action: 'close', variant: 'danger' },
 	'mark-done': {
 		kind: 'mark-done',
 		label: 'Mark done',
 		action: 'report_success',
 		variant: 'primary'
 	},
-	'see-helper': { kind: 'see-helper', label: 'See Helper', action: null, variant: 'neutral' },
-	'see-owner': { kind: 'see-owner', label: 'See Owner', action: null, variant: 'neutral' },
+	'see-helper': { kind: 'see-helper', label: 'See helper', action: null, variant: 'neutral' },
+	'see-owner': { kind: 'see-owner', label: 'See owner', action: null, variant: 'neutral' },
 	'offer-help': { kind: 'offer-help', label: 'Offer help', action: 'join', variant: 'primary' },
 	review: { kind: 'review', label: 'Review request', action: null, variant: 'primary' },
 	contact: { kind: 'contact', label: 'Contact', action: null, variant: 'neutral', mock: true }
 };
+
+export function actionLabel(kind: TaskActionKind): string {
+	return SPECS[kind].label;
+}
 
 function pick(kinds: TaskActionKind[]): TaskActionSpec[] {
 	return kinds.map((k) => SPECS[k]);
@@ -56,7 +60,7 @@ export function taskActions(status: TaskStatus, permission: TaskPermission): Tas
 			case 'open':
 				return pick(['see-more', 'edit', 'remove']);
 			case 'pending':
-				return pick(['see-more', 'review', 'remove']);
+				return pick(['review', 'see-more', 'remove']);
 			case 'approved':
 				return pick(['mark-done', 'see-more', 'see-helper', 'remove']);
 			case 'succeeded':
@@ -84,7 +88,7 @@ export function taskActions(status: TaskStatus, permission: TaskPermission): Tas
 
 	// public
 	if (status === 'open') {
-		return pick(['see-more', 'offer-help']);
+		return pick(['offer-help', 'see-more']);
 	}
 	return pick(['see-more']);
 }

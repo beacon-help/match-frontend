@@ -12,6 +12,8 @@
 	import ProfileModal from '$lib/components/ProfileModal.svelte';
 	import SignInPrompt from '$lib/components/SignInPrompt.svelte';
 	import Button from '$lib/components/Button.svelte';
+	import Page from '$lib/components/Page.svelte';
+	import PageHeader from '$lib/components/PageHeader.svelte';
 
 	let reviewTask: Task | null = $state(null);
 	let profileUserId: number | null = $state(null);
@@ -26,7 +28,6 @@
 		authed.data = tasks.map((t) => (t.id === updated.id ? updated : t));
 	});
 
-	// Volunteers land on Search from the empty state; help-seekers land on Create Task.
 	const isVolunteer = $derived(session.role === 'volunteer');
 
 	function runAction(task: Task, action: 'close' | 'report_success') {
@@ -40,39 +41,40 @@
 	}
 </script>
 
-<section class="container mx-auto px-4 py-10">
-	<h3 class="mb-6 text-4xl font-bold">My Tasks</h3>
+<Page>
+	<PageHeader title="My tasks">
+		{#snippet action()}
+			{#if isVolunteer}
+				<Button variant="primary" href={resolve('/tasks/search')}>Find a task</Button>
+			{:else}
+				<Button variant="primary" href={resolve('/tasks/create')}>Ask for help</Button>
+			{/if}
+		{/snippet}
+	</PageHeader>
 
 	{#if authed.isLoading}
-		<p class="text-gray-600">Loading your tasks…</p>
+		<p class="text-ink-soft">Loading your tasks…</p>
 	{:else if authed.needsSignIn}
 		<SignInPrompt purpose="to view your tasks" />
 	{:else if authed.error}
-		<p class="text-red-600">{authed.error}</p>
+		<p class="text-danger">{authed.error}</p>
 	{:else if tasks.length === 0}
-		<div class="flex flex-col items-center gap-8 py-24 text-center">
+		<p class="max-w-[52ch] border-t-2 border-ink pt-5">
 			{#if isVolunteer}
-				<p class="max-w-sm text-gray-900">
-					You haven't offered to help with any tasks yet. Browse open tasks to find someone who
-					needs a hand.
-				</p>
-				<Button variant="primary" href={resolve('/tasks/search')}>Search tasks</Button>
+				You haven't offered to help with any tasks yet. Browse open tasks to find someone who needs
+				a hand.
 			{:else}
-				<p class="max-w-sm text-gray-900">
-					You haven't created any tasks yet. If there's anything you need help with, feel free to
-					get started.
-				</p>
-				<Button variant="success" href={resolve('/tasks/create')}>Create your first task</Button>
+				You haven't created any tasks yet. If there's anything you need help with, feel free to get
+				started.
 			{/if}
-		</div>
+		</p>
 	{:else}
-		<div class="space-y-6">
+		<ul class="border-t-2 border-ink">
 			{#each tasks as task (task.id)}
 				<MyTaskCard
 					{task}
 					{currentUserId}
 					busy={actions.busy}
-					onSeeMore={() => goto(resolve('/tasks/[id]', { id: String(task.id) }))}
 					onEdit={() => goto(resolve('/tasks/[id]/edit', { id: String(task.id) }))}
 					onReview={() => {
 						actionError = null;
@@ -85,9 +87,9 @@
 					onCancel={() => runAction(task, 'close')}
 				/>
 			{/each}
-		</div>
+		</ul>
 	{/if}
-</section>
+</Page>
 
 {#if reviewTask}
 	<ReviewOfferModal

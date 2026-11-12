@@ -1,4 +1,5 @@
 <script lang="ts">
+	import config from 'virtual:match-config';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { addTaskImages, createTask } from '$lib/api/task';
@@ -9,6 +10,9 @@
 	import CreateTaskForm from '$lib/components/CreateTaskForm.svelte';
 	import TaskImagePicker from '$lib/components/TaskImagePicker.svelte';
 	import Button from '$lib/components/Button.svelte';
+	import Inset from '$lib/components/Inset.svelte';
+	import Page from '$lib/components/Page.svelte';
+	import PageHeader from '$lib/components/PageHeader.svelte';
 
 	let task: TaskCreationRequest = $state({
 		title: '',
@@ -98,46 +102,68 @@
 	}
 </script>
 
-<section class="container mx-auto px-4 py-10">
+<Page>
 	{#if taskExists}
-		<div class="mx-auto max-w-2xl rounded-2xl border border-gray-200 bg-white p-6 shadow-lg">
-			<h2 class="text-2xl font-bold text-gray-800">Your task was created</h2>
+		<div class="max-w-2xl">
+			<PageHeader title="Your task was created" />
 			{#if imageError}
-				<p class="mt-2 text-gray-700">
+				<p>
 					The photos didn't upload, so the task is saved without them. You can try again here, or
 					<a
 						href={resolve('/tasks/[id]/edit', { id: String(createdTaskId) })}
-						class="font-medium text-blue-600 hover:text-blue-700">add them later by editing it</a
+						class="text-navy underline hover:text-navy-dark">add them later by editing it</a
 					>.
 				</p>
-				<p class="mt-2 text-sm text-red-600">{imageError}</p>
+				<p class="mt-2 text-base text-danger">{imageError}</p>
 			{:else}
-				<p class="mt-2 text-gray-700">Uploading your photos…</p>
+				<p class="text-ink-soft">Uploading your photos…</p>
 			{/if}
 
-			<div class="mt-4">
+			<div class="mt-6">
 				<TaskImagePicker bind:pending={pendingImages} disabled={isSubmitting} />
 			</div>
 
-			<div class="mt-6 flex justify-end gap-3">
-				<Button variant="neutral" disabled={isSubmitting} onclick={skipPhotos}>
-					Continue without photos
-				</Button>
+			<div class="mt-6 flex flex-wrap gap-3">
 				<Button variant="primary" disabled={isSubmitting} onclick={retryUpload}>
 					{isSubmitting ? 'Uploading…' : 'Retry upload'}
 				</Button>
+				<Button disabled={isSubmitting} onclick={skipPhotos}>Continue without photos</Button>
 			</div>
 		</div>
 	{:else}
-		<CreateTaskForm
-			bind:task
-			bind:pendingImages
-			{errors}
-			{isSubmitting}
-			{submitError}
-			mode="create"
-			onSubmit={handleSubmit}
-			onCancel={() => goto(resolve('/tasks'))}
+		<PageHeader
+			title="Ask for help"
+			lede="Describe one thing you need. You can post as many tasks as you like."
 		/>
+
+		<div class="grid items-start gap-x-16 gap-y-10 lg:grid-cols-[minmax(0,38rem)_minmax(0,19rem)]">
+			<CreateTaskForm
+				bind:task
+				bind:pendingImages
+				{errors}
+				{isSubmitting}
+				{submitError}
+				mode="create"
+				onSubmit={handleSubmit}
+				onCancel={() => goto(resolve('/tasks'))}
+			/>
+
+			<aside>
+				<Inset>
+					<h2 class="font-bold">What happens next</h2>
+					<ol class="mt-2 list-decimal space-y-2 pl-5 text-base text-ink-soft">
+						<li>Your task appears on the map for volunteers nearby.</li>
+						<li>When someone offers to help, you see their message.</li>
+						<li>You decide whether to accept, then agree on the details together.</li>
+					</ol>
+				</Inset>
+				<p class="mt-4 text-base text-ink-soft">
+					Need a hand with this form? Write to
+					<a href="mailto:{config.contact_email}" class="text-navy underline hover:text-navy-dark"
+						>{config.contact_email}</a
+					>
+				</p>
+			</aside>
+		</div>
 	{/if}
-</section>
+</Page>

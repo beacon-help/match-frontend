@@ -10,6 +10,10 @@
 	import { validateTask, type TaskErrors } from '$lib/validation/task';
 	import type { Task, TaskCreationRequest } from '$lib/types/task';
 	import CreateTaskForm from '$lib/components/CreateTaskForm.svelte';
+	import StatusBadge from '$lib/components/StatusBadge.svelte';
+	import SignInPrompt from '$lib/components/SignInPrompt.svelte';
+	import Page from '$lib/components/Page.svelte';
+	import PageHeader from '$lib/components/PageHeader.svelte';
 
 	const taskId = Number(page.params.id);
 
@@ -114,32 +118,35 @@
 	}
 </script>
 
-<section class="container mx-auto px-4 py-10">
-	<h3 class="mb-6 text-4xl font-bold">Edit Task</h3>
+<Page>
+	<PageHeader title="Edit your task">
+		{#snippet badge()}
+			{#if original}
+				<StatusBadge status={original.status} permission="owner" />
+			{/if}
+		{/snippet}
+	</PageHeader>
 
 	{#if isLoading}
-		<p class="text-gray-600">Loading task…</p>
+		<p class="text-ink-soft">Loading task…</p>
 	{:else if needsSignIn}
-		<p class="text-gray-600">
-			You need to <a href={resolve('/login')} class="font-medium text-blue-600 hover:text-blue-700"
-				>sign in</a
-			> to edit this task.
-		</p>
+		<SignInPrompt purpose="to edit this task" />
 	{:else if loadError}
-		<p class="text-red-600">{loadError}</p>
+		<p class="text-danger">{loadError}</p>
 	{:else if original}
-		<CreateTaskForm
-			bind:task={form}
-			bind:pendingImages
-			bind:removedImageIds
-			existingImages={original.images}
-			{errors}
-			{isSubmitting}
-			{submitError}
-			mode="edit"
-			status={original.status}
-			onSubmit={handleSubmit}
-			onCancel={() => goto(resolve('/tasks/[id]', { id: String(taskId) }))}
-		/>
+		<div class="max-w-[38rem]">
+			<CreateTaskForm
+				bind:task={form}
+				bind:pendingImages
+				bind:removedImageIds
+				existingImages={original.images}
+				{errors}
+				{isSubmitting}
+				{submitError}
+				mode="edit"
+				onSubmit={handleSubmit}
+				onCancel={() => goto(resolve('/tasks/[id]', { id: String(taskId) }))}
+			/>
+		</div>
 	{/if}
-</section>
+</Page>

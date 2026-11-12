@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { CATEGORIES } from '$lib/tasks/categories';
+	import CheckboxOption from '$lib/components/CheckboxOption.svelte';
 
 	interface Props {
 		/** Selected category values. Bindable so the parent owns the state. */
@@ -17,17 +18,13 @@
 	}
 </script>
 
-<fieldset class="flex flex-col gap-2">
-	<legend class="mb-1 text-sm font-medium text-gray-700">Filter by category</legend>
+<fieldset>
+	<legend class="mb-1.5 font-semibold">Kind of help</legend>
 	{#each CATEGORIES as category (category.value)}
-		<label class="flex items-center gap-2 text-sm text-gray-700">
-			<input
-				type="checkbox"
-				checked={selected.includes(category.value)}
-				onchange={() => toggle(category.value)}
-				class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-			/>
-			{category.label}
-		</label>
+		<CheckboxOption
+			label={category.label}
+			checked={selected.includes(category.value)}
+			onchange={() => toggle(category.value)}
+		/>
 	{/each}
 </fieldset>

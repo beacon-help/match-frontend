@@ -3,6 +3,7 @@
 	import 'leaflet/dist/leaflet.css';
 	import type * as Leaflet from 'leaflet';
 	import { createMap, type MapHandle } from '$lib/map/createMap';
+	import TextField from '$lib/components/TextField.svelte';
 
 	interface Props {
 		/** Free-text address (source of truth). Bindable. */
@@ -21,9 +22,6 @@
 	// handler are imperative.
 	let handle: MapHandle | undefined;
 	let marker: Leaflet.Marker | undefined;
-
-	const inputClasses =
-		'w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none';
 
 	function placeMarker(la: number, lo: number) {
 		if (!handle) return;
@@ -75,25 +73,20 @@
 	});
 </script>
 
-<div class="flex flex-col gap-2">
-	<label class="text-sm font-medium text-gray-700" for="address-input">Address</label>
+<div class="space-y-2.5">
 	<!-- TODO: backend — no geocoding endpoint; the address is stored as typed and the
 	     coordinates come from clicking the map. -->
-	<input
-		id="address-input"
-		type="text"
+	<TextField
+		label="Address"
 		bind:value={address}
 		placeholder="e.g. Carrer de Colón 12, Valencia"
-		class={inputClasses}
+		hint="Type the address, then click on the map to drop a pin for the location."
+		{error}
 	/>
-	{#if error}
-		<p class="text-sm text-red-600">{error}</p>
-	{/if}
 	<div
 		bind:this={container}
 		role="application"
 		aria-label="Click the map to set the task location"
-		class="isolate aspect-[5/3] w-full overflow-hidden rounded-2xl border border-gray-200"
+		class="isolate h-72 w-full border border-line"
 	></div>
-	<p class="text-xs text-gray-500">Click on the map to drop a pin for the location.</p>
 </div>

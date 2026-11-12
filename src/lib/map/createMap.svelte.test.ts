@@ -42,7 +42,7 @@ describe('createMap', () => {
 		const handle = await createMap(container(), { center: [0, 0], zoom: 2 });
 
 		expect(handle!.icon.options.iconUrl).toBe('/home/marker.svg');
-		expect(handle!.icon.options.iconAnchor).toEqual([8, 20]);
+		expect(handle!.icon.options.iconAnchor).toEqual([11, 28]);
 		handle!.map.remove();
 	});
 

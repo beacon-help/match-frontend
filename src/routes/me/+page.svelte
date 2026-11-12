@@ -3,25 +3,30 @@
 	import Button from '$lib/components/Button.svelte';
 	import ProfileCard from '$lib/components/ProfileCard.svelte';
 	import SignInPrompt from '$lib/components/SignInPrompt.svelte';
+	import Page from '$lib/components/Page.svelte';
+	import PageHeader from '$lib/components/PageHeader.svelte';
 	import { session } from '$lib/auth/session.svelte';
 	import { createAuthedPage } from '$lib/auth/authedPage.svelte';
 
 	const authed = createAuthedPage();
 </script>
 
-<section class="container mx-auto px-4 py-10">
-	<h3 class="mb-6 text-4xl font-bold">Profile</h3>
+<Page>
+	<PageHeader title="Profile">
+		{#snippet action()}
+			{#if session.user}
+				<Button variant="neutral" href={resolve('/me/edit')}>Edit profile</Button>
+			{/if}
+		{/snippet}
+	</PageHeader>
 
 	{#if authed.isLoading}
-		<p class="text-gray-600">Loading your profile…</p>
+		<p class="text-ink-soft">Loading your profile…</p>
 	{:else if authed.needsSignIn}
 		<SignInPrompt purpose="to view your profile" />
 	{:else if authed.error}
-		<p class="text-red-600">{authed.error}</p>
+		<p class="text-danger">{authed.error}</p>
 	{:else if session.user}
 		<ProfileCard user={session.user} />
-		<div class="mx-auto mt-4 flex max-w-xl justify-end">
-			<Button variant="neutral" href={resolve('/me/edit')}>Edit profile</Button>
-		</div>
 	{/if}
-</section>
+</Page>

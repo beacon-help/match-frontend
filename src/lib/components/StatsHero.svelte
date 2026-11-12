@@ -2,7 +2,9 @@
 	import { resolve } from '$app/paths';
 	import type { UserType } from '$lib/api/user';
 	import type { Stats } from '$lib/types/stats';
-	import { liveLabel, statsHeadline, statsSubline } from '$lib/stats/headline';
+	import { statsSentence } from '$lib/stats/headline';
+	import Button from '$lib/components/Button.svelte';
+	import PathChoice from '$lib/components/PathChoice.svelte';
 
 	interface Props {
 		stats: Stats | null;
@@ -11,66 +13,46 @@
 
 	let { stats, role }: Props = $props();
 
-	const headline = $derived(statsHeadline(stats));
-	const subline = $derived(statsSubline(stats));
-	const live = $derived(liveLabel(stats));
+	const sentence = $derived(statsSentence(stats));
 </script>
 
-<section
-	aria-labelledby="stats-hero-title"
-	class="space-y-7 rounded-3xl bg-gray-100 px-6 py-10 text-gray-900 sm:px-10 sm:py-14"
->
-	{#if live}
-		<p class="flex items-center gap-2.5 text-sm font-medium text-gray-600">
-			<span class="relative flex h-2.5 w-2.5" aria-hidden="true">
-				<span
-					class="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75 motion-reduce:animate-none"
-				></span>
-				<span class="relative inline-flex h-2.5 w-2.5 rounded-full bg-green-500"></span>
-			</span>
-			{live}
-		</p>
-	{/if}
-
+<section aria-labelledby="stats-hero-title" class="pt-6 pb-6 sm:pt-14 sm:pb-7">
 	<h1
 		id="stats-hero-title"
-		class="max-w-[24ch] text-3xl leading-tight font-semibold tracking-tight sm:text-5xl sm:leading-[1.1]"
+		class="max-w-[22ch] text-3xl leading-[1.1] font-bold tracking-tight sm:text-5xl sm:leading-[1.1]"
 	>
-		{#each headline as part, i (i)}
-			{#if part.highlight}<span class="text-blue-600">{part.text}</span>{:else}{part.text}{/if}
-		{/each}
+		Neighbours helping neighbours after the DANA.
 	</h1>
+	<p class="mt-2 max-w-[60ch] text-ink-soft sm:mt-3 sm:text-xl">{sentence}</p>
 
-	<p class="max-w-[50ch] text-lg text-gray-600">{subline}</p>
-
-	<div class="flex flex-wrap gap-3">
-		{#if role === 'volunteer'}
-			<a
-				href={resolve('/tasks/search')}
-				class="rounded-lg bg-blue-600 px-5 py-3 font-medium text-white hover:bg-blue-700"
-			>
-				Find a task
-			</a>
-		{:else if role === 'help-seeker'}
-			<a
-				href={resolve('/tasks/create')}
-				class="rounded-lg bg-blue-600 px-5 py-3 font-medium text-white hover:bg-blue-700"
-			>
-				Create a task
-			</a>
-		{:else}
-			<a
-				href={resolve('/signup/volunteer')}
-				class="rounded-lg bg-blue-600 px-5 py-3 font-medium text-white hover:bg-blue-700"
-			>
-				I want to help
-			</a>
-			<a
+	{#if role === 'volunteer'}
+		<div class="mt-5 flex flex-wrap gap-3 sm:mt-8 sm:border-b sm:border-line sm:pb-8">
+			<Button variant="primary" href={resolve('/tasks/search')}>Find a task</Button>
+			<Button href={resolve('/tasks')}>My tasks</Button>
+		</div>
+	{:else if role === 'help-seeker'}
+		<div class="mt-5 flex flex-wrap gap-3 sm:mt-8 sm:border-b sm:border-line sm:pb-8">
+			<Button variant="primary" href={resolve('/tasks/create')}>Ask for help</Button>
+			<Button href={resolve('/tasks')}>My tasks</Button>
+		</div>
+	{:else}
+		<div class="mt-5 grid grid-cols-2 gap-2 sm:hidden">
+			<Button variant="primary" href={resolve('/signup/helpseeker')}>I need help</Button>
+			<Button variant="primary" href={resolve('/signup/volunteer')}>I want to help</Button>
+		</div>
+		<div class="mt-9 hidden border-t-2 border-b border-t-ink border-b-line sm:grid sm:grid-cols-2">
+			<PathChoice
+				title="I need help"
+				text="Describe one thing you need. Volunteers near you will see it."
 				href={resolve('/signup/helpseeker')}
-				class="rounded-lg border border-gray-300 bg-white px-5 py-3 font-medium text-gray-700 hover:bg-gray-50"
-			>
-				I need help
-			</a>
-		{/if}
-	</div>
+				cta="Sign up to get help"
+			/>
+			<PathChoice
+				title="I want to help"
+				text="See what people near you need, and offer what you can."
+				href={resolve('/signup/volunteer')}
+				cta="Sign up to volunteer"
+			/>
+		</div>
+	{/if}
 </section>
